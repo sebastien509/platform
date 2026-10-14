@@ -1,0 +1,780 @@
+
+/* ============================================================
+   IV — WARM LOADING EXPERIENCE
+   Complete replacement: IV-loading.css
+
+   Warm Canvas × Electric Intelligence
+
+   Preserves:
+   - Fixed full-screen overlay
+   - Hex-brick node network
+   - Original node geometry
+   - Row-staggered animations
+   - Two ambient orbs
+   - Rotating status messages
+   - Inline loading dots
+
+   Design:
+   - Warm #F4F3F0 background
+   - Electric blue hex network
+   - Authentic IV wordmark
+   - Dark slate primary typography
+   - Very quiet ambient blue atmosphere
+   ============================================================ */
+
+/* ============================================================
+   01. FULL-SCREEN LOADING SURFACE
+   ============================================================ */
+
+   .iv-loading-screen {
+    --loading-canvas: #f4f3f0;
+    --loading-ink: #202736;
+    --loading-secondary: #6a778a;
+    --loading-muted: #98a3b2;
+    --loading-blue: #426bfa;
+  
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+  
+    overflow: hidden;
+  
+    background:
+      linear-gradient(
+        135deg,
+        #f8f8f6 0%,
+        #f4f3f0 100%
+      );
+  
+    color: var(--loading-ink);
+    pointer-events: all;
+  }
+  
+  /* ============================================================
+     02. AMBIENT BACKGROUND
+     ============================================================ */
+  
+  .iv-loading-screen__ambient {
+    position: absolute;
+    inset: 0;
+  
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  .iv-loading-screen__orb {
+    position: absolute;
+  
+    border-radius: 50%;
+    filter: blur(110px);
+  
+    pointer-events: none;
+  }
+  
+  .iv-loading-screen__orb--one {
+    top: 14%;
+    left: 28%;
+  
+    width: 540px;
+    height: 540px;
+  
+    background: #c9d8ff;
+    opacity: 0.24;
+  
+    animation:
+      iv-loading-drift-a
+      12s ease-in-out infinite;
+  }
+  
+  .iv-loading-screen__orb--two {
+    right: 15%;
+    bottom: 7%;
+  
+    width: 440px;
+    height: 440px;
+  
+    background: #d7e6ff;
+    opacity: 0.22;
+  
+    animation:
+      iv-loading-drift-b
+      16s ease-in-out infinite;
+  }
+  
+  @keyframes iv-loading-drift-a {
+    0%,
+    100% {
+      transform: translate3d(-20px, -10px, 0);
+    }
+  
+    50% {
+      transform: translate3d(30px, 20px, 0);
+    }
+  }
+  
+  @keyframes iv-loading-drift-b {
+    0%,
+    100% {
+      transform: translate3d(20px, 10px, 0);
+    }
+  
+    50% {
+      transform: translate3d(-30px, -20px, 0);
+    }
+  }
+  
+  /* Very faint architectural grid */
+  
+  .iv-loading-screen__grid {
+    position: absolute;
+    inset: 0;
+  
+    background-image:
+      linear-gradient(
+        rgb(66 107 250 / 5%) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgb(66 107 250 / 5%) 1px,
+        transparent 1px
+      );
+  
+    background-size: 52px 52px;
+  
+    -webkit-mask-image:
+      radial-gradient(
+        ellipse at center,
+        #000000 0%,
+        transparent 68%
+      );
+  
+    mask-image:
+      radial-gradient(
+        ellipse at center,
+        #000000 0%,
+        transparent 68%
+      );
+  
+    opacity: 0.5;
+  }
+  
+  /* ============================================================
+     03. CONTENT
+     ============================================================ */
+  
+  .iv-loading-screen__content {
+    position: relative;
+    z-index: 10;
+  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  
+    width: min(100%, 520px);
+    min-width: 0;
+    padding: 45px 24px;
+  
+    text-align: center;
+  }
+  
+  /* ============================================================
+     04. OFFICIAL WORDMARK
+     ============================================================ */
+  
+  .iv-loading-screen__brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 100%;
+    margin-bottom: 46px;
+  }
+  
+  .iv-loading-screen__wordmark-img {
+    display: block;
+  
+    width: auto;
+    height: 32px;
+    max-width: 240px;
+  
+    object-fit: contain;
+  
+    filter:
+      drop-shadow(
+        0 5px 16px rgb(66 107 250 / 5%)
+      );
+  }
+  
+  /* ============================================================
+     05. HEX NETWORK
+     ============================================================ */
+  
+  /*
+   * The animation geometry remains the same.
+   * The original three intersecting bars are preserved.
+   *
+   * Warm mode adjusts their glow and fade colors.
+   */
+  
+  .iv-loading-screen .iv-hex-net {
+    position: relative;
+  
+    width: 200px;
+    height: 200px;
+    flex-shrink: 0;
+  
+    transform: scale(0.88);
+    transform-origin: center;
+  
+    filter:
+      drop-shadow(
+        0 0 24px rgb(66 107 250 / 7%)
+      );
+  }
+  
+  .iv-loading-screen .iv-hex-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  
+    width: 30px;
+    height: 30px;
+  
+    transition: transform 0.3s ease;
+  }
+  
+  .iv-loading-screen .iv-hex-node--center {
+    margin-left: -15px;
+    margin-top: -15px;
+  
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite;
+  }
+  
+  /* Bricks */
+  
+  .iv-loading-screen .iv-hex-brick {
+    position: absolute;
+  
+    top: 5px;
+    width: 3px;
+    height: 70px;
+  
+    border-radius: 4px;
+    background: #426bfa;
+  
+    box-shadow:
+      0 0 7px rgb(66 107 250 / 20%),
+      0 0 17px rgb(66 107 250 / 6%);
+  
+    transform-origin: center center;
+  
+    animation:
+      iv-hex-fade-warm
+      2.4s ease-in-out infinite;
+  }
+  
+  .iv-loading-screen .iv-hex-brick--b {
+    transform: rotate(60deg);
+  }
+  
+  .iv-loading-screen .iv-hex-brick--c {
+    transform: rotate(-60deg);
+  }
+  
+  /* ============================================================
+     06. ANIMATION
+     ============================================================ */
+  
+  @keyframes iv-hex-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+  
+    50% {
+      transform: scale(0.06);
+    }
+  }
+  
+  @keyframes iv-hex-fade-warm {
+    0%,
+    100% {
+      opacity: 0.86;
+      background: #426bfa;
+    }
+  
+    50% {
+      opacity: 0.14;
+      background: #9cb5ee;
+    }
+  }
+  
+  /* ============================================================
+     07. ORIGINAL NODE POSITIONS
+     ============================================================ */
+  
+  .iv-loading-screen .iv-hex-node--c1 {
+    margin-left: -47px;
+    margin-top: -15px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c2 {
+    margin-left: -31px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c3 {
+    margin-left: 1px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c4 {
+    margin-left: 17px;
+    margin-top: -15px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c5 {
+    margin-left: -31px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c6 {
+    margin-left: 1px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c7 {
+    margin-left: -63px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c8 {
+    margin-left: 33px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c9 {
+    margin-left: -15px;
+    margin-top: 41px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c10 {
+    margin-left: -63px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c11 {
+    margin-left: 33px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c12 {
+    margin-left: -15px;
+    margin-top: -71px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c13 {
+    margin-left: -47px;
+    margin-top: -71px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c14 {
+    margin-left: 17px;
+    margin-top: -71px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c15 {
+    margin-left: -47px;
+    margin-top: 41px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c16 {
+    margin-left: 17px;
+    margin-top: 41px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c17 {
+    margin-left: -79px;
+    margin-top: -15px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c18 {
+    margin-left: 49px;
+    margin-top: -15px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c19 {
+    margin-left: -63px;
+    margin-top: -99px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c20 {
+    margin-left: 33px;
+    margin-top: -99px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c21 {
+    margin-left: 1px;
+    margin-top: -99px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c22 {
+    margin-left: -31px;
+    margin-top: -99px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c23 {
+    margin-left: -63px;
+    margin-top: 69px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c24 {
+    margin-left: 33px;
+    margin-top: 69px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c25 {
+    margin-left: 1px;
+    margin-top: 69px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c26 {
+    margin-left: -31px;
+    margin-top: 69px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c28 {
+    margin-left: -95px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c29 {
+    margin-left: -95px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c30 {
+    margin-left: 49px;
+    margin-top: 41px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c31 {
+    margin-left: -79px;
+    margin-top: -71px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c32 {
+    margin-left: -111px;
+    margin-top: -15px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c33 {
+    margin-left: 65px;
+    margin-top: -43px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c34 {
+    margin-left: 65px;
+    margin-top: 13px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c35 {
+    margin-left: -79px;
+    margin-top: 41px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c36 {
+    margin-left: 49px;
+    margin-top: -71px;
+  }
+  
+  .iv-loading-screen .iv-hex-node--c37 {
+    margin-left: 81px;
+    margin-top: -15px;
+  }
+  
+  /* ============================================================
+     08. STAGGERED ROW TIMING
+     ============================================================ */
+  
+  .iv-loading-screen .iv-hex-node--r1 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.2s;
+  }
+  
+  .iv-loading-screen .iv-hex-node--r2 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.4s;
+  }
+  
+  .iv-loading-screen .iv-hex-node--r3 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.6s;
+  }
+  
+  .iv-loading-screen .iv-hex-node--r1 .iv-hex-brick {
+    animation-delay: 0.2s;
+  }
+  
+  .iv-loading-screen .iv-hex-node--r2 .iv-hex-brick {
+    animation-delay: 0.4s;
+  }
+  
+  .iv-loading-screen .iv-hex-node--r3 .iv-hex-brick {
+    animation-delay: 0.6s;
+  }
+  
+  /* ============================================================
+     09. STATUS
+     ============================================================ */
+  
+  .iv-loading-screen__status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  
+    width: 100%;
+    min-height: 95px;
+  
+    margin-top: 67px;
+    text-align: center;
+  }
+  
+  .iv-loading-screen__status-message {
+    margin: 0;
+  
+    font-family: var(
+      --font-display,
+      var(--font-sans, sans-serif)
+    );
+  
+    font-size: clamp(17px, 2vw, 20px);
+    font-weight: 650;
+    line-height: 1.45;
+    letter-spacing: -0.025em;
+  
+    color: #202736;
+  
+    animation:
+      iv-loading-status-in
+      0.5s ease-out both;
+  }
+  
+  .iv-loading-screen__status-description {
+    margin-top: 9px;
+  
+    font-family: var(
+      --font-sans,
+      sans-serif
+    );
+  
+    font-size: 12px;
+    line-height: 1.6;
+    color: var(--loading-secondary);
+  }
+  
+  .iv-loading-screen__status-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  
+    margin-top: 24px;
+  
+    font-family: var(
+      --font-sans,
+      sans-serif
+    );
+  
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  
+    color: var(--loading-muted);
+  }
+  
+  .iv-loading-screen__status-dot {
+    display: inline-block;
+  
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+  
+    background: #426bfa;
+  
+    box-shadow:
+      0 0 0 4px rgb(66 107 250 / 8%);
+  }
+  
+  @keyframes iv-loading-status-in {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* ============================================================
+     10. RESPONSIVE
+     ============================================================ */
+  
+  @media (max-width: 640px) {
+    .iv-loading-screen__content {
+      padding: 36px 20px;
+    }
+  
+    .iv-loading-screen__brand {
+      margin-bottom: 32px;
+    }
+  
+    .iv-loading-screen__wordmark-img {
+      height: 28px;
+      max-width: 205px;
+    }
+  
+    .iv-loading-screen .iv-hex-net {
+      transform: scale(0.74);
+    }
+  
+    .iv-loading-screen__status {
+      margin-top: 48px;
+    }
+  
+    .iv-loading-screen__status-message {
+      font-size: 17px;
+    }
+  
+    .iv-loading-screen__status-description {
+      font-size: 11px;
+    }
+  
+    .iv-loading-screen__orb--one {
+      width: 320px;
+      height: 320px;
+      left: -50px;
+    }
+  
+    .iv-loading-screen__orb--two {
+      width: 280px;
+      height: 280px;
+      right: -70px;
+    }
+  }
+  
+  /* ============================================================
+     11. ACCESSIBILITY
+     ============================================================ */
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-loading-screen .iv-hex-brick,
+    .iv-loading-screen .iv-hex-node,
+    .iv-loading-screen__orb,
+    .iv-loading-screen__status-message {
+      animation: none !important;
+    }
+  
+    .iv-loading-screen .iv-hex-node {
+      transform: none;
+    }
+  
+    .iv-loading-screen .iv-hex-brick {
+      opacity: 0.65;
+    }
+  }
+  
+  /* ============================================================
+     12. INLINE LOADER
+     Existing reusable loader, preserved
+     ============================================================ */
+  
+  .iv-loader {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2, 8px);
+  
+    color: var(
+      --text-secondary,
+      #667085
+    );
+  
+    font-family: var(
+      --font-sans,
+      sans-serif
+    );
+  
+    font-size: var(
+      --text-2xs,
+      11px
+    );
+  }
+  
+  .iv-loader__dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  
+  .iv-loader__dot {
+    width: 5px;
+    height: 5px;
+  
+    border-radius: 50%;
+    background: var(--accent, #426bfa);
+  
+    animation:
+      iv-loader-bounce
+      1.2s ease-in-out infinite;
+  }
+  
+  .iv-loader__dot:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  
+  .iv-loader__dot:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  
+  @keyframes iv-loader-bounce {
+    0%,
+    100% {
+      opacity: 0.35;
+      transform: translateY(0);
+    }
+  
+    50% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
+  
+  .iv-loader--lg .iv-loader__dot {
+    width: 8px;
+    height: 8px;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-loader__dot {
+      animation: none;
+      opacity: 0.7;
+    }
+  }
+  

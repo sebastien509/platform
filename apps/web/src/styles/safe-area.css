@@ -1,0 +1,47 @@
+/* ============================================================
+   SAFE AREA + STICKY LAYER HEIGHTS
+   Centralizes the vertical cost of fixed UI so every page can
+   reserve the right amount of space. Nothing else should define
+   these heights.
+   ============================================================ */
+
+:root {
+  /* Fixed top layers */
+  --app-header-h: 58px;
+  --venture-nav-h: 44px;
+  --sticky-top: calc(var(--app-header-h) + var(--venture-nav-h));
+
+  /* Fixed bottom layer */
+  --agent-rail-h: 52px;
+
+  /* Total chrome cost on a venture page */
+  --chrome-top: calc(var(--sticky-top) + 24px);
+  --chrome-bottom: calc(var(--agent-rail-h) + 56px);
+}
+
+/* Any element that owns scroll on a venture page must respect
+   the sticky top layers. Applies to scroll-padding so anchor
+   jumps and focus scrolls land below the chrome. */
+.venture-shell__scroll,
+.venture-scroll-region {
+  scroll-padding-top: var(--chrome-top);
+  scroll-padding-bottom: var(--chrome-bottom);
+}
+
+/* Any section or card can be a scroll target. Give it a
+   matching top margin so scrollIntoView lands correctly. */
+.section,
+.venture-bento__card,
+.section-narrative,
+.section-metric-row,
+.collection-view,
+.artifact-frame {
+  scroll-margin-top: var(--chrome-top);
+  scroll-margin-bottom: var(--chrome-bottom);
+}
+
+/* Agent rail reserve: keeps the last thing on any page from
+   sitting underneath the bottom rail. */
+.venture-page {
+  padding-bottom: var(--chrome-bottom) !important;
+}

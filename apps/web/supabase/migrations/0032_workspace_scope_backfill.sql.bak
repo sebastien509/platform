@@ -1,0 +1,112 @@
+-- ============================================================
+-- IV Platform — close the workspace_id gap.
+--
+-- Every row that belongs to a venture should inherit the
+-- venture's workspace_id. Before this migration, outputs,
+-- threads, and knowledge_entries were written with
+-- workspace_id = null, which broke the workspace-scoped RLS:
+-- only the owner could see their own rows.
+--
+-- Fix:
+--   1. Re-assert is_workspace_member() — the single helper every
+--      RLS policy relies on.
+--   2. Add a BEFORE INSERT/UPDATE trigger that fills workspace_id
+--      from the linked venture whenever it's null.
+--   3. Backfill every existing row.
+-- ============================================================
+
+-- ── 1. Re-assert the membership helper ──
+create or replace function public.is_workspace_member(ws uuid)
+returns boolean
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select exists (
+    select 1
+    from public.memberships m
+    where m.workspace_id = ws
+      and m.user_id = auth.uid()
+  );
+$$;
+
+-- ── 2. Sync trigger — BEFORE INSERT/UPDATE fills workspace_id ──
+create or replace function public.sync_workspace_from_venture()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if new.workspace_id is null and new.venture_id is not null then
+    select v.workspace_id into new.workspace_id
+    from public.ventures v
+    where v.id = new.venture_id;
+  end if;
+  return new;
+end;
+$$;
+
+-- outputs
+drop trigger if exists trg_outputs_sync_workspace on public.outputs;
+create trigger trg_outputs_sync_workspace
+  before insert or update of venture_id, workspace_id on public.outputs
+  for each row execute function public.sync_workspace_from_venture();
+
+-- threads
+drop trigger if exists trg_threads_sync_workspace on public.threads;
+create trigger trg_threads_sync_workspace
+  before insert or update of venture_id, workspace_id on public.threads
+  for each row execute function public.sync_workspace_from_venture();
+
+-- knowledge_entries
+drop trigger if exists trg_knowledge_sync_workspace on public.knowledge_entries;
+create trigger trg_knowledge_sync_workspace
+  before insert or update of venture_id, workspace_id on public.knowledge_entries
+  for each row execute function public.sync_workspace_from_venture();
+
+-- ── 3. Backfill every existing row ──
+
+-- outputs
+update public.outputs o
+set workspace_id = v.workspace_id
+from public.ventures v
+where o.venture_id = v.id
+  and o.workspace_id is null;
+
+-- threads
+update public.threads t
+set workspace_id = v.workspace_id
+from public.ventures v
+where t.venture_id = v.id
+  and t.workspace_id is null;
+
+-- knowledge_entries
+update public.knowledge_entries k
+set workspace_id = v.workspace_id
+from public.ventures v
+where k.venture_id = v.id
+  and k.workspace_id is null;
+
+-- venture_events — same issue if any were written pre-scope
+update public.venture_events e
+set workspace_id = v.workspace_id
+from public.ventures v
+where e.venture_id = v.id
+  and e.workspace_id is distinct from v.workspace_id;
+
+-- ── 4. Realtime: also publish outputs so multi-user lists refresh live ──
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'outputs'
+  ) then
+    alter publication supabase_realtime add table public.outputs;
+  end if;
+end $$;
+
+alter table public.outputs replica identity full;

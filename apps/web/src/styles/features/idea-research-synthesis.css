@@ -1,0 +1,877 @@
+
+/* ============================================================
+   IV — IDEA JOURNEY
+   Research Cards + Synthesize Stage
+   ============================================================
+
+   Warm Canvas × Electric Intelligence
+
+   Visual-only enhancement.
+   No changes to React logic, data, API or navigation.
+
+   Research:
+     Document-style file cards
+     State-specific icon/badge treatment
+     Clear review affordance
+
+   Synthesize:
+     Editorial idea brief
+     Four structured outcome cards
+     Refined actions
+     Responsive layouts
+
+   Load AFTER idea-journey.css.
+   ============================================================ */
+
+/* ============================================================
+   01. LOCAL DESIGN SYSTEM
+   ============================================================ */
+
+   .idea-focus--research,
+   .synth-stage {
+     --iv-rs-ink: var(--text-primary, #202736);
+     --iv-rs-secondary: var(--text-secondary, #667085);
+     --iv-rs-muted: var(--text-muted, #8b95a5);
+   
+     --iv-rs-blue: #426bfa;
+     --iv-rs-blue-muted: #edf2ff;
+   
+     --iv-rs-green: #178b73;
+     --iv-rs-green-muted: #edf8f3;
+   
+     --iv-rs-amber: #a87938;
+     --iv-rs-amber-muted: #fff6e8;
+   
+     --iv-rs-red: #b65b63;
+     --iv-rs-red-muted: #fdf0f1;
+   
+     --iv-rs-white: #ffffff;
+     --iv-rs-line: #e5e9f1;
+     --iv-rs-line-strong: #d4dce9;
+   
+     --iv-rs-radius: 17px;
+     --iv-rs-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+   
+     --iv-rs-shadow:
+       0 2px 4px rgb(32 39 54 / 2%),
+       0 12px 30px rgb(32 39 54 / 3%);
+   
+     --iv-rs-shadow-hover:
+       0 5px 12px rgb(32 39 54 / 4%),
+       0 20px 42px rgb(32 39 54 / 6%);
+   }
+   
+   /* ============================================================
+      02. RESEARCH LAYOUT
+      ============================================================ */
+   
+   .idea-focus--research {
+     width: 100%;
+     align-items: stretch;
+     gap: 22px;
+     text-align: left;
+   }
+   
+   .idea-focus--research .research-file-list {
+     display: grid;
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+     align-items: stretch;
+   
+     width: 100%;
+     min-width: 0;
+     gap: 16px;
+   }
+   
+   /* ============================================================
+      03. RESEARCH FILE CARD
+      ============================================================ */
+   
+   .idea-focus--research .research-file-card {
+     position: relative;
+     isolation: isolate;
+   
+     display: flex;
+     flex-direction: column;
+     align-items: stretch;
+     gap: 0;
+   
+     width: 100%;
+     min-width: 0;
+     min-height: 260px;
+   
+     margin: 0;
+     padding: 23px 22px 19px;
+   
+     overflow: hidden;
+   
+     border: 1px solid var(--iv-rs-line);
+     border-radius: var(--iv-rs-radius);
+   
+     background: var(--iv-rs-white);
+     box-shadow: var(--iv-rs-shadow);
+   
+     font-family: var(--font-sans, sans-serif);
+     color: var(--iv-rs-ink);
+     text-align: left;
+   
+     cursor: pointer;
+   
+     transition:
+       transform 220ms var(--iv-rs-ease),
+       box-shadow 220ms var(--iv-rs-ease),
+       border-color 180ms var(--iv-rs-ease);
+   }
+   
+   /* Narrow document-accent rule instead of colorful backgrounds. */
+   
+   .idea-focus--research .research-file-card::before {
+     content: "";
+   
+     position: absolute;
+     top: 0;
+     left: 22px;
+     right: auto;
+   
+     width: 38px;
+     height: 2px;
+   
+     border-radius: 0 0 3px 3px;
+   
+     background: var(--iv-rs-line-strong);
+     opacity: 1;
+   }
+   
+   /* Existing ResearchStage states. */
+   
+   .idea-focus--research .research-file-card.is-pending {
+     --rs-state: var(--iv-rs-muted);
+     --rs-state-soft: #f1f3f7;
+   }
+   
+   .idea-focus--research .research-file-card.is-running {
+     --rs-state: var(--iv-rs-blue);
+     --rs-state-soft: var(--iv-rs-blue-muted);
+   }
+   
+   .idea-focus--research .research-file-card.is-complete {
+     --rs-state: var(--iv-rs-blue);
+     --rs-state-soft: var(--iv-rs-blue-muted);
+   }
+   
+   .idea-focus--research .research-file-card.is-reviewed {
+     --rs-state: var(--iv-rs-green);
+     --rs-state-soft: var(--iv-rs-green-muted);
+   }
+   
+   .idea-focus--research .research-file-card.is-failed {
+     --rs-state: var(--iv-rs-red);
+     --rs-state-soft: var(--iv-rs-red-muted);
+   }
+   
+   .idea-focus--research .research-file-card::before {
+     background: var(--rs-state, var(--iv-rs-muted));
+   }
+   
+   /* Only actionable document cards respond to hover. */
+   
+   .idea-focus--research
+   .research-file-card:not(:disabled):hover {
+     transform: translateY(-3px);
+     border-color: #cbd7ff;
+     box-shadow: var(--iv-rs-shadow-hover);
+   }
+   
+   .idea-focus--research
+   .research-file-card:not(:disabled):active {
+     transform: translateY(-1px);
+   }
+   
+   /* Pending, running and failed cards are not clickable.
+      Preserve their existing native disabled semantics. */
+   
+   .idea-focus--research
+   .research-file-card:disabled {
+     cursor: default;
+   }
+   
+   .idea-focus--research
+   .research-file-card.is-pending {
+     background: #fcfcfd;
+   }
+   
+   .idea-focus--research
+   .research-file-card.is-running {
+     background:
+       linear-gradient(
+         150deg,
+         #ffffff 0%,
+         #ffffff 68%,
+         #f8faff 100%
+       );
+   }
+   
+   .idea-focus--research
+   .research-file-card.is-failed {
+     border-color: #f0d8dc;
+   }
+   
+   /* ============================================================
+      04. CARD TOP — DOCUMENT ICON AND STATUS
+      ============================================================ */
+   
+   .idea-focus--research .research-file-card__top {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 12px;
+   
+     width: 100%;
+     margin-bottom: 23px;
+   }
+   
+   .idea-focus--research .research-file-card__chip {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     flex: 0 0 auto;
+   
+     width: 40px;
+     height: 40px;
+   
+     border: 1px solid transparent;
+     border-radius: 12px;
+   
+     background: var(--rs-state-soft, #f1f3f7);
+     color: var(--rs-state, var(--iv-rs-muted));
+   }
+   
+   .idea-focus--research .research-file-card__chip svg {
+     width: 17px;
+     height: 17px;
+     color: inherit;
+   }
+   
+   /* Disable the old loading-state color overrides. */
+   
+   .idea-focus--research
+   .research-file-card.is-running
+   .research-file-card__chip {
+     background: var(--iv-rs-blue-muted);
+     color: var(--iv-rs-blue);
+   }
+   
+   /* Keep the existing spinner. */
+   
+   .idea-focus--research .research-file-card__spin {
+     animation: iv-rs-spin 1.3s linear infinite;
+   }
+   
+   @keyframes iv-rs-spin {
+     to {
+       transform: rotate(360deg);
+     }
+   }
+   
+   .idea-focus--research .research-file-card__badge {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+   
+     flex: 0 0 auto;
+     max-width: 100%;
+   
+     padding: 5px 9px;
+   
+     border: 1px solid transparent;
+     border-radius: 999px;
+   
+     background: var(--rs-state-soft, #f1f3f7);
+     color: var(--rs-state, var(--iv-rs-muted));
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 9px;
+     font-weight: 700;
+     line-height: 1.25;
+     letter-spacing: 0.065em;
+     text-transform: uppercase;
+     white-space: nowrap;
+   }
+   
+   /* Reviewed is rendered as .is-complete.is-reviewed.
+      The parent state already supplies the green tokens. */
+   
+   .idea-focus--research
+   .research-file-card.is-reviewed
+   .research-file-card__badge {
+     background: var(--iv-rs-green-muted);
+     color: var(--iv-rs-green);
+   }
+   
+   /* ============================================================
+      05. CARD TYPOGRAPHY
+      ============================================================ */
+   
+   .idea-focus--research .research-file-card__title {
+     margin: 0 0 11px;
+   
+     font-family: var(--font-display, var(--font-sans, sans-serif));
+     font-size: clamp(16px, 1.5vw, 19px);
+     font-weight: 700;
+     line-height: 1.25;
+     letter-spacing: -0.03em;
+   
+     color: var(--iv-rs-ink);
+     overflow-wrap: anywhere;
+   }
+   
+   .idea-focus--research .research-file-card__summary {
+     display: -webkit-box;
+     -webkit-box-orient: vertical;
+     -webkit-line-clamp: 4;
+   
+     flex: 1;
+     min-height: 0;
+     margin: 0 0 21px;
+   
+     overflow: hidden;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 12.5px;
+     font-weight: 400;
+     line-height: 1.65;
+   
+     color: var(--iv-rs-secondary);
+     overflow-wrap: anywhere;
+   }
+   
+   /* ============================================================
+      06. CARD FOOTER ACTION
+      ============================================================ */
+   
+   /*
+    * The footer is a span inside the existing outer button.
+    * It remains presentation-only and uses the card's onClick.
+    */
+   
+   .idea-focus--research .research-file-card__review {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 9px;
+   
+     width: 100%;
+     min-height: 34px;
+   
+     margin-top: auto;
+     padding: 11px 0 0;
+   
+     border: 0;
+     border-top: 1px solid var(--iv-rs-line);
+     border-radius: 0;
+   
+     background: transparent;
+     color: var(--iv-rs-blue);
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 11.5px;
+     font-weight: 650;
+     line-height: 1.3;
+   
+     transition: color 180ms var(--iv-rs-ease);
+   }
+   
+   .idea-focus--research
+   .research-file-card__review svg {
+     width: 15px;
+     height: 15px;
+     flex-shrink: 0;
+   
+     transition: transform 180ms var(--iv-rs-ease);
+   }
+   
+   .idea-focus--research
+   .research-file-card:not(:disabled):hover
+   .research-file-card__review svg {
+     transform: translateX(3px);
+   }
+   
+   .idea-focus--research
+   .research-file-card.is-reviewed
+   .research-file-card__review {
+     color: var(--iv-rs-green);
+   }
+   
+   .idea-focus--research
+   .research-file-card:disabled
+   .research-file-card__review {
+     color: var(--iv-rs-muted);
+     opacity: 0.7;
+   }
+   
+   /* ============================================================
+      07. SYNTHESIZE — WIDER READING SURFACE
+      ============================================================ */
+   
+   /*
+    * The existing typeform panel defaults to 620px.
+    * Research already expands to 900px.
+   
+    * Synthesize needs a wider layout for its 2×2 outcomes.
+    */
+   
+   .typeform-stage__panel:has(.synth-stage) {
+     max-width: 960px;
+   }
+   
+   .idea-stage:has(.synth-stage) {
+     width: 100%;
+   }
+   
+   .synth-stage {
+     display: flex;
+     flex-direction: column;
+     gap: 18px;
+   
+     width: 100%;
+     max-width: 960px;
+     min-width: 0;
+   
+     text-align: left;
+     color: var(--iv-rs-ink);
+   
+     font-family: var(--font-sans, sans-serif);
+   }
+   
+   /* ============================================================
+      08. SYNTHESIZE — HERO / FINAL IDEA BRIEF
+      ============================================================ */
+   
+   .synth-hero {
+     position: relative;
+     isolation: isolate;
+   
+     display: flex;
+     flex-direction: column;
+     align-items: flex-start;
+     gap: 0;
+   
+     width: 100%;
+     min-width: 0;
+   
+     padding: clamp(27px, 4vw, 45px);
+   
+     overflow: hidden;
+   
+     border: 1px solid #e2e8f2;
+     border-radius: 21px;
+   
+     background:
+       radial-gradient(
+         ellipse 55% 85% at 100% 0%,
+         rgb(66 107 250 / 5%),
+         transparent 82%
+       ),
+       #ffffff;
+   
+     box-shadow: var(--iv-rs-shadow);
+   }
+   
+   /* Tiny brand indicator, not a full illustration. */
+   
+   .synth-hero::before {
+     content: "";
+   
+     position: absolute;
+     top: 0;
+     left: clamp(27px, 4vw, 45px);
+   
+     width: 44px;
+     height: 3px;
+   
+     border-radius: 0 0 3px 3px;
+     background: var(--iv-rs-blue);
+   }
+   
+   .synth-hero__eyebrow {
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+   
+     margin: 0 0 27px;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 10px;
+     font-weight: 700;
+     line-height: 1.4;
+     letter-spacing: 0.12em;
+     text-transform: uppercase;
+   
+     color: var(--iv-rs-blue);
+   }
+   
+   .synth-hero__eyebrow svg {
+     width: 15px;
+     height: 15px;
+     flex-shrink: 0;
+   }
+   
+   .synth-hero__title {
+     max-width: 25ch;
+     margin: 0;
+   
+     font-family: var(--font-display, var(--font-sans, sans-serif));
+     font-size: clamp(28px, 3vw, 40px);
+     font-weight: 700;
+     line-height: 1.15;
+     letter-spacing: -0.045em;
+   
+     color: var(--iv-rs-ink);
+     overflow-wrap: anywhere;
+   }
+   
+   .synth-hero__brief {
+     max-width: 73ch;
+     margin: 20px 0 0;
+     padding: 0;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: clamp(13px, 1.35vw, 15px);
+     font-weight: 400;
+     line-height: 1.8;
+     letter-spacing: -0.005em;
+   
+     color: var(--iv-rs-secondary);
+     overflow-wrap: anywhere;
+   }
+   
+   /* ============================================================
+      09. SYNTHESIZE — FOUR OUTCOME CARDS
+      ============================================================ */
+   
+   .synth-outcomes {
+     display: grid;
+     grid-template-columns: repeat(2, minmax(0, 1fr));
+     align-items: stretch;
+     gap: 16px;
+   
+     width: 100%;
+     min-width: 0;
+   }
+   
+   .synth-outcome {
+     position: relative;
+   
+     display: flex;
+     flex-direction: column;
+     gap: 18px;
+   
+     min-width: 0;
+     min-height: 170px;
+   
+     margin: 0;
+     padding: 25px 26px;
+   
+     border: 1px solid var(--iv-rs-line);
+     border-radius: var(--iv-rs-radius);
+   
+     background: var(--iv-rs-white);
+     box-shadow: var(--iv-rs-shadow);
+   
+     transition:
+       border-color 180ms var(--iv-rs-ease),
+       box-shadow 220ms var(--iv-rs-ease);
+   }
+   
+   .synth-outcome:hover {
+     border-color: var(--iv-rs-line-strong);
+     box-shadow: var(--iv-rs-shadow-hover);
+   }
+   
+   /*
+    * Same white base for every card.
+    * Only the small index is different.
+    */
+   
+   .synth-outcome::after {
+     position: absolute;
+     top: 23px;
+     right: 25px;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 10px;
+     font-weight: 650;
+     line-height: 1.4;
+     letter-spacing: 0.06em;
+   
+     color: #aab3c1;
+   }
+   
+   .synth-outcome:nth-child(1)::after {
+     content: "01";
+   }
+   
+   .synth-outcome:nth-child(2)::after {
+     content: "02";
+   }
+   
+   .synth-outcome:nth-child(3)::after {
+     content: "03";
+   }
+   
+   .synth-outcome:nth-child(4)::after {
+     content: "04";
+   }
+   
+   .synth-outcome__label {
+     display: inline-flex;
+     align-items: center;
+   
+     margin: 0;
+     padding-right: 30px;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 10px;
+     font-weight: 700;
+     line-height: 1.4;
+     letter-spacing: 0.115em;
+     text-transform: uppercase;
+   
+     color: var(--iv-rs-muted);
+   }
+   
+   .synth-outcome__value {
+     margin: 0;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: clamp(13px, 1.3vw, 15px);
+     font-weight: 500;
+     line-height: 1.7;
+     letter-spacing: -0.012em;
+   
+     color: var(--iv-rs-ink);
+     overflow-wrap: anywhere;
+   }
+   
+   /* ============================================================
+      10. SYNTHESIZE — ACTION ROW
+      ============================================================ */
+   
+   .synth-actions {
+     display: flex;
+     align-items: center;
+     justify-content: flex-end;
+     flex-wrap: wrap;
+     gap: 11px;
+   
+     width: 100%;
+     margin-top: 7px;
+     padding: 17px 0 8px;
+   }
+   
+   .synth-btn {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     gap: 9px;
+   
+     min-height: 43px;
+     padding: 0 17px;
+   
+     border: 1px solid transparent;
+     border-radius: 11px;
+   
+     font-family: var(--font-sans, sans-serif);
+     font-size: 12.5px;
+     font-weight: 650;
+     line-height: 1.3;
+     letter-spacing: -0.005em;
+   
+     white-space: nowrap;
+     cursor: pointer;
+   
+     transition:
+       background 180ms var(--iv-rs-ease),
+       border-color 180ms var(--iv-rs-ease),
+       color 180ms var(--iv-rs-ease),
+       transform 180ms var(--iv-rs-ease),
+       box-shadow 180ms var(--iv-rs-ease);
+   }
+   
+   .synth-btn svg {
+     width: 15px;
+     height: 15px;
+     flex-shrink: 0;
+   }
+   
+   .synth-btn--ghost {
+     border-color: var(--iv-rs-line);
+     background: #ffffff;
+     color: var(--iv-rs-secondary);
+   }
+   
+   .synth-btn--ghost:hover {
+     border-color: var(--iv-rs-line-strong);
+     background: #f7f9fc;
+     color: var(--iv-rs-ink);
+   }
+   
+   .synth-btn--primary {
+     background: var(--iv-rs-blue);
+     color: #ffffff;
+   
+     box-shadow: 0 3px 8px rgb(66 107 250 / 12%);
+   }
+   
+   .synth-btn--primary:hover {
+     transform: translateY(-1px);
+     background: #345be5;
+     box-shadow: 0 6px 16px rgb(66 107 250 / 18%);
+   }
+   
+   .synth-btn:disabled {
+     opacity: 0.48;
+     cursor: not-allowed;
+     box-shadow: none;
+     transform: none;
+   }
+   
+   /* ============================================================
+      11. FOCUS STATES
+      ============================================================ */
+   
+   .idea-focus--research .research-file-card:focus-visible,
+   .synth-btn:focus-visible {
+     outline: 2px solid var(--iv-rs-blue);
+     outline-offset: 3px;
+   }
+   
+   /* ============================================================
+      12. RESPONSIVE — RESEARCH
+      ============================================================ */
+   
+   @media (max-width: 900px) {
+     .idea-focus--research .research-file-list {
+       grid-template-columns: repeat(2, minmax(0, 1fr));
+     }
+   }
+   
+   @media (max-width: 640px) {
+     .idea-focus--research .research-file-list {
+       grid-template-columns: minmax(0, 1fr);
+       gap: 13px;
+     }
+   
+     .idea-focus--research .research-file-card {
+       min-height: 210px;
+       padding: 21px;
+     }
+   
+     .idea-focus--research .research-file-card__top {
+       margin-bottom: 17px;
+     }
+   
+     .idea-focus--research .research-file-card__summary {
+       margin-bottom: 15px;
+     }
+   }
+   
+   /* ============================================================
+      13. RESPONSIVE — SYNTHESIZE
+      ============================================================ */
+   
+   @media (max-width: 740px) {
+     .synth-stage {
+       gap: 14px;
+     }
+   
+     .synth-hero {
+       padding: 28px 25px;
+       border-radius: 18px;
+     }
+   
+     .synth-hero::before {
+       left: 25px;
+     }
+   
+     .synth-hero__title {
+       font-size: clamp(25px, 5vw, 32px);
+     }
+   
+     .synth-outcomes {
+       gap: 13px;
+     }
+   
+     .synth-outcome {
+       padding: 21px;
+       min-height: 155px;
+     }
+   }
+   
+   @media (max-width: 540px) {
+     .typeform-stage__panel:has(.synth-stage) {
+       max-width: 100%;
+     }
+   
+     .synth-outcomes {
+       grid-template-columns: minmax(0, 1fr);
+     }
+   
+     .synth-outcome {
+       min-height: 0;
+       gap: 13px;
+       padding: 22px;
+     }
+   
+     .synth-hero {
+       padding: 26px 22px;
+     }
+   
+     .synth-hero::before {
+       left: 22px;
+     }
+   
+     .synth-hero__eyebrow {
+       margin-bottom: 19px;
+     }
+   
+     .synth-hero__brief {
+       margin-top: 15px;
+       font-size: 13px;
+     }
+   
+     .synth-actions {
+       flex-direction: column-reverse;
+       align-items: stretch;
+       padding-top: 10px;
+     }
+   
+     .synth-btn {
+       width: 100%;
+       min-height: 44px;
+     }
+   }
+   
+   /* ============================================================
+      14. REDUCED MOTION
+      ============================================================ */
+   
+   @media (prefers-reduced-motion: reduce) {
+     .idea-focus--research .research-file-card,
+     .idea-focus--research .research-file-card__review,
+     .idea-focus--research .research-file-card__review svg,
+     .synth-outcome,
+     .synth-btn {
+       transition: none;
+     }
+   
+     .idea-focus--research .research-file-card__spin {
+       animation: none;
+     }
+   
+     .idea-focus--research
+     .research-file-card:not(:disabled):hover,
+     .synth-btn--primary:hover {
+       transform: none;
+     }
+   }
+   

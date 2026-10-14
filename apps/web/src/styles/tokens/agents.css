@@ -1,0 +1,25 @@
+/* Single warm agent palette. */
+:root {
+  --agent-research: oklch(62% 0.15 205);
+  --agent-strategy: oklch(62% 0.15 275);
+  --agent-product: oklch(62% 0.15 125);
+  --agent-engineering: oklch(62% 0.15 60);
+  --agent-gtm: oklch(62% 0.15 190);
+  --agent-campaign: oklch(62% 0.15 330);
+  --agent-sales: oklch(62% 0.15 300);
+  --agent-growth: oklch(62% 0.15 15);
+  --agent-analysis: oklch(62% 0.15 215);
+  --agent-knowledge: oklch(62% 0.15 350);
+  --agent-outcomes: oklch(62% 0.15 105);
+  --agent-research-muted: oklch(62% 0.15 205 / 12%);
+  --agent-strategy-muted: oklch(62% 0.15 275 / 12%);
+  --agent-product-muted: oklch(62% 0.15 125 / 12%);
+  --agent-engineering-muted: oklch(62% 0.15 60 / 12%);
+  --agent-gtm-muted: oklch(62% 0.15 190 / 12%);
+  --agent-campaign-muted: oklch(62% 0.15 330 / 12%);
+  --agent-sales-muted: oklch(62% 0.15 300 / 12%);
+  --agent-growth-muted: oklch(62% 0.15 15 / 12%);
+  --agent-analysis-muted: oklch(62% 0.15 215 / 12%);
+  --agent-knowledge-muted: oklch(62% 0.15 350 / 12%);
+  --agent-outcomes-muted: oklch(62% 0.15 105 / 12%);
+}

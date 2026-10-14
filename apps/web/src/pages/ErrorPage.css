@@ -1,0 +1,758 @@
+
+/* ============================================================
+   IV ERROR PAGE
+   Warm Canvas × Electric Intelligence
+   Complete replacement: ErrorPage.css
+   ============================================================ */
+
+   .iv-error-page {
+    --error-ink: #202736;
+    --error-secondary: #697587;
+    --error-muted: #98a3b3;
+    --error-blue: #426bfa;
+    --error-line: #e4e8ef;
+    --error-canvas: #f4f3f0;
+    --error-white: #ffffff;
+  
+    position: relative;
+    isolation: isolate;
+  
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+  
+    overflow: hidden;
+  
+    background: var(--error-canvas);
+    color: var(--error-ink);
+  
+    font-family: var(
+      --font-sans,
+      Inter,
+      system-ui,
+      sans-serif
+    );
+  }
+  
+  .iv-error-page *,
+  .iv-error-page *::before,
+  .iv-error-page *::after {
+    box-sizing: border-box;
+  }
+  
+  /* BACKGROUND */
+  
+  .iv-error-page__ambient {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  
+    background:
+      radial-gradient(
+        ellipse 42% 45% at 93% 32%,
+        rgb(66 107 250 / 6%),
+        transparent 85%
+      ),
+      linear-gradient(
+        180deg,
+        #f8f8f6 0%,
+        #f4f3f0 100%
+      );
+  }
+  
+  /* SHELL */
+  
+  .iv-error-page__shell {
+    width: min(1120px, calc(100% - 64px));
+    min-height: 100vh;
+    min-height: 100dvh;
+  
+    margin-inline: auto;
+  
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* HEADER */
+  
+  .iv-error-page__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  
+    padding: 32px 0;
+  }
+  
+  .iv-error-page__brand {
+    display: inline-flex;
+    align-items: center;
+  
+    width: auto;
+    padding: 0;
+  
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  .iv-error-page__wordmark {
+    display: block;
+    width: auto;
+    height: 29px;
+    max-width: 220px;
+  
+    object-fit: contain;
+  }
+  
+  .iv-error-page__header-meta {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--error-muted);
+  }
+  
+  /* MAIN HERO */
+  
+  .iv-error-page__main {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 1.1fr)
+      minmax(300px, 0.9fr);
+  
+    align-items: center;
+    gap: clamp(36px, 5vw, 85px);
+  
+    flex: 1;
+    padding: 45px 0 74px;
+  }
+  
+  .iv-error-page__copy {
+    position: relative;
+    z-index: 2;
+  
+    min-width: 0;
+    max-width: 580px;
+  }
+  
+  .iv-error-page__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+  
+    margin-bottom: 25px;
+  
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+    letter-spacing: 0.15em;
+  
+    color: var(--error-blue);
+  }
+  
+  .iv-error-page__eyebrow-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  
+    background: var(--error-blue);
+    box-shadow: 0 0 0 4px #e7ecff;
+  }
+  
+  .iv-error-page__heading-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 13px;
+  }
+  
+  .iv-error-page__code {
+    font-family: var(
+      --font-mono,
+      ui-monospace,
+      monospace
+    );
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  
+    color: #9aa5b4;
+  }
+  
+  .iv-error-page__title {
+    max-width: 13ch;
+    margin: 0;
+  
+    font-family: var(
+      --font-display,
+      var(--font-sans, sans-serif)
+    );
+    font-size: clamp(42px, 5.2vw, 70px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.06em;
+  
+    color: var(--error-ink);
+    overflow-wrap: anywhere;
+  }
+  
+  .iv-error-page__description {
+    max-width: 440px;
+    margin: 23px 0 0;
+  
+    font-size: 14px;
+    line-height: 1.85;
+    font-weight: 400;
+  
+    color: var(--error-secondary);
+  }
+  
+  /* ACTIONS */
+  
+  .iv-error-page__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 11px;
+  
+    margin-top: 33px;
+  }
+  
+  .iv-error-page__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  
+    min-height: 44px;
+    padding: 0 17px;
+  
+    border: 1px solid transparent;
+    border-radius: 11px;
+  
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 650;
+    white-space: nowrap;
+  
+    cursor: pointer;
+  
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+  
+  .iv-error-page__button--primary {
+    background: var(--error-blue);
+    color: #ffffff;
+  
+    box-shadow:
+      0 4px 12px rgb(66 107 250 / 12%);
+  }
+  
+  .iv-error-page__button--primary:hover {
+    background: #335ae9;
+    transform: translateY(-1px);
+  
+    box-shadow:
+      0 8px 20px rgb(66 107 250 / 16%);
+  }
+  
+  .iv-error-page__button--secondary {
+    background: #ffffff;
+    color: var(--error-ink);
+  
+    border-color: #dfe4ec;
+  }
+  
+  .iv-error-page__button--secondary:hover {
+    background: #f9faff;
+    border-color: #cbd6ee;
+  }
+  
+  .iv-error-page__button:active {
+    transform: translateY(0);
+  }
+  
+  /* REFERENCE */
+  
+  .iv-error-page__reference {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  
+    margin-top: 25px;
+  
+    font-size: 11px;
+    font-family: var(
+      --font-mono,
+      ui-monospace,
+      monospace
+    );
+  
+    color: var(--error-muted);
+  }
+  
+  /* DEV DETAILS */
+  
+  .iv-error-page__debug {
+    max-width: 100%;
+    margin-top: 20px;
+    padding: 13px 15px;
+  
+    border: 1px solid var(--error-line);
+    border-radius: 12px;
+  
+    background: #ffffff;
+  
+    font-size: 11px;
+    color: var(--error-secondary);
+  }
+  
+  .iv-error-page__debug summary {
+    cursor: pointer;
+    font-weight: 650;
+  }
+  
+  .iv-error-page__debug pre {
+    max-height: 180px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  
+    margin: 12px 0 0;
+  
+    font-size: 10px;
+    line-height: 1.6;
+  }
+  
+  /* ============================================================
+     ART — SIMPLE TECHNICAL BRAND OBJECT
+     ============================================================ */
+  
+  .iv-error-page__art {
+    position: relative;
+    isolation: isolate;
+  
+    width: 100%;
+    min-height: 400px;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    overflow: hidden;
+  
+    border: 1px solid #e3e8f2;
+    border-radius: 24px;
+  
+    background:
+      radial-gradient(
+        ellipse 70% 65% at 53% 48%,
+        rgb(66 107 250 / 9%),
+        transparent 90%
+      ),
+      linear-gradient(
+        135deg,
+        #ffffff 0%,
+        #fafcff 64%,
+        #f0f5ff 100%
+      );
+  
+    box-shadow:
+      0 12px 38px rgb(32 39 54 / 3%);
+  }
+  
+  .iv-error-page__art-grid {
+    position: absolute;
+    inset: 0;
+  
+    background-image:
+      linear-gradient(
+        rgb(66 107 250 / 5%) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        rgb(66 107 250 / 5%) 1px,
+        transparent 1px
+      );
+  
+    background-size: 32px 32px;
+  
+    opacity: 0.65;
+  
+    -webkit-mask-image:
+      radial-gradient(
+        circle at center,
+        #000 5%,
+        transparent 75%
+      );
+  
+    mask-image:
+      radial-gradient(
+        circle at center,
+        #000 5%,
+        transparent 75%
+      );
+  }
+  
+  .iv-error-page__art-number {
+    position: absolute;
+    top: -24px;
+    right: -8px;
+  
+    font-family: var(
+      --font-display,
+      sans-serif
+    );
+    font-size: clamp(130px, 17vw, 245px);
+    font-weight: 750;
+    letter-spacing: -0.11em;
+    line-height: 1;
+  
+    color: #eaf0ff;
+    user-select: none;
+  }
+  
+  .iv-error-page__art-logo {
+    position: relative;
+    z-index: 2;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 170px;
+    height: 170px;
+  
+    border: 1px solid rgb(66 107 250 / 11%);
+    border-radius: 32px;
+  
+    background: rgb(255 255 255 / 82%);
+  
+    box-shadow:
+      0 14px 45px rgb(66 107 250 / 7%);
+  
+    transform: rotate(-6deg);
+  }
+  
+  .iv-error-page__art-logo::after {
+    content: "";
+  
+    position: absolute;
+    inset: -14px;
+    z-index: -1;
+  
+    border: 1px solid rgb(66 107 250 / 10%);
+    border-radius: 40px;
+  
+    transform: rotate(12deg);
+  }
+  
+  .iv-error-page__art-logo img {
+    display: block;
+  
+    width: 110px;
+    height: 110px;
+  
+    object-fit: contain;
+  }
+  
+  .iv-error-page__art-label {
+    position: absolute;
+    bottom: 24px;
+    left: 26px;
+  
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  
+    color: #8798bc;
+  }
+  
+  .iv-error-page__art-line {
+    width: 22px;
+    height: 1px;
+    background: var(--error-blue);
+  }
+  
+  /* ============================================================
+     NEXT STEPS
+     ============================================================ */
+  
+  .iv-error-page__next {
+    display: grid;
+    grid-template-columns:
+      minmax(0, 0.8fr)
+      minmax(0, 1.2fr);
+  
+    align-items: center;
+    gap: 38px;
+  
+    padding: 28px 0 38px;
+  
+    border-top: 1px solid #e0e3e9;
+  }
+  
+  .iv-error-page__next-eyebrow {
+    font-size: 9px;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    color: var(--error-blue);
+  }
+  
+  .iv-error-page__next-intro h2 {
+    margin: 9px 0 5px;
+  
+    font-family: var(
+      --font-display,
+      sans-serif
+    );
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+  }
+  
+  .iv-error-page__next-intro p {
+    margin: 0;
+  
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--error-secondary);
+  }
+  
+  .iv-error-page__next-links {
+    display: grid;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 11px;
+  }
+  
+  .iv-error-page__next-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  
+    min-width: 0;
+    padding: 15px;
+  
+    border: 1px solid var(--error-line);
+    border-radius: 14px;
+  
+    background: #ffffff;
+    color: var(--error-ink);
+  
+    text-decoration: none;
+    text-align: left;
+    font: inherit;
+  
+    cursor: pointer;
+  
+    transition:
+      transform 180ms ease,
+      border-color 180ms ease,
+      box-shadow 180ms ease;
+  }
+  
+  .iv-error-page__next-link:hover {
+    transform: translateY(-2px);
+    border-color: #ccd8f3;
+  
+    box-shadow:
+      0 9px 24px rgb(32 39 54 / 5%);
+  }
+  
+  .iv-error-page__next-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  
+    width: 38px;
+    height: 38px;
+  
+    border-radius: 10px;
+  
+    background: #f0f4ff;
+    color: var(--error-blue);
+  }
+  
+  .iv-error-page__next-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .iv-error-page__next-copy strong {
+    font-size: 12px;
+    font-weight: 700;
+  }
+  
+  .iv-error-page__next-copy small {
+    font-size: 10px;
+    line-height: 1.45;
+    color: var(--error-muted);
+  }
+  
+  .iv-error-page__next-arrow {
+    flex-shrink: 0;
+    color: #9ca8ba;
+  }
+  
+  /* FOOTER */
+  
+  .iv-error-page__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  
+    padding: 21px 0 27px;
+  
+    border-top: 1px solid #e0e3e9;
+  
+    font-size: 10px;
+    font-weight: 550;
+    color: var(--error-muted);
+  }
+  
+  /* FOCUS */
+  
+  .iv-error-page button:focus-visible,
+  .iv-error-page a:focus-visible,
+  .iv-error-page summary:focus-visible {
+    outline: 2px solid var(--error-blue);
+    outline-offset: 3px;
+  }
+  
+  /* RESPONSIVE */
+  
+  @media (max-width: 900px) {
+    .iv-error-page__shell {
+      width: min(680px, calc(100% - 48px));
+    }
+  
+    .iv-error-page__main {
+      grid-template-columns: 1fr;
+      gap: 35px;
+      padding: 35px 0 50px;
+    }
+  
+    .iv-error-page__art {
+      min-height: 280px;
+    }
+  
+    .iv-error-page__art-logo {
+      width: 128px;
+      height: 128px;
+      border-radius: 24px;
+    }
+  
+    .iv-error-page__art-logo img {
+      width: 83px;
+      height: 83px;
+    }
+  
+    .iv-error-page__art-number {
+      font-size: 160px;
+    }
+  
+    .iv-error-page__next {
+      grid-template-columns: 1fr;
+      gap: 21px;
+    }
+  }
+  
+  @media (max-width: 560px) {
+    .iv-error-page__shell {
+      width: calc(100% - 36px);
+    }
+  
+    .iv-error-page__header {
+      padding: 22px 0;
+    }
+  
+    .iv-error-page__wordmark {
+      height: 24px;
+    }
+  
+    .iv-error-page__main {
+      padding: 35px 0 36px;
+    }
+  
+    .iv-error-page__title {
+      font-size: clamp(37px, 10vw, 52px);
+    }
+  
+    .iv-error-page__description {
+      font-size: 13px;
+    }
+  
+    .iv-error-page__actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .iv-error-page__button {
+      width: 100%;
+    }
+  
+    .iv-error-page__art {
+      min-height: 225px;
+      border-radius: 19px;
+    }
+  
+    .iv-error-page__art-number {
+      font-size: 120px;
+    }
+  
+    .iv-error-page__art-logo {
+      width: 108px;
+      height: 108px;
+    }
+  
+    .iv-error-page__art-logo img {
+      width: 68px;
+      height: 68px;
+    }
+  
+    .iv-error-page__art-label {
+      left: 18px;
+      bottom: 17px;
+      font-size: 8px;
+    }
+  
+    .iv-error-page__next-links {
+      grid-template-columns: 1fr;
+    }
+  
+    .iv-error-page__footer {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-error-page *,
+    .iv-error-page *::before,
+    .iv-error-page *::after {
+      transition: none !important;
+      animation: none !important;
+    }
+  
+    .iv-error-page__button:hover,
+    .iv-error-page__next-link:hover {
+      transform: none;
+    }
+  }
+  

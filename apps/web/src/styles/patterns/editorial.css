@@ -1,0 +1,12 @@
+/* Editorial typography: use display scale only in editorial contexts. */
+.iv-display{font-family:var(--font-display);font-size:clamp(56px,7vw,96px);font-weight:700;line-height:.96;letter-spacing:-.06em;color:var(--text-primary);margin:0}
+.iv-headline{font-family:var(--font-display);font-size:clamp(32px,4vw,48px);font-weight:650;line-height:1.05;letter-spacing:-.04em;color:var(--text-primary);margin:0}
+.iv-subhead{font-family:var(--font-display);font-size:clamp(22px,2.6vw,32px);font-weight:650;line-height:1.15;letter-spacing:-.03em;color:var(--text-primary);margin:0}
+.iv-eyebrow{font-family:var(--font-sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);margin:0}
+.iv-lede{font-family:var(--font-sans);font-size:clamp(15px,1.3vw,17px);line-height:1.65;color:var(--text-secondary);max-width:60ch;margin:0}
+@media(max-width:640px){.iv-display{letter-spacing:-.045em}.iv-headline{letter-spacing:-.03em}}
+
+/* Deliberate optical treatment for electric intelligence micro-labels. */
+.iv-eyebrow--electric{color:var(--accent,#426BFA)}
+.iv-eyebrow--violet{color:var(--iv-color-violet,#8B5CF6)}
+.iv-lede strong{color:var(--text-primary);font-weight:650}

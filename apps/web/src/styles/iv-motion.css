@@ -1,0 +1,254 @@
+
+/* ============================================================
+   IV MOTION SYSTEM
+   Scope: Research, Synthesize, Validate, Today
+
+   CSS-only.
+   No JavaScript / Framer Motion required.
+   ============================================================ */
+
+   :root {
+    --iv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --iv-ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  
+    --iv-enter-duration: 520ms;
+    --iv-hover-duration: 220ms;
+  
+    --iv-hover-shadow:
+      0 5px 12px rgb(32 39 54 / 4%),
+      0 18px 38px rgb(32 39 54 / 7%);
+  }
+  
+  /* ============================================================
+     KEYFRAMES
+     ============================================================ */
+  
+  @keyframes iv-motion-enter {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes iv-motion-soft-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+      filter: blur(3px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+  
+  @keyframes iv-motion-running {
+    0%, 100% {
+      border-color: #dce5ff;
+    }
+  
+    50% {
+      border-color: #90aaff;
+    }
+  }
+  
+  /* ============================================================
+     RESEARCH CARDS
+     ============================================================ */
+  
+  .idea-focus--research .research-file-card {
+    animation:
+      iv-motion-enter
+      var(--iv-enter-duration)
+      var(--iv-ease-out)
+      both;
+  
+    transition:
+      transform var(--iv-hover-duration) var(--iv-ease-standard),
+      box-shadow var(--iv-hover-duration) var(--iv-ease-standard),
+      border-color var(--iv-hover-duration) var(--iv-ease-standard);
+  }
+  
+  .idea-focus--research .research-file-card:nth-child(1) {
+    animation-delay: 40ms;
+  }
+  
+  .idea-focus--research .research-file-card:nth-child(2) {
+    animation-delay: 110ms;
+  }
+  
+  .idea-focus--research .research-file-card:nth-child(3) {
+    animation-delay: 180ms;
+  }
+  
+  .idea-focus--research
+  .research-file-card:not(:disabled):hover {
+    transform: translateY(-4px);
+    box-shadow: var(--iv-hover-shadow);
+    border-color: #cad6ff;
+  }
+  
+  /* Research in progress */
+  
+  .idea-focus--research .research-file-card.is-running {
+    animation:
+      iv-motion-enter 520ms var(--iv-ease-out) both,
+      iv-motion-running 3s ease-in-out 520ms infinite;
+  }
+  
+  /* File action arrow */
+  
+  .idea-focus--research .research-file-card__review svg {
+    transition:
+      transform 200ms var(--iv-ease-standard);
+  }
+  
+  .idea-focus--research
+  .research-file-card:not(:disabled):hover
+  .research-file-card__review svg {
+    transform: translateX(3px);
+  }
+  
+  /* ============================================================
+     SYNTHESIZE
+     ============================================================ */
+  
+  .synth-stage .synth-hero {
+    animation:
+      iv-motion-soft-reveal
+      640ms
+      var(--iv-ease-out)
+      both;
+  }
+  
+  .synth-stage .synth-outcome {
+    animation:
+      iv-motion-enter
+      520ms
+      var(--iv-ease-out)
+      both;
+  
+    transition:
+      transform var(--iv-hover-duration) var(--iv-ease-standard),
+      box-shadow var(--iv-hover-duration) var(--iv-ease-standard),
+      border-color var(--iv-hover-duration) var(--iv-ease-standard);
+  }
+  
+  .synth-outcome:nth-child(1) {
+    animation-delay: 100ms;
+  }
+  
+  .synth-outcome:nth-child(2) {
+    animation-delay: 160ms;
+  }
+  
+  .synth-outcome:nth-child(3) {
+    animation-delay: 220ms;
+  }
+  
+  .synth-outcome:nth-child(4) {
+    animation-delay: 280ms;
+  }
+  
+  .synth-stage .synth-outcome:hover {
+    transform: translateY(-2px);
+    border-color: #d2ddfa;
+    box-shadow: var(--iv-hover-shadow);
+  }
+  
+  /* Actions */
+  
+  .synth-stage .synth-btn {
+    transition:
+      transform 180ms var(--iv-ease-standard),
+      box-shadow 180ms var(--iv-ease-standard),
+      background 180ms var(--iv-ease-standard);
+  }
+  
+  .synth-stage .synth-btn:not(:disabled):active {
+    transform: scale(0.98);
+  }
+  
+  /* ============================================================
+     VALIDATE — PROVISIONAL SELECTORS
+     Confirm actual classes before relying on these.
+     ============================================================ */
+  
+  .validate-card {
+    animation:
+      iv-motion-enter
+      520ms
+      var(--iv-ease-out)
+      both;
+  
+    transition:
+      transform var(--iv-hover-duration) var(--iv-ease-standard),
+      box-shadow var(--iv-hover-duration) var(--iv-ease-standard),
+      border-color var(--iv-hover-duration) var(--iv-ease-standard);
+  }
+  
+  .validate-card:nth-child(1) { animation-delay: 50ms; }
+  .validate-card:nth-child(2) { animation-delay: 110ms; }
+  .validate-card:nth-child(3) { animation-delay: 170ms; }
+  .validate-card:nth-child(4) { animation-delay: 230ms; }
+  
+  .validate-card:not(:disabled):hover {
+    transform: translateY(-3px);
+    box-shadow: var(--iv-hover-shadow);
+  }
+  
+  .validate-card:not(:disabled):active {
+    transform: scale(0.99);
+  }
+  
+  /* ============================================================
+     TODAY — PROVISIONAL SELECTORS
+     Confirm actual classes before relying on these.
+     ============================================================ */
+  
+  .today-page .today-card {
+    animation:
+      iv-motion-enter
+      540ms
+      var(--iv-ease-out)
+      both;
+  
+    transition:
+      transform var(--iv-hover-duration) var(--iv-ease-standard),
+      box-shadow var(--iv-hover-duration) var(--iv-ease-standard),
+      border-color var(--iv-hover-duration) var(--iv-ease-standard);
+  }
+  
+  .today-page .today-card:nth-child(1) { animation-delay: 40ms; }
+  .today-page .today-card:nth-child(2) { animation-delay: 100ms; }
+  .today-page .today-card:nth-child(3) { animation-delay: 160ms; }
+  .today-page .today-card:nth-child(4) { animation-delay: 220ms; }
+  
+  .today-page .today-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--iv-hover-shadow);
+  }
+  
+  /* ============================================================
+     ACCESSIBILITY
+     ============================================================ */
+  
+  @media (prefers-reduced-motion: reduce) {
+    .idea-focus--research .research-file-card,
+    .synth-stage .synth-hero,
+    .synth-stage .synth-outcome,
+    .validate-card,
+    .today-page .today-card {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+  

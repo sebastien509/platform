@@ -1,0 +1,38 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  // One permanent warm/light theme. No class/data-mode dark switching.
+  content: ['./index.html','./src/**/*.{js,ts,jsx,tsx}','../../packages/ui/src/**/*.{js,ts,jsx,tsx}'],
+  theme: {extend: {
+    colors: {
+      background:'var(--surface-0)',foreground:'var(--text-primary)',
+      card:{DEFAULT:'var(--surface-1)',foreground:'var(--text-primary)'},
+      popover:{DEFAULT:'var(--surface-1)',foreground:'var(--text-primary)'},
+      secondary:{DEFAULT:'var(--surface-2)',foreground:'var(--text-primary)'},
+      muted:{DEFAULT:'var(--surface-2)',foreground:'var(--text-muted)'},
+      primary:{DEFAULT:'hsl(var(--iv-color-accent-primary) / <alpha-value>)',foreground:'#FFFFFF'},
+      ring:'hsl(var(--iv-color-accent-focus) / <alpha-value>)',
+      accent:{DEFAULT:'var(--surface-2)',foreground:'var(--text-primary)'},
+      destructive:{DEFAULT:'var(--error)',foreground:'#FFFFFF'},
+      success:'var(--success)',warning:'var(--warning)',error:'var(--error)',info:'var(--info)',
+      border:'var(--border)','border-subtle':'var(--border-subtle)','border-strong':'var(--border-strong)',input:'var(--border)',
+      'bento-blue':'var(--bento-blue)','bento-sky':'var(--bento-sky)','bento-violet':'var(--bento-violet)','bento-sage':'var(--bento-sage)','bento-amber':'var(--bento-amber)','bento-rose':'var(--bento-rose)',
+      'expr-intelligence':'var(--expr-intelligence)','expr-intelligence-muted':'var(--expr-intelligence-muted)',
+      'expr-validated':'var(--expr-validated)','expr-validated-muted':'var(--expr-validated-muted)',
+      'expr-caution':'var(--expr-caution)','expr-caution-muted':'var(--expr-caution-muted)',
+      'expr-exploration':'var(--expr-exploration)','expr-exploration-muted':'var(--expr-exploration-muted)',
+      'expr-research':'var(--expr-research)','expr-research-muted':'var(--expr-research-muted)',
+      'agent-research':'var(--agent-research)','agent-strategy':'var(--agent-strategy)','agent-product':'var(--agent-product)',
+      'agent-engineering':'var(--agent-engineering)','agent-gtm':'var(--agent-gtm)','agent-campaign':'var(--agent-campaign)',
+      'agent-sales':'var(--agent-sales)','agent-growth':'var(--agent-growth)','agent-analysis':'var(--agent-analysis)',
+      'agent-knowledge':'var(--agent-knowledge)','agent-outcomes':'var(--agent-outcomes)',
+    },
+    borderRadius:{xs:'var(--radius-xs)',sm:'var(--radius-sm)',md:'var(--radius-md)',lg:'var(--radius-lg)',xl:'var(--radius-xl)',full:'var(--radius-pill)'},
+    boxShadow:{card:'var(--iv-shadow-card)',hover:'var(--iv-shadow-hover)',floating:'var(--iv-shadow-floating)',glow:'var(--iv-shadow-glow)'},
+    fontFamily:{sans:['var(--font-sans)','system-ui','sans-serif'],display:['var(--font-display)','system-ui','sans-serif'],mono:['var(--font-mono)','ui-monospace','monospace']},
+    fontSize:{'2xs':['0.625rem',{lineHeight:'0.875rem'}]},
+    maxWidth:{content:'var(--iv-layout-content-max)',readable:'720px'},
+    spacing:{sidebar:'var(--iv-layout-sidebar-width)','sidebar-collapsed':'var(--iv-layout-sidebar-collapsed)',topbar:'var(--iv-layout-topbar-height)','iv-1':'var(--space-1)','iv-2':'var(--space-2)','iv-3':'var(--space-3)','iv-4':'var(--space-4)','iv-5':'var(--space-5)','iv-6':'var(--space-6)','iv-8':'var(--space-8)','iv-10':'var(--space-10)','iv-12':'var(--space-12)'},
+    transitionDuration:{fast:'var(--motion-fast)',base:'var(--motion-base)',card:'var(--motion-card)',panel:'var(--motion-panel)',page:'var(--motion-page)'},
+    transitionTimingFunction:{iv:'var(--ease-standard)','iv-enter':'var(--ease-enter)','iv-exit':'var(--ease-exit)'},
+  }},plugins:[],
+};

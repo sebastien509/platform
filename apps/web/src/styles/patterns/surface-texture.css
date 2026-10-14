@@ -1,0 +1,26 @@
+/* Single warm theme: no data-mode branches. Shell geometry remains owned by Wave A. */
+.content-grid{position:relative;min-height:100%;background:var(--surface-0)}
+.content-grid__pattern{position:absolute;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(to right,var(--border-subtle) 1px,transparent 1px),linear-gradient(to bottom,var(--border-subtle) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse 72% 52% at 50% 0%,#000 25%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 72% 52% at 50% 0%,#000 25%,transparent 100%);opacity:.12}
+.content-grid__content{position:relative;z-index:1}
+/* Existing page gutters preserved; DO NOT override venture-shell__content here. */
+.iv-card{position:relative;min-width:0;overflow:hidden;isolation:isolate;border-radius:var(--radius-xl);background:var(--surface-1);border:1px solid transparent;box-shadow:var(--iv-shadow-card);transition:border-color var(--motion-base) var(--ease-standard),box-shadow var(--motion-card) var(--ease-standard),transform var(--motion-card) var(--ease-standard)}
+.iv-card:hover{border-color:rgb(66 107 250 / .10);box-shadow:var(--iv-shadow-hover);transform:translateY(-2px)}
+.iv-card__body{padding:var(--space-5)}
+.iv-card__title{margin:0;font-family:var(--font-display);font-size:var(--text-h3);font-weight:700;color:var(--text-primary);letter-spacing:-.02em;line-height:1.2}
+.iv-card__meta{margin-top:var(--space-2);font-family:var(--font-sans);font-size:var(--text-body-sm);line-height:1.55;color:var(--text-secondary)}
+.idea-card__cover{height:108px;background:radial-gradient(130% 160% at 100% 0%,oklch(72% .09 var(--idea-hue,265)/.46),transparent 55%),linear-gradient(145deg,oklch(96% .018 var(--idea-hue,265)),oklch(91% .040 var(--idea-hue,265)));border-bottom:1px solid rgb(32 39 54 / .045);display:flex;align-items:flex-end;padding:var(--space-5)}
+.idea-card__phase-pill{display:inline-flex;align-items:center;padding:5px 10px;border-radius:var(--radius-pill);background:rgb(255 255 255/.72);border:1px solid rgb(255 255 255/.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);color:oklch(28% .025 var(--idea-hue,265));font-family:var(--font-sans);font-size:var(--text-label);font-weight:650;letter-spacing:.01em}
+.venture-card__cover{height:108px;background:radial-gradient(110% 160% at 100% 0%,oklch(67% .08 var(--venture-hue,265)/.28),transparent 60%),linear-gradient(150deg,var(--bento-blue),var(--surface-2));display:flex;align-items:flex-end;padding:var(--space-5);border-bottom:1px solid var(--border-subtle)}
+.venture-card__cover-label{font-family:var(--font-display);font-size:var(--text-h4);font-weight:700;color:var(--text-primary);letter-spacing:-.02em}
+.venture-header--tinted{background:radial-gradient(800px 280px at 80% 0%,oklch(65% .08 var(--venture-hue,265)/.10),transparent 70%),var(--surface-0)}
+.content-grid--fill{height:100%;min-height:100%;display:flex;flex-direction:column}.content-grid--fill .content-grid__content{flex:1;min-height:0;display:flex;flex-direction:column}
+@media(prefers-reduced-motion:reduce){.iv-card{transition:none}.iv-card:hover{transform:none}}
+
+/* Soft electric cue for cards that explicitly request a colored treatment. */
+.iv-card--electric{--iv-card-accent:#426BFA}
+.iv-card--violet{--iv-card-accent:#8B5CF6}
+.iv-card--cyan{--iv-card-accent:#19BCE5}
+.iv-card--mint{--iv-card-accent:#12BFA0}
+.iv-card--coral{--iv-card-accent:#F47779}
+.iv-card:is(.iv-card--electric,.iv-card--violet,.iv-card--cyan,.iv-card--mint,.iv-card--coral):hover{border-color:color-mix(in srgb,var(--iv-card-accent) 19%,transparent);box-shadow:0 2px 7px rgb(32 39 54 / .045),0 12px 25px color-mix(in srgb,var(--iv-card-accent) 7%,transparent)}
+.iv-card:focus-visible{outline:2px solid var(--iv-card-accent,var(--accent,#426BFA));outline-offset:3px}

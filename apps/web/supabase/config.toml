@@ -1,0 +1,80 @@
+# ============================================================
+# Supabase project configuration
+# ============================================================
+
+project_id = "txwohthyqdwlbkdzpswu"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+site_url = "http://localhost:5173"
+additional_redirect_urls = ["https://localhost:5173"]
+jwt_expiry = 3600
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+
+# ============================================================
+# Edge Functions
+#
+# All public-facing functions have verify_jwt = false so the
+# gateway does not reject the CORS preflight (OPTIONS) request
+# before it reaches our handlers.
+#
+# Each function does its own auth check via verifyAuth() which
+# reads the caller's session token from the Authorization header.
+# ============================================================
+
+[functions.idea-agent]
+verify_jwt = false
+
+[functions.venture-agent]
+verify_jwt = false
+
+[functions.connector-oauth]
+verify_jwt = false
+
+[functions.connector-execute]
+verify_jwt = false
+
+[functions.share-guest]
+verify_jwt = false
+
+[functions.stripe-checkout]
+verify_jwt = false
+
+[functions.stripe-portal]
+verify_jwt = false
+
+[functions.stripe-webhook]
+verify_jwt = false
+
+[functions.stripe-billing-info]
+verify_jwt = false
+
+[functions.workspace-invite]
+verify_jwt = false

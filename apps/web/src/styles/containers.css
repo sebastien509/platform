@@ -1,0 +1,39 @@
+/* Conservative Wave B overlay styles: original dimensions retained. */
+.drawer-overlay{position:fixed;inset:0;background:oklch(0% 0 0/40%);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:40}
+.drawer-shell{position:fixed;top:0;right:0;height:100%;background:var(--surface-2);box-shadow:var(--elevation-overlay,var(--iv-shadow-floating));display:flex;flex-direction:column;z-index:41;outline:none}
+.drawer-shell--sheet{top:auto;bottom:0;right:0;left:0;height:auto;max-height:85vh;border-radius:var(--radius-xl) var(--radius-xl) 0 0}
+.drawer-shell__header{position:sticky;top:0;padding:var(--space-7,28px);background:var(--surface-2);border-bottom:1px solid var(--border-subtle);z-index:1}
+.drawer-shell__content{padding:var(--space-7,28px);overflow-y:auto;flex:1;min-height:0}.drawer-shell__footer{position:sticky;bottom:0;padding:var(--space-6) var(--space-7,28px);background:var(--surface-2);border-top:1px solid var(--border-subtle);z-index:1}
+.drawer-header__row{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4)}.drawer-header__text{flex:1;min-width:0}.drawer-header__title{font-size:var(--text-h3);font-weight:600;color:var(--text-primary);line-height:var(--leading-tight,1.2)}.drawer-header__description{margin-top:var(--space-2);font-size:var(--text-body-sm);color:var(--text-secondary);line-height:var(--leading-normal,1.5)}.drawer-header__meta{display:flex;align-items:center;gap:var(--space-2);flex-shrink:0}.drawer-header__close{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:var(--radius-sm);color:var(--text-muted);transition:background .15s ease,color .15s ease}.drawer-header__close:hover{background:var(--surface-3);color:var(--text-primary)}
+.modal-overlay{position:fixed;inset:0;background:oklch(0% 0 0/55%);z-index:50}
+.modal-shell-positioner{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:51;padding:0}
+.modal-shell{position:relative;width:90%;background:var(--surface-2);box-shadow:var(--elevation-overlay,var(--iv-shadow-floating));border-radius:var(--radius-xl);padding:var(--space-8);display:flex;flex-direction:column;max-height:90vh;pointer-events:auto;outline:none}
+.modal-shell__header{font-size:var(--text-h3);font-weight:600;color:var(--text-primary);margin-bottom:var(--space-6);line-height:var(--leading-tight,1.2)}.modal-shell__content{overflow-y:auto;flex:1;min-height:0}.modal-shell__footer{display:flex;justify-content:flex-end;gap:var(--space-4);margin-top:var(--space-7,28px)}
+@media(max-width:480px){.modal-shell__footer{flex-direction:column-reverse}.modal-shell__footer>*{width:100%}}
+.inline-expand{width:100%}.inline-expand__trigger{display:inline-flex;align-items:center;gap:var(--space-2);background:none;border:none;padding:0;cursor:pointer;font-family:inherit;color:inherit;text-align:left;width:100%}.inline-expand__trigger:hover{color:var(--accent)}.inline-expand__chevron{width:14px;height:14px;color:var(--text-muted);transition:transform .15s ease;flex-shrink:0}.inline-expand__chevron.is-open{transform:rotate(180deg)}.inline-expand__trigger-content{flex:1;min-width:0}.inline-expand__content{overflow:hidden}
+.iv-btn{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 var(--space-5);border-radius:var(--radius-md);font-size:var(--text-body-sm);font-weight:500;font-family:inherit;cursor:pointer;transition:background .15s ease,border-color .15s ease;border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary)}.iv-btn:hover{background:var(--surface-2)}.iv-btn--primary{background:var(--accent);border-color:var(--accent);color:white}.iv-btn--primary:hover{background:var(--accent-hover,var(--accent));border-color:var(--accent-hover,var(--accent))}.iv-btn--destructive{background:var(--error);border-color:var(--error);color:white}.iv-btn--destructive:hover{opacity:.9}
+@media(prefers-reduced-motion:reduce){.inline-expand__chevron,.iv-btn,.drawer-header__close{transition:none}}
+
+
+/* Electric Polish — elevated overlay surfaces, minimal borders. */
+.drawer-shell, .drawer-shell__header, .drawer-shell__footer,
+.modal-shell { background: var(--surface-1); }
+.drawer-shell { border-left: 1px solid rgba(32,39,54,.065); box-shadow: var(--iv-elevation-drawer, -12px 0 36px rgba(24,28,36,.08)); }
+.modal-shell { border: 1px solid rgba(32,39,54,.07); box-shadow: var(--iv-elevation-modal, 0 24px 64px rgba(24,28,36,.13)); }
+.drawer-shell__header, .drawer-shell__footer { border-color: rgba(32,39,54,.075); }
+.drawer-header__description { color: var(--text-secondary); }
+.drawer-header__close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Wave B Electric Intelligence: nuanced elevation, crisp contrast and color focus. */
+.drawer-shell,.modal-shell{background:var(--surface-1,#fff);border-color:transparent}
+.drawer-shell{box-shadow:-10px 0 34px rgb(32 39 54 / .085),-1px 0 0 rgb(32 39 54 / .045)}
+.modal-shell{box-shadow:0 22px 64px rgb(32 39 54 / .115),0 2px 12px rgb(32 39 54 / .04)}
+.drawer-shell__header,.drawer-shell__footer{background:var(--surface-1,#fff);border-color:var(--border-subtle,#e6e8ee)}
+.drawer-header__description{color:var(--text-secondary,#667085)}
+.drawer-header__close:hover{background:rgb(66 107 250 / .07);color:var(--accent,#426bfa)}
+.drawer-header__close:focus-visible,.iv-btn:focus-visible{outline:2px solid var(--accent,#426bfa);outline-offset:2px}
+.iv-btn{border-color:var(--border-subtle,#e6e8ee);box-shadow:0 1px 2px rgb(32 39 54 / .035)}
+.iv-btn:hover{border-color:rgb(66 107 250 / .18);box-shadow:0 3px 10px rgb(32 39 54 / .05)}
+.iv-btn--primary{border-color:transparent;box-shadow:0 2px 7px rgb(66 107 250 / .17)}
+.iv-btn--primary:hover{box-shadow:0 4px 13px rgb(66 107 250 / .20)}
+@media(prefers-reduced-motion:reduce){.iv-btn,.drawer-header__close{transition:none}}

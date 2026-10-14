@@ -1,0 +1,58 @@
+/* ============================================================
+ IV by InthraOS — Agent Accent Colors
+ Single source of truth for all 11 agents. Do not duplicate
+ these values anywhere else in the token system.
+ ============================================================ */
+
+ :root,
+ [data-mode="structured"] {
+   --agent-research:    oklch(72% 0.14 205);
+   --agent-strategy:    oklch(72% 0.14 275);
+   --agent-product:     oklch(72% 0.14 125);
+   --agent-engineering: oklch(72% 0.14 60);
+   --agent-gtm:         oklch(72% 0.14 190);
+   --agent-campaign:    oklch(72% 0.14 330);
+   --agent-sales:       oklch(72% 0.14 300);
+   --agent-growth:      oklch(72% 0.14 15);
+   --agent-analysis:    oklch(72% 0.14 215);
+   --agent-knowledge:   oklch(72% 0.14 350);
+   --agent-outcomes:    oklch(72% 0.14 105);
+ 
+   --agent-research-muted:    oklch(72% 0.14 205 / 15%);
+   --agent-strategy-muted:    oklch(72% 0.14 275 / 15%);
+   --agent-product-muted:     oklch(72% 0.14 125 / 15%);
+   --agent-engineering-muted: oklch(72% 0.14 60 / 15%);
+   --agent-gtm-muted:         oklch(72% 0.14 190 / 15%);
+   --agent-campaign-muted:    oklch(72% 0.14 330 / 15%);
+   --agent-sales-muted:       oklch(72% 0.14 300 / 15%);
+   --agent-growth-muted:      oklch(72% 0.14 15 / 15%);
+   --agent-analysis-muted:    oklch(72% 0.14 215 / 15%);
+   --agent-knowledge-muted:   oklch(72% 0.14 350 / 15%);
+   --agent-outcomes-muted:    oklch(72% 0.14 105 / 15%);
+ }
+ 
+ [data-mode="warm"] {
+   --agent-research:    oklch(62% 0.15 205);
+   --agent-strategy:    oklch(62% 0.15 275);
+   --agent-product:     oklch(62% 0.15 125);
+   --agent-engineering: oklch(62% 0.15 60);
+   --agent-gtm:         oklch(62% 0.15 190);
+   --agent-campaign:    oklch(62% 0.15 330);
+   --agent-sales:       oklch(62% 0.15 300);
+   --agent-growth:      oklch(62% 0.15 15);
+   --agent-analysis:    oklch(62% 0.15 215);
+   --agent-knowledge:   oklch(62% 0.15 350);
+   --agent-outcomes:    oklch(62% 0.15 105);
+ 
+   --agent-research-muted:    oklch(62% 0.15 205 / 12%);
+   --agent-strategy-muted:    oklch(62% 0.15 275 / 12%);
+   --agent-product-muted:     oklch(62% 0.15 125 / 12%);
+   --agent-engineering-muted: oklch(62% 0.15 60 / 12%);
+   --agent-gtm-muted:         oklch(62% 0.15 190 / 12%);
+   --agent-campaign-muted:    oklch(62% 0.15 330 / 12%);
+   --agent-sales-muted:       oklch(62% 0.15 300 / 12%);
+   --agent-growth-muted:      oklch(62% 0.15 15 / 12%);
+   --agent-analysis-muted:    oklch(62% 0.15 215 / 12%);
+   --agent-knowledge-muted:   oklch(62% 0.15 350 / 12%);
+   --agent-outcomes-muted:    oklch(62% 0.15 105 / 12%);
+ }

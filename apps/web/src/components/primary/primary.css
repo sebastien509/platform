@@ -1,0 +1,94 @@
+/* ============================================================
+   IV by InthraOS — Primary Surface Styles
+   ============================================================ */
+
+/* ---------- Base surface ---------- */
+
+.primary-surface {
+  max-width: var(--content-max-width, 720px);   /* was: 720px literal */
+  width: 100%;
+  margin-inline: auto;
+  padding: var(--space-8);
+  background: var(--surface-1);
+  box-shadow: var(--elevation-raised);
+  border-radius: var(--radius-xl);
+}
+
+@media (max-width: 640px) {
+  .primary-surface {
+    max-width: 100%;
+    padding: var(--space-7);
+    border-radius: var(--radius-lg);
+  }
+}
+
+.primary-surface__header {
+  margin-bottom: var(--space-6);
+}
+
+.primary-surface__header-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.primary-surface__title {
+  font-size: var(--text-h3);
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: var(--leading-tight);
+}
+
+.primary-surface__meta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.primary-surface__timestamp {
+  font-size: var(--text-label);
+  color: var(--text-muted);
+}
+
+.primary-surface__badge {
+  font-size: var(--text-label);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+}
+
+.primary-surface__badge--accent {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+.primary-surface__badge--success {
+  background: var(--success-soft-border);
+  color: var(--success);
+}
+.primary-surface__badge--warning {
+  background: var(--warning-soft-border);
+  color: var(--warning);
+}
+
+.primary-surface__header-actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.primary-surface__content {
+  color: var(--text-primary);
+}
+
+.primary-surface__actions {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-7);
+}
+
+@media (max-width: 640px) {
+  .primary-surface__actions {
+    flex-direction: column;
+  }
+}

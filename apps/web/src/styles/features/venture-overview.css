@@ -1,0 +1,272 @@
+/* ============================================================
+   Venture Overview — command center
+   Composed narrative + one hero action + ambient context.
+   Not a bento grid. Not a function page.
+   ============================================================ */
+
+/* ---------- Narrative line ---------- */
+
+.overview-narrative {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: 0 0 var(--space-6);
+  max-width: 780px;
+}
+
+.overview-narrative__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  background: var(--accent-muted);
+  color: var(--accent);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.overview-narrative__text {
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+/* ---------- Next best action ---------- */
+
+.overview-nba {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-6);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  border-left: 3px solid var(--accent);
+}
+
+.overview-nba.is-critical {
+  border-left-color: var(--error);
+}
+.overview-nba.is-warning {
+  border-left-color: var(--warning);
+}
+.overview-nba.is-info {
+  border-left-color: var(--accent);
+}
+.overview-nba.is-none {
+  border-left-color: var(--success);
+}
+
+.overview-nba__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.overview-nba.is-critical .overview-nba__eyebrow {
+  color: var(--error);
+}
+.overview-nba.is-warning .overview-nba__eyebrow {
+  color: var(--warning);
+}
+.overview-nba.is-info .overview-nba__eyebrow {
+  color: var(--accent);
+}
+.overview-nba.is-none .overview-nba__eyebrow {
+  color: var(--success);
+}
+
+.overview-nba__title {
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.overview-nba__why {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  color: var(--text-secondary);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 62ch;
+}
+
+.overview-nba__actions {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-2);
+}
+
+/* ---------- Sector health strip ---------- */
+
+.overview-sectors {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-6) 0 0;
+}
+
+.overview-sectors__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-4);
+}
+
+.overview-sector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--iv-motion-ease-standard),
+    transform 160ms var(--iv-motion-ease-standard),
+    background 160ms var(--iv-motion-ease-standard);
+}
+
+.overview-sector:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.overview-sector.is-active {
+  border-color: var(--accent);
+  background: var(--surface-1);
+}
+
+.overview-sector__label {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.overview-sector__track {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.overview-sector__bar {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  transition:
+    width 400ms var(--iv-motion-ease-standard),
+    background 200ms var(--iv-motion-ease-standard);
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+  .overview-sectors__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .overview-sectors__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------- What happened ---------- */
+
+.overview-activity {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-8) 0 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--space-8);
+}
+
+.overview-activity__label {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.overview-activity__empty {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.overview-activity__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.overview-activity__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+}
+
+.overview-activity__item:last-child {
+  border-bottom: none;
+}
+
+.overview-activity__icon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.overview-activity__text {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.overview-activity__time {
+  color: var(--text-muted);
+  font-size: var(--text-2xs);
+  flex-shrink: 0;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 640px) {
+  .overview-nba__title { font-size: var(--text-h3); }
+  .overview-narrative__text { font-size: var(--text-h4); }
+}

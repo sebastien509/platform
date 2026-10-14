@@ -1,0 +1,1187 @@
+/* ============================================================
+
+   PHASE B — LAYOUT PRIMITIVES
+
+   Styles for PageShell, PageHeader, Section, SectionGrid.
+
+   Uses existing tokens only. Nothing currently imports these
+
+   classes — Phase C wires them into the venture page engine.
+
+   \============================================================ */
+
+
+
+/* ---------- PageShell ---------- */
+
+
+
+.page-shell {
+
+  width: 100%;
+
+  max-width: 1440px;
+
+  margin-inline: auto;
+
+  padding-block: var(--space-6) var(--space-16);
+
+  padding-inline: clamp(20px, 3vw, 48px);
+
+}
+
+
+
+.page-shell--reading { max-width: 1080px; }
+
+.page-shell--wide    { max-width: 1680px; }
+
+
+
+/* Vertical rhythm between direct children of a shell. */
+
+.page-shell > * + * {
+
+  margin-top: var(--space-10);
+
+}
+
+
+
+/* ---------- PageHeader ---------- */
+
+
+
+.page-header {
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: var(--space-6);
+
+  flex-wrap: wrap;
+
+}
+
+
+
+.page-header__content {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  min-width: 0;
+
+  max-width: 720px;
+
+}
+
+
+
+.page-header__eyebrow {
+
+  font-family: var(--font-sans);
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+
+  color: var(--text-muted);
+
+}
+
+
+
+.page-header__title {
+
+  margin: 0;
+
+  font-family: var(--font-display);
+
+  font-size: clamp(28px, 3vw, 38px);
+
+  font-weight: 700;
+
+  line-height: 1.05;
+
+  letter-spacing: -0.035em;
+
+  color: var(--text-primary);
+
+}
+
+
+
+.page-header__description {
+
+  margin: 8px 0 0;
+
+  font-family: var(--font-sans);
+
+  font-size: 15px;
+
+  line-height: 1.55;
+
+  color: var(--text-secondary);
+
+}
+
+
+
+.page-header__aside {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--space-3);
+
+  flex-shrink: 0;
+
+  margin-bottom: 6px;
+
+}
+
+
+
+.page-header__actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: var(--space-2);
+
+}
+
+
+
+/* Page state chip */
+
+
+
+.page-header__state {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 5px 11px;
+
+  border-radius: 999px;
+
+  border: 1px solid var(--border-subtle);
+
+  background: var(--surface-1);
+
+  font-family: var(--font-sans);
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  color: var(--text-secondary);
+
+  white-space: nowrap;
+
+}
+
+
+
+.page-header__state-dot {
+
+  width: 5px;
+
+  height: 5px;
+
+  border-radius: 999px;
+
+  background: var(--text-muted);
+
+  flex-shrink: 0;
+
+}
+
+
+
+.page-header__state-stage {
+
+  color: var(--text-primary);
+
+  letter-spacing: -0.005em;
+
+}
+
+
+
+.page-header__state-sep {
+
+  color: var(--text-muted);
+
+  opacity: 0.55;
+
+}
+
+
+
+.page-header__state-detail {
+
+  color: var(--text-secondary);
+
+  font-weight: 500;
+
+}
+
+
+
+.page-header__state-badge {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 16px;
+
+  height: 16px;
+
+  padding: 0 5px;
+
+  border-radius: 999px;
+
+  background: var(--accent-muted);
+
+  color: var(--accent);
+
+  font-size: 9.5px;
+
+  font-weight: 700;
+
+  margin-left: 2px;
+
+}
+
+
+
+.page-header__state.is-attention {
+
+  border-color: var(--warning-soft-border);
+
+}
+
+
+
+.page-header__state.is-attention .page-header__state-dot {
+
+  background: var(--warning);
+
+}
+
+
+
+.page-header__state.is-attention .page-header__state-badge {
+
+  background: var(--warning-muted);
+
+  color: var(--warning);
+
+}
+
+
+
+.page-header__state.is-ready {
+
+  border-color: var(--success-soft-border);
+
+}
+
+
+
+.page-header__state.is-ready .page-header__state-dot {
+
+  background: var(--success);
+
+}
+
+
+
+.page-header__state.is-ready .page-header__state-badge {
+
+  background: var(--success-muted);
+
+  color: var(--success);
+
+}
+
+
+
+/* ---------- Section ---------- */
+
+
+
+.section {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--space-5);
+
+  min-width: 0;
+
+}
+
+
+
+.section__head {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: space-between;
+
+  gap: var(--space-5);
+
+  flex-wrap: wrap;
+
+}
+
+
+
+.section__heading {
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  min-width: 0;
+
+}
+
+
+
+.section__heading-text {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+
+  min-width: 0;
+
+}
+
+
+
+.section__icon {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 18px;
+
+  height: 18px;
+
+  color: var(--text-muted);
+
+  margin-top: 3px;
+
+  flex-shrink: 0;
+
+}
+
+
+
+.section__title {
+
+  margin: 0;
+
+  font-family: var(--font-sans);
+
+  font-size: 15px;
+
+  font-weight: 640;
+
+  line-height: 1.3;
+
+  letter-spacing: -0.012em;
+
+  color: var(--text-primary);
+
+}
+
+
+
+.section__description {
+
+  margin: 0;
+
+  font-family: var(--font-sans);
+
+  font-size: 13px;
+
+  line-height: 1.55;
+
+  color: var(--text-secondary);
+
+  max-width: 68ch;
+
+}
+
+
+
+.section__actions {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+
+}
+
+
+
+.section__body {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: var(--space-4);
+
+  min-width: 0;
+
+}
+
+
+
+/* ---------- SectionGrid ---------- */
+
+
+
+.section-grid {
+
+  display: grid;
+
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+
+  gap: var(--space-5);
+
+  align-items: start;
+
+  width: 100%;
+
+  min-width: 0;
+
+}
+
+
+
+.section-grid--compact { gap: var(--space-3); }
+
+.section-grid--roomy   { gap: var(--space-6); }
+
+
+
+.section-grid > [data-size="full"]    { grid-column: span 12; }
+
+.section-grid > [data-size="wide"]    { grid-column: span 8;  }
+
+.section-grid > [data-size="half"]    { grid-column: span 6;  }
+
+.section-grid > [data-size="compact"] { grid-column: span 4;  }
+
+
+
+/* Children without a data-size default to full width. */
+
+.section-grid > * {
+
+  min-width: 0;
+
+}
+
+
+
+.section-grid > *:not([data-size]) {
+
+  grid-column: span 12;
+
+}
+
+
+
+/* ---------- Responsive ---------- */
+
+
+
+@media (max-width: 1100px) {
+
+  .section-grid > [data-size="wide"],
+
+  .section-grid > [data-size="compact"] {
+
+    grid-column: span 6;
+
+  }
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .page-shell {
+
+    padding-block: var(--space-4) var(--space-12);
+
+    padding-inline: clamp(16px, 3vw, 32px);
+
+  }
+
+
+
+  .page-shell > * + * {
+
+    margin-top: var(--space-8);
+
+  }
+
+
+
+  .page-header {
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+  }
+
+
+
+  .page-header__aside {
+
+    margin-bottom: 0;
+
+  }
+
+}
+
+
+
+@media (max-width: 640px) {
+
+  .section-grid {
+
+    grid-template-columns: 1fr;
+
+  }
+
+
+
+  .section-grid > * {
+
+    grid-column: span 1 !important;
+
+  }
+
+}
+
+
+
+/* ============================================================
+
+   VENTURE PAGE STACK — vertical rhythm for engine sections
+
+   \============================================================ */
+
+
+
+.venture-page-stack {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 32px;
+
+  min-width: 0;
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .venture-page-stack {
+
+    gap: 24px;
+
+  }
+
+}
+
+
+
+/* ============================================================
+
+   SPACING RHYTHM — versioned values
+
+   Stabilizes vertical rhythm between all sections.
+
+   \============================================================ */
+
+
+
+.venture-page-stack {
+
+  gap: 32px;
+
+}
+
+
+
+.venture-page__header {
+
+  margin-bottom: 4px;
+
+}
+
+
+
+.page-header__title {
+
+  line-height: 1.05;
+
+}
+
+
+
+.page-header__description {
+
+  margin-top: 6px;
+
+}
+
+
+
+/* Section gaps inside a page follow a single scale */
+
+.section + .section,
+
+.venture-page-stack > * + * {
+
+  margin-top: 0;
+
+}
+
+
+
+/* Header to tabs — 28px not 40 */
+
+.venture-page-stack > .sector-tabs,
+
+.venture-page-stack > .section:first-child {
+
+  margin-top: 0;
+
+}
+
+
+
+/* Prevent flex/grid overflow — global safety net */
+
+.section,
+
+.section__body,
+
+.venture-page-stack,
+
+.section-grid > *,
+
+.collection-view,
+
+.artifact-frame,
+
+.object-card {
+
+  min-width: 0;
+
+}
+
+
+
+/* Long content doesn't escape its container */
+
+.section-narrative__title,
+
+.section-narrative__body,
+
+.object-card__title,
+
+.object-card__description,
+
+.section__title {
+
+  overflow-wrap: anywhere;
+
+  max-width: 100%;
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .venture-page-stack {
+
+    gap: 24px;
+
+  }
+
+}
+
+
+
+/* ============================================================
+
+   SPACING RHYTHM — versioned values
+
+   Stabilizes vertical rhythm between all sections.
+
+   \============================================================ */
+
+
+
+.venture-page-stack {
+
+  gap: 32px;
+
+}
+
+
+
+.venture-page__header {
+
+  margin-bottom: 4px;
+
+}
+
+
+
+.page-header__title {
+
+  line-height: 1.05;
+
+}
+
+
+
+.page-header__description {
+
+  margin-top: 6px;
+
+}
+
+
+
+/* Section gaps inside a page follow a single scale */
+
+.section + .section,
+
+.venture-page-stack > * + * {
+
+  margin-top: 0;
+
+}
+
+
+
+/* Header to tabs — 28px not 40 */
+
+.venture-page-stack > .sector-tabs,
+
+.venture-page-stack > .section:first-child {
+
+  margin-top: 0;
+
+}
+
+
+
+/* Prevent flex/grid overflow — global safety net */
+
+.section,
+
+.section__body,
+
+.venture-page-stack,
+
+.section-grid > *,
+
+.collection-view,
+
+.artifact-frame,
+
+.object-card {
+
+  min-width: 0;
+
+}
+
+
+
+/* Long content doesn't escape its container */
+
+.section-narrative__title,
+
+.section-narrative__body,
+
+.object-card__title,
+
+.object-card__description,
+
+.section__title {
+
+  overflow-wrap: anywhere;
+
+  max-width: 100%;
+
+}
+
+
+
+@media (max-width: 900px) {
+
+  .venture-page-stack {
+
+    gap: 24px;
+
+  }
+
+}
+
+
+
+/* ============================================================
+
+   VENTURE SECTIONS — 12-col composition grid
+
+   Sections declare width via `layout` in the config.
+
+   Default is full — same as the pre-D1 stack.
+
+   \============================================================ */
+
+
+
+.venture-sections {
+
+  display: grid;
+
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+
+  gap: 32px 20px;
+
+  min-width: 0;
+
+  width: 100%;
+
+}
+
+
+
+.venture-section-slot {
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0;
+
+}
+
+
+
+.venture-section-slot[data-width='full']    { grid-column: span 12; }
+
+.venture-section-slot[data-width='wide']    { grid-column: span 8; }
+
+.venture-section-slot[data-width='half']    { grid-column: span 6; }
+
+.venture-section-slot[data-width='compact'] { grid-column: span 4; }
+
+
+
+@media (max-width: 1100px) {
+
+  .venture-section-slot[data-width='wide']    { grid-column: span 12; }
+
+  .venture-section-slot[data-width='compact'] { grid-column: span 6; }
+
+}
+
+
+
+@media (max-width: 768px) {
+
+  .venture-sections {
+
+    gap: 24px 0;
+
+  }
+
+  .venture-section-slot[data-width] {
+
+    grid-column: span 12;
+
+  }
+
+}
+
+
+
+/* ============================================================
+
+   ACTIVITY BAR — clean, no agent name
+
+   \============================================================ */
+
+
+
+.activity-bar {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  width: 100%;
+
+  padding: 10px 16px;
+
+  margin-top: 24px;
+
+  border-radius: 12px;
+
+  border: 1px solid var(--border-subtle);
+
+  background: var(--surface-1);
+
+  font-family: var(--font-sans);
+
+  font-size: 12.5px;
+
+  color: var(--text-secondary);
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+
+    border-color 200ms cubic-bezier(0.2, 0.7, 0.2, 1),
+
+    background 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+
+}
+
+
+
+.activity-bar:hover {
+
+  border-color: var(--border);
+
+  background: var(--surface-2);
+
+}
+
+
+
+.activity-bar--attention {
+
+  border-color: var(--warning-soft-border);
+
+  background:
+
+    radial-gradient(520px 120px at 100% 0%, var(--warning-muted), transparent 72%),
+
+    var(--surface-1);
+
+}
+
+
+
+.activity-bar--ready {
+
+  border-color: var(--accent-soft-border);
+
+  background:
+
+    radial-gradient(520px 120px at 100% 0%, var(--accent-muted), transparent 72%),
+
+    var(--surface-1);
+
+}
+
+
+
+.activity-bar__icon {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  width: 24px;
+
+  height: 24px;
+
+  border-radius: 8px;
+
+  background: var(--accent-muted);
+
+  color: var(--accent);
+
+  flex-shrink: 0;
+
+}
+
+
+
+.activity-bar__icon.is-working { background: var(--info-muted); color: var(--info); }
+
+.activity-bar__icon.is-needs-you { background: var(--warning-muted); color: var(--warning); }
+
+.activity-bar__icon.is-review-ready { background: var(--accent-muted); color: var(--accent); }
+
+
+
+.activity-bar__label {
+
+  flex: 1;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+
+  color: var(--text-primary);
+
+  font-weight: 500;
+
+}
+
+
+
+.activity-bar--attention .activity-bar__label {
+
+  color: var(--warning);
+
+  font-weight: 600;
+
+}
+
+
+
+.activity-bar__status {
+
+  font-size: 10.5px;
+
+  font-weight: 650;
+
+  padding: 3px 9px;
+
+  border-radius: 999px;
+
+  background: var(--surface-2);
+
+  color: var(--text-muted);
+
+  flex-shrink: 0;
+
+}
+
+
+
+.activity-bar__cta {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  color: var(--accent);
+
+  flex-shrink: 0;
+
+}
+
+
+
+/* ============================================================
+
+   SECTION GROUPS
+
+   Quiet text dividers used when the config still groups sections
+
+   (legacy tab labels become these). No interaction — just rhythm.
+
+   \============================================================ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ============================================================
+   IV — Electric polish (optical only; no layout geometry changes)
+   ============================================================ */
+.page-header__eyebrow { color: var(--text-secondary); }
+.page-header__subtitle, .page-header__description { color: var(--text-secondary); }
+.section-card, .page-card {
+  box-shadow: var(--iv-shadow-card);
+}

@@ -1,0 +1,71 @@
+/* ============================================================
+   IV by InthraOS — Health Grid Styles
+   ============================================================ */
+
+.health-collapsed {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-3) 0;
+  font-family: inherit;
+  text-align: left;
+}
+
+.health-collapsed__dots {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.health-collapsed__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-circle);
+  transition: transform 0.15s ease;
+}
+
+.health-collapsed:hover .health-collapsed__dot {
+  transform: scale(1.15);
+}
+
+.health-collapsed__summary {
+  font-size: var(--text-body-sm);
+  color: var(--text-secondary);
+}
+
+.health-expanded {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.health-expanded__row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.health-expanded__label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.health-expanded__label {
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.health-expanded__value {
+  font-size: var(--text-body-sm);
+  color: var(--text-secondary);
+}
+
+.health-expanded__status {
+  font-size: var(--text-label);
+  color: var(--text-muted);
+}

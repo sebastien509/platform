@@ -1,0 +1,39 @@
+/* ============================================================
+   PageContainer — content max-width tiers.
+
+   Semantic classes instead of Tailwind arbitrary values.
+   Arbitrary values like max-w-[1280px] can be missed by the
+   JIT scanner depending on where they're declared; these
+   classes are always generated.
+
+   The shell owns outer gutter (padding-inline on the content
+   grid). PageContainer owns the inner cap. Never both.
+   ============================================================ */
+
+   .page-container {
+    width: 100%;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+  
+  /* Narrow — reading, forms, single-column focus */
+  .page-container--narrow {
+    max-width: 640px;
+  }
+  
+  /* Default — the content-max-width token (720 Structured / 680 Warm) */
+  .page-container--default {
+    max-width: var(--content-max-width, 720px);
+  }
+  
+  /* Wide — workspaces, grids, dashboards */
+  .page-container--wide {
+    max-width: 1200px;
+  }
+  
+  /* Full — no cap, page owns the gutter */
+  .page-container--full {
+    max-width: none;
+  }

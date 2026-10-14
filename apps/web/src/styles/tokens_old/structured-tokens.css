@@ -1,0 +1,184 @@
+/* ============================================================
+   IV by InthraOS — Structured Mode Tokens
+   ============================================================
+   Premium dark workspace.
+   Same geometry as Warm; different optical physics.
+   ============================================================ */
+
+:root,
+[data-mode="structured"] {
+  --iv-mode-warm: 0;
+  --iv-mode-structured: 1;
+
+  /* ==========================================================
+     CORE COLOR
+     ========================================================== */
+
+  --iv-color-bg-base: 225 18% 8%;
+  --iv-color-bg-elevated: 225 16% 11%;
+  --iv-color-bg-sunken: 225 20% 6%;
+
+  --iv-color-surface-default: 225 15% 12%;
+  --iv-color-surface-hover: 225 14% 15%;
+  --iv-color-surface-active: 225 13% 18%;
+
+  --iv-color-text-primary: 220 14% 95%;
+  --iv-color-text-secondary: 220 9% 71%;
+  --iv-color-text-tertiary: 220 7% 52%;
+  --iv-color-text-disabled: 220 6% 37%;
+
+  --iv-color-border-subtle: 225 12% 18%;
+  --iv-color-border-default: 225 11% 24%;
+  --iv-color-border-strong: 225 10% 33%;
+
+  /* Brand */
+  --iv-color-accent-primary: 226 76% 61%;
+  --iv-color-accent-primary-hover: 226 78% 68%;
+  --iv-color-accent-focus: 226 76% 61%;
+
+  /* Status */
+  --iv-color-status-success: 151 52% 52%;
+  --iv-color-status-warning: 38 80% 57%;
+  --iv-color-status-error: 0 68% 62%;
+  --iv-color-status-info: 204 68% 59%;
+
+  /* ==========================================================
+     ELEVATION
+     ========================================================== */
+
+  --iv-elevation-0: none;
+
+  --iv-elevation-1:
+    inset 0 0 0 1px hsl(var(--iv-color-border-subtle));
+
+  --iv-elevation-2:
+    inset 0 0 0 1px hsl(var(--iv-color-border-default)),
+    0 8px 24px rgb(0 0 0 / 0.20);
+
+  --iv-elevation-3:
+    inset 0 0 0 1px hsl(var(--iv-color-border-default)),
+    0 18px 44px rgb(0 0 0 / 0.32);
+
+  --iv-elevation-drawer:
+    -12px 0 40px rgb(0 0 0 / 0.40);
+
+  --iv-elevation-modal:
+    0 28px 72px rgb(0 0 0 / 0.50);
+
+  /* ==========================================================
+     SHARED GEOMETRY
+     ========================================================== */
+
+  --iv-radius-xs: 6px;
+  --iv-radius-sm: 8px;
+  --iv-radius-md: 12px;
+  --iv-radius-lg: 16px;
+  --iv-radius-xl: 20px;
+  --iv-radius-2xl: 28px;
+  --iv-radius-3xl: 40px;
+  --iv-radius-full: 9999px;
+
+  --iv-space-0: 0px;
+  --iv-space-1: 4px;
+  --iv-space-2: 8px;
+  --iv-space-3: 12px;
+  --iv-space-4: 16px;
+  --iv-space-5: 20px;
+  --iv-space-6: 24px;
+  --iv-space-8: 32px;
+  --iv-space-10: 40px;
+  --iv-space-12: 48px;
+  --iv-space-14: 56px;
+  --iv-space-16: 64px;
+
+  /* Typography */
+  --iv-font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
+  --iv-font-display: 'Sora', system-ui, -apple-system, sans-serif;
+  --iv-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --iv-font-size-2xs: 10px;
+  --iv-font-size-xs: 11px;
+  --iv-font-size-sm: 12px;
+  --iv-font-size-base: 13px;
+  --iv-font-size-md: 14px;
+  --iv-font-size-lg: 16px;
+  --iv-font-size-xl: 20px;
+  --iv-font-size-2xl: 24px;
+  --iv-font-size-3xl: 30px;
+
+  --iv-font-weight-regular: 400;
+  --iv-font-weight-medium: 500;
+  --iv-font-weight-semibold: 600;
+  --iv-font-weight-bold: 700;
+
+  --iv-line-height-tight: 1.2;
+  --iv-line-height-snug: 1.35;
+  --iv-line-height-normal: 1.5;
+  --iv-line-height-relaxed: 1.65;
+
+  /* Layout */
+  --iv-layout-sidebar-width: 240px;
+  --iv-layout-sidebar-collapsed: 56px;
+  --iv-layout-topbar-height: 56px;
+  --iv-layout-journey-rail-height: 44px;
+  --iv-layout-content-max: 1600px;
+
+  /* Soft borders */
+  --success-soft-border: oklch(70% 0.13 155 / 0.32);
+  --warning-soft-border: oklch(78% 0.13 75 / 0.32);
+  --error-soft-border:   oklch(69% 0.16 27 / 0.35);
+  --info-soft-border:    oklch(72% 0.11 245 / 0.32);
+  --accent-soft-border:  oklch(69% 0.15 265 / 0.34);
+
+  /* Motion — base ladder */
+  --motion-fast: 140ms;
+  --motion-base: 180ms;
+  --motion-card: 220ms;
+  --motion-panel: 280ms;
+  --motion-page: 320ms;
+  --motion-emphasis: 420ms;
+
+  /* Motion — premium tier (heavier register jumps) */
+  --motion-premium-fast: 500ms;
+  --motion-premium-base: 600ms;
+  --motion-premium-page: 700ms;
+
+  --ease-standard: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --iv-motion-duration-instant: var(--motion-fast);
+  --iv-motion-duration-fast: var(--motion-base);
+  --iv-motion-duration-base: var(--motion-card);
+  --iv-motion-duration-slow: var(--motion-page);
+  --iv-motion-duration-slower: var(--motion-emphasis);
+
+  --iv-motion-ease-standard: var(--ease-standard);
+  --iv-motion-ease-decelerate: var(--ease-enter);
+  --iv-motion-ease-accelerate: var(--ease-exit);
+  --iv-motion-ease-emphasized: var(--ease-standard);
+
+  /* Expression */
+  --expr-intelligence:       oklch(73% 0.12 265);
+  --expr-intelligence-muted: oklch(23% 0.030 265);
+
+  --expr-validated:          oklch(70% 0.12 150);
+  --expr-validated-muted:    oklch(23% 0.030 150);
+
+  --expr-caution:            oklch(78% 0.13 72);
+  --expr-caution-muted:      oklch(25% 0.035 72);
+
+  --expr-exploration:        oklch(72% 0.12 320);
+  --expr-exploration-muted:  oklch(23% 0.030 320);
+
+  --expr-research:           oklch(74% 0.10 225);
+  --expr-research-muted:     oklch(23% 0.028 225);
+
+  /* Bento */
+  --bento-blue:   oklch(20% 0.030 260);
+  --bento-sky:    oklch(20% 0.026 225);
+  --bento-violet: oklch(20% 0.030 305);
+  --bento-sage:   oklch(20% 0.025 150);
+  --bento-amber:  oklch(21% 0.030 80);
+  --bento-rose:   oklch(20% 0.028 20);
+}

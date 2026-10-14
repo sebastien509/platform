@@ -1,0 +1,50 @@
+/* Single warm surface system. */
+:root,
+:root[data-mode="warm"] {
+  --iv-gradient-hero: radial-gradient(700px 380px at 92% -5%, var(--iv-accent-a14), transparent 68%), radial-gradient(540px 320px at -5% 105%, var(--iv-violet-a08), transparent 72%), var(--surface-1);
+  --iv-gradient-research: linear-gradient(135deg, var(--bento-sky), var(--surface-1) 58%, var(--bento-violet));
+  --iv-gradient-brand: linear-gradient(135deg, oklch(66% 0.16 265), oklch(59% 0.18 270) 52%, oklch(61% 0.16 300));
+  --iv-bloom-primary: radial-gradient(600px 400px at 82% 0%, var(--iv-accent-a14), transparent 62%);
+  --iv-bloom-secondary: radial-gradient(400px 300px at 0% 100%, var(--iv-accent-a08), transparent 68%);
+  --iv-bloom-violet: radial-gradient(500px 320px at 100% 100%, var(--iv-violet-a08), transparent 65%);
+}
+
+:root,
+:root[data-mode="warm"] {
+  --iv-accent-a05: rgb(66 107 250 / 0.05);
+  --iv-accent-a06: rgb(66 107 250 / 0.06);
+  --iv-accent-a08: rgb(66 107 250 / 0.08);
+  --iv-accent-a10: rgb(66 107 250 / 0.10);
+  --iv-accent-a14: rgb(66 107 250 / 0.14);
+  --iv-accent-a16: rgb(66 107 250 / 0.16);
+  --iv-accent-a17: rgb(66 107 250 / 0.17);
+  --iv-accent-a20: rgb(66 107 250 / 0.20);
+  --iv-accent-a25: rgb(66 107 250 / 0.25);
+  --iv-accent-a35: rgb(66 107 250 / 0.35);
+  --iv-accent-a45: rgb(66 107 250 / 0.45);
+  --iv-surface-glass-1: rgb(255 255 255 / 0.68);
+  --iv-surface-glass-2: rgb(255 255 255 / 0.78);
+  --iv-surface-glass-3: rgb(255 255 255 / 0.90);
+  --iv-border-glass-subtle: rgb(32 39 54 / 0.035);
+  --iv-border-glass: rgb(32 39 54 / 0.055);
+  --iv-border-glass-strong: rgb(32 39 54 / 0.10);
+  --iv-shadow-card: 0 1px 2px rgb(16 24 40 / 0.035), 0 8px 24px rgb(16 24 40 / 0.045);
+  --iv-shadow-hover: 0 2px 5px rgb(16 24 40 / 0.04), 0 16px 32px rgb(66 107 250 / 0.075);
+  --iv-shadow-floating: 0 24px 60px rgb(16 24 40 / 0.11);
+  --iv-shadow-glow: 0 0 0 1px rgb(66 107 250 / 0.08), 0 16px 42px rgb(66 107 250 / 0.085);
+  --iv-violet-a08: oklch(66% 0.09 305 / 0.07);
+  --iv-violet-a16: oklch(66% 0.09 305 / 0.14);
+  --iv-sage-a35: oklch(65% 0.06 150 / 0.25);
+  --iv-error-a08: oklch(63% 0.15 27 / 0.07);
+  --iv-error-a40: oklch(63% 0.15 27 / 0.32);
+  --iv-elevation-4: 0 2px 4px rgb(24 28 36 / 0.04), 0 12px 28px rgb(24 28 36 / 0.06), 0 40px 80px rgb(24 28 36 / 0.05);
+  --iv-elevation-5: 0 4px 8px rgb(24 28 36 / 0.05), 0 20px 48px rgb(24 28 36 / 0.08), 0 64px 128px rgb(24 28 36 / 0.07);
+  --iv-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.60);
+  --iv-rim-light-strong: inset 0 1px 0 rgb(255 255 255 / 0.90);
+  --iv-glass-blur-sm: blur(12px) saturate(130%);
+  --iv-glass-blur-md: blur(24px) saturate(145%);
+  --iv-glass-blur-lg: blur(40px) saturate(160%);
+  --iv-gradient-hero: radial-gradient(720px 400px at 96% -8%, var(--iv-accent-a14), transparent 68%), radial-gradient(520px 300px at -4% 108%, var(--iv-violet-a08), transparent 72%), var(--surface-1);
+  --iv-bloom-primary: radial-gradient(600px 400px at 82% 0%, var(--iv-accent-a10), transparent 62%);
+  --iv-bloom-secondary: radial-gradient(400px 300px at 0% 100%, var(--iv-accent-a06), transparent 68%);
+}

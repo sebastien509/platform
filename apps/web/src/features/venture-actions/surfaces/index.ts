@@ -1,0 +1,12 @@
+export { SurfaceFrame, CopyLinkButton } from './SurfaceFrame';
+export { CommentThread } from './CommentThread';
+export { FeedbackList } from './FeedbackList';
+export { SurfaceSections } from './sections';
+export { BriefSurface } from './BriefSurface';
+export { PrototypeSurface } from './PrototypeSurface';
+export { DocsSurface } from './DocsSurface';
+export { PlanSurface } from './PlanSurface';
+export { LandingSurface } from './LandingSurface';
+export { ProposalSurface } from './ProposalSurface';
+export { SURFACE_REGISTRY, getSurfaceRenderer, hasSurface } from './registry';
+export type { SurfaceProps } from './registry';

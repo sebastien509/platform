@@ -1,0 +1,205 @@
+/* ============================================================
+   Journey Shell — focused pre-venture container
+   ============================================================
+   Fixed viewport frame.
+
+   Architecture:
+   - Shell owns viewport height.
+   - Topbar owns its fixed row.
+   - Main owns all page scrolling.
+   - Feature pages must NOT create another viewport-height frame.
+   ============================================================ */
+
+.journey-shell {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  overflow: hidden;
+  background: var(--surface-0);
+}
+
+/* ============================================================
+   Topbar
+   ============================================================ */
+
+.journey-shell__topbar {
+  position: relative;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+
+  /* Use the shared layout token.
+     This was previously hardcoded to 64px while the design
+     system defines the application topbar as 56px. */
+  height: var(--iv-layout-topbar-height);
+  min-height: var(--iv-layout-topbar-height);
+
+  padding-inline: clamp(20px, 2.4vw, 32px);
+
+  flex: 0 0 var(--iv-layout-topbar-height);
+
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-0);
+}
+
+/* ---------- Topbar regions ---------- */
+
+.journey-shell__topbar-left,
+.journey-shell__topbar-center,
+.journey-shell__topbar-right {
+  flex: 1 1 0;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+}
+
+.journey-shell__topbar-left {
+  justify-content: flex-start;
+}
+
+.journey-shell__topbar-center {
+  justify-content: center;
+}
+
+.journey-shell__topbar-right {
+  justify-content: flex-end;
+}
+
+/* ============================================================
+   Brand
+   ============================================================ */
+
+.journey-shell__brand {
+  display: inline-flex;
+  align-items: center;
+
+  opacity: 0.88;
+
+  transition:
+    opacity var(--motion-fast) var(--ease-standard);
+}
+
+.journey-shell__brand:hover {
+  opacity: 1;
+}
+
+.journey-shell__wordmark {
+  display: block;
+
+  width: auto;
+  height: 30px;
+  max-width: 100%;
+}
+
+/* ============================================================
+   Exit
+   ============================================================ */
+
+.journey-shell__exit {
+  display: inline-flex;
+  align-items: center;
+
+  gap: var(--space-1);
+
+  padding:
+    var(--space-1)
+    var(--space-2);
+
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+
+  color: var(--text-muted);
+
+  transition:
+    color var(--motion-fast) var(--ease-standard),
+    background var(--motion-fast) var(--ease-standard);
+}
+
+.journey-shell__exit:hover {
+  color: var(--text-primary);
+  background: var(--surface-2);
+}
+
+/* ============================================================
+   Main
+   ============================================================
+   THIS is the only vertical scroll owner inside JourneyShell.
+
+   Do not add:
+   - height: 100vh
+   - min-height: 100vh
+   - overflow-y: auto
+
+   to IdeaStage / Validate / transition pages.
+   ============================================================ */
+
+.journey-shell__main {
+  position: relative;
+
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+
+  /* Feature pages own internal composition.
+     Shell must not create a second page gutter. */
+  padding: 0;
+
+  background: var(--surface-0);
+}
+
+/* ============================================================
+   Scrollbar
+   ============================================================ */
+
+.journey-shell__main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.journey-shell__main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.journey-shell__main::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-pill);
+}
+
+/* ============================================================
+   Mobile
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .journey-shell__topbar {
+    padding-inline: 16px;
+  }
+
+  .journey-shell__wordmark {
+    height: 27px;
+  }
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-shell__brand,
+  .journey-shell__exit {
+    transition: none;
+  }
+}

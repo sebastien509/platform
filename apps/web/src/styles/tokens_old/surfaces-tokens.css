@@ -1,0 +1,231 @@
+/* ============================================================
+   IV — Surface Tokens
+   ============================================================ */
+
+:root {
+  /* Glass */
+  --iv-surface-glass-1: rgb(255 255 255 / 0.025);
+  --iv-surface-glass-2: rgb(255 255 255 / 0.045);
+  --iv-surface-glass-3: rgb(255 255 255 / 0.065);
+
+  --iv-border-glass-subtle: rgb(255 255 255 / 0.06);
+  --iv-border-glass: rgb(255 255 255 / 0.095);
+  --iv-border-glass-strong: rgb(255 255 255 / 0.15);
+
+  /* Shadows */
+  --iv-shadow-card:
+    0 1px 1px rgb(0 0 0 / 0.12),
+    0 10px 32px rgb(0 0 0 / 0.14);
+
+  --iv-shadow-hover:
+    0 2px 2px rgb(0 0 0 / 0.15),
+    0 18px 48px rgb(0 0 0 / 0.22);
+
+  --iv-shadow-floating:
+    0 28px 70px rgb(0 0 0 / 0.34);
+
+  --iv-shadow-glow:
+    0 0 0 1px oklch(69% 0.15 265 / 0.08),
+    0 24px 64px oklch(60% 0.17 265 / 0.10);
+
+  /* Accent alphas */
+  --iv-accent-a05: oklch(69% 0.15 265 / 0.05);
+  --iv-accent-a06: oklch(69% 0.15 265 / 0.06);
+  --iv-accent-a08: oklch(69% 0.15 265 / 0.08);
+  --iv-accent-a10: oklch(69% 0.15 265 / 0.10);
+  --iv-accent-a14: oklch(69% 0.15 265 / 0.14);
+  --iv-accent-a16: oklch(69% 0.15 265 / 0.16);
+  --iv-accent-a17: oklch(69% 0.15 265 / 0.17);
+  --iv-accent-a20: oklch(69% 0.15 265 / 0.20);
+  --iv-accent-a25: oklch(69% 0.15 265 / 0.25);
+  --iv-accent-a35: oklch(69% 0.15 265 / 0.35);
+  --iv-accent-a45: oklch(69% 0.15 265 / 0.45);
+
+  /* Decorative */
+  --iv-violet-a08: oklch(70% 0.10 305 / 0.08);
+  --iv-violet-a16: oklch(70% 0.10 305 / 0.16);
+  --iv-sage-a35: oklch(72% 0.07 150 / 0.35);
+
+  --iv-error-a08: oklch(69% 0.16 27 / 0.08);
+  --iv-error-a40: oklch(69% 0.16 27 / 0.40);
+
+  /* Premium gradients */
+  --iv-gradient-hero:
+    radial-gradient(
+      700px 380px at 92% -5%,
+      var(--iv-accent-a14),
+      transparent 68%
+    ),
+    radial-gradient(
+      540px 320px at -5% 105%,
+      var(--iv-violet-a08),
+      transparent 72%
+    ),
+    var(--surface-1);
+
+  --iv-gradient-research:
+    linear-gradient(
+      135deg,
+      var(--bento-sky),
+      var(--surface-1) 58%,
+      var(--bento-violet)
+    );
+
+  --iv-gradient-brand:
+    linear-gradient(
+      135deg,
+      oklch(66% 0.16 265),
+      oklch(59% 0.18 270) 52%,
+      oklch(61% 0.16 300)
+    );
+
+  /* ==========================================================
+     PREMIUM — deep elevation (3-stop + rim light)
+     ========================================================== */
+
+  --iv-elevation-4:
+    inset 0 1px 0 rgb(255 255 255 / 0.06),
+    0 4px 8px rgb(0 0 0 / 0.10),
+    0 16px 40px rgb(0 0 0 / 0.18),
+    0 48px 100px rgb(0 0 0 / 0.22);
+
+  --iv-elevation-5:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 8px 16px rgb(0 0 0 / 0.14),
+    0 32px 72px rgb(0 0 0 / 0.28),
+    0 80px 160px rgb(0 0 0 / 0.34);
+
+  /* Rim light — 1px inner highlight for dimensional glass */
+  --iv-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.06);
+  --iv-rim-light-strong: inset 0 1px 0 rgb(255 255 255 / 0.10);
+
+  /* Glass blur tiers */
+  --iv-glass-blur-sm: blur(12px) saturate(140%);
+  --iv-glass-blur-md: blur(24px) saturate(160%);
+  --iv-glass-blur-lg: blur(40px) saturate(180%);
+
+  /* Bloom gradient fragments — hero card backgrounds */
+  --iv-bloom-primary:
+    radial-gradient(
+      600px 400px at 82% 0%,
+      var(--iv-accent-a14),
+      transparent 62%
+    );
+  --iv-bloom-secondary:
+    radial-gradient(
+      400px 300px at 0% 100%,
+      var(--iv-accent-a08),
+      transparent 68%
+    );
+  --iv-bloom-violet:
+    radial-gradient(
+      500px 320px at 100% 100%,
+      var(--iv-violet-a08),
+      transparent 65%
+    );
+}
+
+[data-mode="warm"] {
+  --iv-surface-glass-1: rgb(255 255 255 / 0.68);
+  --iv-surface-glass-2: rgb(255 255 255 / 0.78);
+  --iv-surface-glass-3: rgb(255 255 255 / 0.90);
+
+  --iv-border-glass-subtle: rgb(24 28 36 / 0.055);
+  --iv-border-glass: rgb(24 28 36 / 0.085);
+  --iv-border-glass-strong: rgb(24 28 36 / 0.14);
+
+  --iv-shadow-card:
+    0 1px 2px rgb(24 28 36 / 0.025),
+    0 7px 22px rgb(24 28 36 / 0.04);
+
+  --iv-shadow-hover:
+    0 2px 4px rgb(24 28 36 / 0.03),
+    0 14px 36px rgb(24 28 36 / 0.075);
+
+  --iv-shadow-floating:
+    0 24px 60px rgb(24 28 36 / 0.12);
+
+  --iv-shadow-glow:
+    0 0 0 1px oklch(62% 0.16 265 / 0.08),
+    0 22px 56px oklch(62% 0.16 265 / 0.08);
+
+  --iv-accent-a05: oklch(62% 0.16 265 / 0.05);
+  --iv-accent-a06: oklch(62% 0.16 265 / 0.06);
+  --iv-accent-a08: oklch(62% 0.16 265 / 0.08);
+  --iv-accent-a10: oklch(62% 0.16 265 / 0.10);
+  --iv-accent-a14: oklch(62% 0.16 265 / 0.14);
+  --iv-accent-a16: oklch(62% 0.16 265 / 0.16);
+  --iv-accent-a17: oklch(62% 0.16 265 / 0.17);
+  --iv-accent-a20: oklch(62% 0.16 265 / 0.20);
+  --iv-accent-a25: oklch(62% 0.16 265 / 0.25);
+  --iv-accent-a35: oklch(62% 0.16 265 / 0.35);
+  --iv-accent-a45: oklch(62% 0.16 265 / 0.45);
+
+  --iv-violet-a08: oklch(66% 0.09 305 / 0.07);
+  --iv-violet-a16: oklch(66% 0.09 305 / 0.14);
+  --iv-sage-a35: oklch(65% 0.06 150 / 0.25);
+
+  --iv-error-a08: oklch(63% 0.15 27 / 0.07);
+  --iv-error-a40: oklch(63% 0.15 27 / 0.32);
+
+  --iv-gradient-hero:
+    radial-gradient(
+      720px 400px at 96% -8%,
+      var(--iv-accent-a14),
+      transparent 68%
+    ),
+    radial-gradient(
+      520px 300px at -4% 108%,
+      var(--iv-violet-a08),
+      transparent 72%
+    ),
+    var(--surface-1);
+
+  --iv-gradient-research:
+    linear-gradient(
+      135deg,
+      var(--bento-sky),
+      var(--surface-1) 58%,
+      var(--bento-violet)
+    );
+
+  /* ==========================================================
+     PREMIUM — warm overrides
+     ========================================================== */
+
+  --iv-elevation-4:
+    0 2px 4px rgb(24 28 36 / 0.04),
+    0 12px 28px rgb(24 28 36 / 0.06),
+    0 40px 80px rgb(24 28 36 / 0.05);
+
+  --iv-elevation-5:
+    0 4px 8px rgb(24 28 36 / 0.05),
+    0 20px 48px rgb(24 28 36 / 0.08),
+    0 64px 128px rgb(24 28 36 / 0.07);
+
+  --iv-rim-light: inset 0 1px 0 rgb(255 255 255 / 0.60);
+  --iv-rim-light-strong: inset 0 1px 0 rgb(255 255 255 / 0.90);
+
+  --iv-glass-blur-sm: blur(12px) saturate(130%);
+  --iv-glass-blur-md: blur(24px) saturate(145%);
+  --iv-glass-blur-lg: blur(40px) saturate(160%);
+
+  --iv-bloom-primary:
+    radial-gradient(
+      600px 400px at 82% 0%,
+      var(--iv-accent-a10),
+      transparent 62%
+    );
+  --iv-bloom-secondary:
+    radial-gradient(
+      400px 300px at 0% 100%,
+      var(--iv-accent-a06),
+      transparent 68%
+    );
+  --iv-bloom-violet:
+    radial-gradient(
+      500px 320px at 100% 100%,
+      var(--iv-violet-a08),
+      transparent 65%
+    );
+}

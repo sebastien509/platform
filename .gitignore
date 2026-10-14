@@ -1,0 +1,38 @@
+# Dependencies
+node_modules
+**/node_modules
+
+# Build outputs
+dist
+build
+.vite
+**/dist
+**/build
+**/.vite
+
+# Env — never commit
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Vercel
+.vercel
+**/.vercel
+
+# Logs
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# OS / IDE
+.DS_Store
+**/.DS_Store
+.vscode
+.idea
+
+# Caches
+.turbo
+.cache

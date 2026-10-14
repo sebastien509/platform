@@ -1,0 +1,10 @@
+import type { ReactNode } from 'react';import { AnimatePresence,motion } from 'framer-motion';
+import { drawerSlide,bottomSheetSlide,containerReduced } from '@/lib/motion/variants';import { useReducedMotion } from '@/lib/motion';import { useMediaQuery } from '@/lib/hooks/useMediaQuery';import { cn } from '@/lib/utils/cn';import { useDialogFocus } from './useDialogFocus';
+export type DrawerSize='sm'|'md'|'lg';
+interface DrawerShellProps{open:boolean;onClose?:()=>void;onOpenChange?:(open:boolean)=>void;header?:ReactNode;title?:string;description?:string;size?:DrawerSize;width?:number;side?:'right'|'left'|'bottom';children:ReactNode;footer?:ReactNode;className?:string}
+const WIDTHS:Record<DrawerSize,number>={sm:360,md:480,lg:640};
+export function DrawerShell({open,onClose,onOpenChange,header,title,description,size='md',width,side:_side,children,footer,className}:DrawerShellProps){
+ const reduced=useReducedMotion();const isMobile=useMediaQuery('(max-width: 640px)');const close=()=>{if(onClose)onClose();else onOpenChange?.(false)};const focusRef=useDialogFocus(open,true,close);
+ const headerNode=header??(title?<div><h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>{description&&<p className="mt-1 text-2xs text-[var(--text-secondary)]">{description}</p>}</div>:null);
+ return <AnimatePresence>{open&&<><motion.div className="drawer-overlay" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} transition={{duration:reduced?0:.15}} onClick={close} aria-hidden="true"/><motion.div ref={focusRef} tabIndex={-1} className={cn('drawer-shell',isMobile?'drawer-shell--sheet':'drawer-shell--side',className)} style={{width:isMobile?'100%':width??WIDTHS[size]}} variants={reduced?containerReduced:isMobile?bottomSheetSlide:drawerSlide} initial="hidden" animate="visible" exit="exit" role="dialog" aria-modal="true" aria-label={title??'Drawer'}>{headerNode&&<div className="drawer-shell__header">{headerNode}</div>}<div className="drawer-shell__content">{children}</div>{footer&&<div className="drawer-shell__footer">{footer}</div>}</motion.div></>}</AnimatePresence>;
+}

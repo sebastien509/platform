@@ -1,0 +1,38 @@
+/* Premium Bento primitives; layout dimensions preserved. */
+.iv-surface{position:relative;min-width:0;overflow:hidden;isolation:isolate;border-radius:var(--radius-xl);background:var(--surface-1);border:1px solid transparent;box-shadow:var(--iv-shadow-card);transition:transform var(--motion-card) var(--ease-standard),border-color var(--motion-card) var(--ease-standard),background var(--motion-card) var(--ease-standard),box-shadow var(--motion-card) var(--ease-standard)}
+.iv-surface--interactive{cursor:pointer}.iv-surface--interactive:hover{transform:translateY(-2px);border-color:rgb(66 107 250 / .12);box-shadow:var(--iv-shadow-hover)}.iv-surface--interactive:active{transform:translateY(0)}
+.iv-surface--glass{background:var(--iv-surface-glass-2);border-color:var(--iv-border-glass-subtle);backdrop-filter:var(--iv-glass-blur-md);-webkit-backdrop-filter:var(--iv-glass-blur-md)}
+.iv-surface--hero{border-radius:var(--radius-2xl);background:var(--iv-gradient-hero);border-color:transparent;box-shadow:var(--iv-elevation-2),var(--iv-rim-light)}
+.iv-surface--premium{border-radius:var(--radius-2xl);border-color:transparent;box-shadow:var(--iv-elevation-2),var(--iv-rim-light)}
+.iv-surface--premium.iv-surface--interactive:hover{box-shadow:var(--iv-shadow-hover),var(--iv-rim-light-strong);transform:translateY(-4px)}
+.iv-surface--bloom{background:var(--iv-bloom-primary),var(--iv-bloom-secondary),var(--surface-1);border-color:transparent}
+.iv-surface--soft{background:var(--iv-surface-soft);border-color:transparent;box-shadow:none}
+.iv-surface--intelligence{background:var(--bento-blue)}.iv-surface--research{background:var(--iv-gradient-research)}.iv-surface--validated{background:var(--bento-sage)}.iv-surface--exploration{background:var(--bento-violet)}.iv-surface--caution{background:var(--bento-amber)}
+.iv-surface--brand{background:var(--iv-gradient-brand);border-color:transparent;color:white}
+.iv-surface--pad-sm{padding:var(--space-3)}.iv-surface--pad-md{padding:var(--space-4)}.iv-surface--pad-lg{padding:var(--space-5)}.iv-surface--pad-xl{padding:var(--space-6)}
+.iv-surface__header{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4)}.iv-surface__body{display:flex;flex:1;min-height:0;flex-direction:column;gap:var(--space-3);margin-top:var(--space-5)}.iv-surface__footer{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin-top:auto;padding-top:var(--space-5)}
+.iv-surface--accent-top::before{content:'';position:absolute;top:0;left:var(--space-5);right:var(--space-5);height:1px;background:linear-gradient(90deg,transparent,var(--iv-border-glass),transparent);opacity:.55;pointer-events:none}
+.iv-surface--glow::after{content:'';position:absolute;width:260px;height:260px;top:-130px;right:-100px;border-radius:50%;background:radial-gradient(circle,var(--iv-accent-a16),transparent 68%);filter:blur(18px);pointer-events:none;z-index:-1}
+.iv-bento,.iv-compose-hero-quad,.iv-compose-quad,.iv-compose-wide-split{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--space-5);width:100%}.iv-bento--compact{gap:var(--space-3)}
+.iv-span-3{grid-column:span 3}.iv-span-4{grid-column:span 4}.iv-span-5{grid-column:span 5}.iv-span-6{grid-column:span 6}.iv-span-7{grid-column:span 7}.iv-span-8{grid-column:span 8}.iv-span-9{grid-column:span 9}.iv-span-12{grid-column:span 12}.iv-row-span-2{grid-row:span 2}
+.iv-compose-hero-quad>.iv-surface--hero,.iv-compose-hero-quad>.iv-surface--premium{grid-column:span 8;grid-row:span 2}.iv-compose-hero-quad>:not(.iv-surface--hero):not(.iv-surface--premium){grid-column:span 4}
+.iv-compose-quad>*{grid-column:span 3}.iv-compose-wide-split>:first-child{grid-column:span 12}.iv-compose-wide-split>:nth-child(2){grid-column:span 7}.iv-compose-wide-split>:nth-child(3){grid-column:span 5}
+.iv-page-atmosphere{position:relative;isolation:isolate}.iv-page-atmosphere::before{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(900px 480px at 82% -12%,var(--iv-accent-a06),transparent 70%),radial-gradient(700px 420px at -8% 40%,var(--iv-violet-a08),transparent 74%)}
+/* 6-column breakpoint: spans are remapped consistently, not against 12 columns. */
+@media(max-width:900px){.iv-bento,.iv-compose-hero-quad,.iv-compose-quad,.iv-compose-wide-split{grid-template-columns:repeat(6,minmax(0,1fr))}.iv-span-3,.iv-span-4,.iv-span-5{grid-column:span 3}.iv-span-6,.iv-span-7,.iv-span-8,.iv-span-9,.iv-span-12{grid-column:span 6}.iv-compose-hero-quad>.iv-surface--hero,.iv-compose-hero-quad>.iv-surface--premium{grid-column:span 6;grid-row:auto}.iv-compose-hero-quad>:not(.iv-surface--hero):not(.iv-surface--premium){grid-column:span 3}.iv-compose-quad>*{grid-column:span 3}.iv-compose-wide-split>*{grid-column:span 6!important}}
+@media(max-width:640px){.iv-bento,.iv-compose-hero-quad,.iv-compose-quad,.iv-compose-wide-split{grid-template-columns:1fr}.iv-bento>*,.iv-compose-hero-quad>*,.iv-compose-quad>*,.iv-compose-wide-split>*{grid-column:span 1!important;grid-row:auto!important}}
+@media(prefers-reduced-motion:reduce){.iv-surface{transition:none!important}.iv-surface--interactive:hover,.iv-surface--interactive:active,.iv-surface--premium.iv-surface--interactive:hover{transform:none}}
+
+/* Electric Intelligence expression. Colors are accents, not saturated canvases. */
+.iv-surface--electric{--iv-surface-accent:#426BFA;--iv-surface-tint:rgb(66 107 250 / .045)}
+.iv-surface--violet{--iv-surface-accent:#8B5CF6;--iv-surface-tint:rgb(139 92 246 / .045)}
+.iv-surface--cyan{--iv-surface-accent:#19BCE5;--iv-surface-tint:rgb(25 188 229 / .045)}
+.iv-surface--mint{--iv-surface-accent:#12BFA0;--iv-surface-tint:rgb(18 191 160 / .045)}
+.iv-surface--coral{--iv-surface-accent:#F47779;--iv-surface-tint:rgb(244 119 121 / .045)}
+.iv-surface--amber{--iv-surface-accent:#F2AE48;--iv-surface-tint:rgb(242 174 72 / .05)}
+.iv-surface--electric,.iv-surface--violet,.iv-surface--cyan,.iv-surface--mint,.iv-surface--coral,.iv-surface--amber{background:linear-gradient(135deg,var(--iv-surface-tint),transparent 58%),var(--surface-1);box-shadow:var(--iv-shadow-card,0 1px 3px rgb(32 39 54 / .045),0 8px 20px rgb(32 39 54 / .035))}
+.iv-surface--electric.iv-surface--interactive:hover,.iv-surface--violet.iv-surface--interactive:hover,.iv-surface--cyan.iv-surface--interactive:hover,.iv-surface--mint.iv-surface--interactive:hover,.iv-surface--coral.iv-surface--interactive:hover,.iv-surface--amber.iv-surface--interactive:hover{border-color:color-mix(in srgb,var(--iv-surface-accent) 20%,transparent);box-shadow:0 3px 16px rgb(32 39 54 / .06),0 12px 32px color-mix(in srgb,var(--iv-surface-accent) 8%,transparent)}
+.iv-surface--signal::before{content:'';position:absolute;top:0;left:var(--space-5);right:var(--space-5);height:2px;border-radius:999px;background:linear-gradient(90deg,var(--iv-surface-accent,var(--accent,#426BFA)),transparent 76%);pointer-events:none}
+.iv-surface__eyebrow{color:var(--text-secondary,#667085);font-size:var(--text-label,11px);font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.iv-surface__meta{color:var(--text-secondary,#667085)}
+.iv-surface--interactive:focus-visible{outline:2px solid var(--iv-surface-accent,var(--accent,#426BFA));outline-offset:3px}

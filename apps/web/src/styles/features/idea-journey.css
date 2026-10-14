@@ -1,0 +1,1106 @@
+/* ============================================================
+   IV — Idea Journey
+   Single-focus. Vertical rail. Bare input.
+   No history region — the rail IS the history.
+
+   The UI is the premium object; the background only sets mood.
+   Surfaces share the same physics as Validate (tokens:
+   --iv-shadow-card, --iv-shadow-hover, --radius-xl).
+   ============================================================ */
+
+/* ---------- Shell ---------- */
+
+.journey-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--surface-0);
+}
+
+/* ---------- Journey root ---------- */
+
+.idea-journey-shell {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-0);
+}
+
+/* ============================================================
+   Background — quiet, token-driven, recessive
+   ============================================================ */
+
+.idea-journey-shell__bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.idea-journey-shell__bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.12;
+  filter: saturate(0.75) brightness(0.62);
+}
+
+[data-mode="warm"] .idea-journey-shell__bg-video {
+  opacity: 0.055;
+  filter: saturate(0.55) brightness(1.08);
+}
+
+.idea-journey-shell__bg-gradient {
+  position: absolute;
+  inset: -90%;
+
+  background:
+    radial-gradient(
+      circle at 30% 20%,
+      var(--iv-accent-a10),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 72% 78%,
+      var(--iv-violet-a08, var(--iv-accent-a08)),
+      transparent 36%
+    );
+
+  filter: blur(80px);
+  animation: bg-drift 28s ease-in-out infinite alternate;
+}
+
+.idea-journey-shell__bg-tint {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    var(--surface-0) 0%,
+    transparent 22%,
+    transparent 78%,
+    var(--surface-0) 100%
+  );
+}
+
+@keyframes bg-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-4%, 3%) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-journey-shell__bg-video { display: none; }
+  .idea-journey-shell__bg-gradient { animation: none; }
+}
+
+/* ============================================================
+   Vertical rail
+   ============================================================ */
+
+.journey-progress {
+  position: fixed;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 20px;
+  pointer-events: none;
+}
+
+.journey-progress__stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20px;
+}
+
+.journey-progress__node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  min-height: 20px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+.journey-progress__node.is-active { min-height: 28px; }
+.journey-progress__node:disabled { cursor: default; }
+
+.journey-progress__node.is-clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.journey-progress__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border);
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    background var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard);
+}
+
+.journey-progress__dot.is-complete { background: var(--success); }
+
+.journey-progress__dot.is-active {
+  width: 10px;
+  height: 10px;
+  background: var(--accent);
+  animation: rail-dot-pulse 2.4s ease-in-out infinite;
+}
+
+.journey-progress__dot.is-future {
+  background: var(--text-muted);
+  opacity: 0.4;
+}
+
+@keyframes rail-dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px var(--accent-muted); }
+  50%      { box-shadow: 0 0 0 8px var(--accent-muted); }
+}
+
+.journey-progress__node.is-clickable.is-complete:hover .journey-progress__dot {
+  transform: scale(1.4);
+  background: var(--success);
+  box-shadow: 0 0 0 3px var(--success-muted, var(--surface-2));
+}
+
+.journey-progress__node.is-clickable.is-future:hover .journey-progress__dot {
+  transform: scale(1.4);
+  background: var(--text-secondary);
+  opacity: 1;
+}
+
+/* Path */
+.journey-progress__path {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+}
+
+.journey-progress__tick {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.55;
+}
+
+/* Active label */
+.journey-progress__label {
+  position: absolute;
+  left: calc(100% + 20px);
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  animation: rail-label-in 400ms var(--ease-standard) both;
+}
+
+@keyframes rail-label-in {
+  from { opacity: 0; transform: translate(-4px, -50%); }
+  to   { opacity: 1; transform: translate(0, -50%); }
+}
+
+/* Tooltip — stage name + saved value (from state) */
+.journey-progress__tooltip {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 280px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--iv-shadow-card);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-base) var(--ease-standard);
+}
+
+.journey-progress__node.is-clickable:hover .journey-progress__tooltip,
+.journey-progress__node.is-clickable:focus-visible .journey-progress__tooltip {
+  opacity: 1;
+}
+
+.journey-progress__tooltip-stage {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.journey-progress__tooltip-value {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-primary);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-progress__dot.is-active {
+    animation: none;
+    box-shadow: 0 0 0 4px var(--accent-muted);
+  }
+  .journey-progress__label { animation: none; }
+}
+
+@media (max-width: 768px) {
+  .journey-progress {
+    position: static;
+    transform: none;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    padding: var(--space-6) 0 var(--space-4);
+  }
+  .journey-progress__stack { flex-direction: row; width: auto; }
+  .journey-progress__node { min-height: auto; }
+  .journey-progress__path { flex-direction: row; padding: 0 6px; }
+  .journey-progress__label {
+    position: static;
+    transform: none;
+    margin-left: var(--space-2);
+    font-size: 10px;
+    animation: none;
+  }
+  .journey-progress__tooltip { display: none; }
+}
+
+/* ============================================================
+   Typeform stage — one static focus.
+   Padding lives on the STAGE. Centering is `margin: auto` on
+   the PANEL — the only centering pattern that plays nice with
+   overflow-y: auto (centers when short, top-aligns on overflow).
+   ============================================================ */
+
+.typeform-stage {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  padding: 140px var(--space-6) var(--space-10);
+  box-sizing: border-box;
+}
+
+.typeform-stage__panel {
+  width: 100%;
+  max-width: 620px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Research panel is wider — same layout rules. */
+.typeform-stage__panel:has(.idea-focus--research) {
+  max-width: 900px;
+}
+
+@media (max-width: 768px) {
+  .typeform-stage {
+    padding: 180px var(--space-4) var(--space-10);
+  }
+  .typeform-stage__panel:has(.idea-focus--research) {
+    max-width: 100%;
+  }
+}
+
+/* ---------- Stage column ---------- */
+
+.idea-stage {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+
+
+
+/* ============================================================
+   Header — icon left, title right
+   ============================================================ */
+
+   .idea-header {
+    position: fixed;
+    top: 96px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+  
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  
+    text-align: left;
+    pointer-events: none;
+  }
+  
+  .idea-header > * {
+    pointer-events: auto;
+  }
+  
+  
+  
+  .idea-header__icon {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    opacity: 0.95;
+  }
+  .idea-header__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+  
+    animation: header-title-in 480ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  
+  @keyframes header-title-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+      filter: blur(3px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+  
+  /* Mobile */
+  @media (max-width: 640px) {
+    .idea-header {
+      gap: 9px;
+      padding-inline: 16px;
+    }
+  
+    .idea-header__icon {
+      width: 34px;
+      height: 34px;
+    }
+  
+    .idea-header__title {
+      font-size: var(--text-h3);
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .idea-header__title {
+      animation: none;
+    }
+  }
+/* ============================================================
+   Header (fixed overlay)
+   ============================================================ */
+
+/* ============================================================
+   Focus
+   ============================================================ */
+
+.idea-focus {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+  text-align: center;
+}
+
+/* ---------- Subtitle ---------- */
+
+.idea-focus__subtitle {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  max-width: 44ch;
+  min-height: 3em;
+  margin: 0 auto;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-lg);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+/* Edit-mode banner — declared AFTER the base subtitle so its
+   overrides actually win the cascade. */
+.idea-focus__subtitle.idea-focus__subtitle--edit {
+  display: inline-flex;
+  justify-content: center;
+  max-width: none;
+  min-height: 0;
+  margin: 0 auto var(--space-3);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-muted);
+  font-size: var(--text-2xs);
+  font-weight: 700;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.idea-focus__word {
+  display: inline-block;
+  margin-right: 0.28em;
+  opacity: 0;
+  animation: idea-word-in 380ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes idea-word-in {
+  from { opacity: 0; transform: translateY(8px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-focus__word {
+    opacity: 1;
+    animation: none;
+    filter: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Clean field dots — interactive
+   ============================================================ */
+
+.clean-field-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  margin-bottom: var(--space-2);
+}
+
+.clean-field-dots__dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition:
+    transform var(--motion-base) var(--ease-standard),
+    width var(--motion-base) var(--ease-standard),
+    height var(--motion-base) var(--ease-standard),
+    background var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-base) var(--ease-standard);
+}
+
+.clean-field-dots__dot.is-locked {
+  background: var(--success);
+}
+
+.clean-field-dots__dot.is-active {
+  width: 14px;
+  height: 14px;
+  background: var(--agent-strategy);
+  box-shadow: 0 0 0 4px var(--agent-strategy-muted);
+}
+
+.clean-field-dots__dot:disabled,
+.clean-field-dots__dot.is-pending {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.clean-field-dots__dot:not(:disabled):hover {
+  transform: scale(1.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clean-field-dots__dot { transition: none; }
+  .clean-field-dots__dot:not(:disabled):hover { transform: none; }
+}
+
+/* ============================================================
+   Bare input
+   ============================================================ */
+
+.idea-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 560px;
+}
+
+.idea-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.idea-input-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.idea-input {
+  width: 100%;
+  min-height: calc(1.5em + var(--space-6));
+  padding: var(--space-8) 0;
+  border: none;
+  border-bottom: 1.5px solid var(--border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: 2;
+  color: var(--text-primary);
+  text-align: left;
+  caret-color: var(--agent-color, var(--accent));
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  transition: border-color 200ms var(--ease-standard);
+}
+
+.idea-input:focus {
+  border-bottom-color: var(--agent-color, var(--accent));
+  border-bottom-width: 2px;
+}
+
+.idea-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+.idea-submit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--agent-color, var(--accent));
+  color: var(--surface-0);
+  cursor: pointer;
+  transition:
+    transform 160ms var(--ease-standard),
+    opacity 160ms var(--ease-standard);
+}
+
+.idea-submit:disabled { opacity: 0.3; cursor: not-allowed; }
+.idea-submit:hover:not(:disabled) { transform: scale(1.06); }
+
+.idea-submit__ripple {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--agent-color, var(--accent));
+  opacity: 0;
+  pointer-events: none;
+  animation: idea-submit-ripple 520ms var(--ease-standard);
+}
+
+@keyframes idea-submit-ripple {
+  0%   { opacity: 0.7; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-submit__ripple { animation: none; }
+  .idea-submit:hover:not(:disabled) { transform: none; }
+}
+
+/* ============================================================
+   Choices
+   ============================================================ */
+
+.idea-choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 560px;
+}
+
+.idea-choice-btn {
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--ease-standard),
+    color 160ms var(--ease-standard),
+    background 160ms var(--ease-standard),
+    opacity 160ms var(--ease-standard),
+    transform 160ms var(--ease-standard);
+}
+
+.idea-choice-btn:hover:not(:disabled) {
+  border-color: var(--agent-color, var(--accent));
+  background: var(--agent-color-muted, var(--accent-muted));
+  color: var(--agent-color, var(--accent));
+  transform: translateY(-1px);
+}
+
+.idea-choice-btn.is-primary {
+  border-color: transparent;
+  background: var(--agent-color, var(--accent));
+  color: var(--surface-0);
+}
+
+.idea-choice-btn.is-primary:hover:not(:disabled) {
+  background: var(--agent-color, var(--accent));
+  color: var(--surface-0);
+  opacity: 0.92;
+}
+
+.idea-choice-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-choice-btn:hover:not(:disabled) { transform: none; }
+}
+
+/* ============================================================
+   Processing hex
+   ============================================================ */
+
+.idea-processing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 220px;
+  padding: var(--space-8) 0;
+  animation: idea-processing-in var(--motion-card) var(--ease-standard) both;
+}
+
+@keyframes idea-processing-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.idea-processing__hex-clip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 200px;
+  overflow: visible;
+}
+
+.idea-processing__hex {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  flex-shrink: 0;
+  transform-origin: center center;
+  animation: idea-hex-breathe 2.8s ease-in-out infinite;
+}
+
+@keyframes idea-hex-breathe {
+  0%, 100% { transform: scale(0.6); }
+  50%      { transform: scale(0.7); }
+}
+
+.idea-processing__hex .iv-hex-brick {
+  background: var(--text-primary);
+  box-shadow:
+    0 0 6px rgb(255 255 255 / 32%),
+    0 0 16px rgb(255 255 255 / 10%);
+  animation: idea-hex-fade-mono 2.4s ease-in-out infinite;
+}
+
+[data-mode="warm"] .idea-processing__hex .iv-hex-brick {
+  box-shadow: none;
+}
+
+@keyframes idea-hex-fade-mono {
+  0%, 100% { opacity: 0.95; background: var(--text-primary); }
+  50%      { opacity: 0.2;  background: var(--text-muted); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idea-processing { animation: none; }
+  .idea-processing__hex { animation: none; transform: scale(0.65); }
+  .idea-processing__hex .iv-hex-brick { animation: none; opacity: 0.6; }
+}
+
+/* ---------- Synthesis summary tally ---------- */
+
+.idea-focus__summary {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* ============================================================
+   Research file cards — same surface physics as Validate
+   ============================================================ */
+
+.idea-focus--research {
+  align-items: stretch;
+  gap: var(--space-5);
+  text-align: left;
+}
+
+.research-file-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .research-file-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .research-file-list { grid-template-columns: 1fr; }
+}
+
+.research-file-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-3);
+  min-height: 240px;
+  padding: var(--space-5);
+
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-1);
+
+  box-shadow: var(--iv-shadow-card);
+
+  transition:
+    border-color var(--motion-base) var(--ease-standard),
+    box-shadow var(--motion-card) var(--ease-standard),
+    transform var(--motion-card) var(--ease-standard);
+}
+
+/* Semantic status line — the one structural accent on the card */
+.research-file-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-5);
+  right: var(--space-5);
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+.research-file-card.is-running::before { color: var(--info); }
+.research-file-card.is-unread::before  { color: var(--accent); }
+.research-file-card.is-read::before    { color: var(--success); }
+.research-file-card.is-failed::before  { color: var(--error); }
+
+.research-file-card.is-unread:hover,
+.research-file-card.is-read:hover {
+  border-color: var(--border);
+  box-shadow: var(--iv-shadow-hover, var(--iv-shadow-card));
+  transform: translateY(-2px);
+}
+
+.research-file-card.is-failed {
+  border-color: var(--iv-error-a40, var(--border));
+}
+
+.research-file-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.research-file-card__chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.research-file-card__spin {
+  animation: research-file-spin 1.2s linear infinite;
+}
+
+@keyframes research-file-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.research-file-card__badge {
+  flex-shrink: 0;
+  padding: 3px 9px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.research-file-card__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.research-file-card__summary {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.research-file-card__review {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  margin-top: auto;
+  padding: 9px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.research-file-card__review.is-primary {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.research-file-card__review.is-primary:hover {
+  background: var(--accent);
+  color: var(--surface-0);
+  transform: translateY(-1px);
+}
+
+.research-file-card__review.is-secondary {
+  border-color: var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.research-file-card__review.is-secondary:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.research-file-card__review:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ---------- Research footer actions ---------- */
+
+.research-file-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.research-file-actions__secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard);
+}
+
+.research-file-actions__secondary:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.research-file-actions__primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: 0;
+  background: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--surface-0);
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.research-file-actions__primary:hover {
+  background: var(--accent-hover, var(--accent));
+  transform: translateY(-1px);
+}
+
+@media (max-width: 560px) {
+  .research-file-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+  .research-file-actions__secondary,
+  .research-file-actions__primary {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .research-file-card,
+  .research-file-card__review,
+  .research-file-actions__primary {
+    transition: none;
+  }
+  .research-file-card__spin { animation: none; }
+  .research-file-card__review.is-primary:hover,
+  .research-file-actions__primary:hover,
+  .research-file-card.is-unread:hover,
+  .research-file-card.is-read:hover {
+    transform: none;
+  }
+}
+
+/* ============================================================
+   Keyboard focus — visible, on-brand, never on mouse click
+   ============================================================ */
+
+.journey-progress__node.is-clickable:focus-visible,
+.clean-field-dots__dot:focus-visible,
+.idea-submit:focus-visible,
+.idea-choice-btn:focus-visible,
+.research-file-card__review:focus-visible,
+.research-file-actions__secondary:focus-visible,
+.research-file-actions__primary:focus-visible {
+  outline: 2px solid var(--agent-color, var(--accent));
+  outline-offset: 3px;
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .idea-header__icon { width: 56px; height: 56px; }
+  .idea-header__title { font-size: var(--text-h3); }
+  .idea-focus__subtitle { font-size: var(--text-body); }
+  .idea-focus__subtitle.idea-focus__subtitle--edit { font-size: var(--text-2xs); }
+  .idea-input { font-size: var(--text-body-lg); }
+}

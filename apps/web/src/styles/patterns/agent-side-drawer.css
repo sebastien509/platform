@@ -1,0 +1,912 @@
+/* ============================================================
+   IV — Agent Side Drawer
+   The single surface for agent interaction.
+
+   Structure:
+     0. Multi-agent switcher
+     1. Header          (identity + status)
+     2. Needs you       (pinned, above scroll)
+     3. Scroll region
+        a. Summary       (label + text + progress)
+        b. Activity      (label + timeline)
+        c. Outputs       (label + cards)
+     4. Composer        (pinned, below scroll)
+
+   Rule enforced: document reading → DocumentViewerDrawer.
+                  Agent interaction → this drawer. Never mixed.
+   ============================================================ */
+
+/* ============================================================
+   FRAME
+   ============================================================ */
+
+.agent-drawer {
+  position: fixed;
+  top: var(--iv-layout-topbar-height, 56px);
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+
+  display: flex;
+  flex-direction: column;
+  width: 420px;
+
+  background: var(--surface-0);
+  border-left: 1px solid var(--border-subtle);
+  box-shadow: var(--iv-elevation-drawer);
+
+  transform: translateX(100%);
+  transition: transform var(--motion-page) var(--ease-enter);
+}
+
+.agent-drawer.is-open {
+  transform: translateX(0);
+}
+
+.agent-drawer--standard { width: 420px; }
+.agent-drawer--expanded { width: 560px; }
+
+.agent-drawer--peek {
+  top: calc(var(--iv-layout-topbar-height, 56px) + 12px);
+  right: 12px;
+  bottom: auto;
+  width: 340px;
+  max-height: 220px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Peek is header + summary only */
+.agent-drawer--peek .agent-drawer__needs-you,
+.agent-drawer--peek .agent-drawer__scroll,
+.agent-drawer--peek .agent-drawer__composer {
+  display: none;
+}
+
+.agent-drawer__frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+/* ============================================================
+   ZONE 0 — Multi-agent switcher
+   ============================================================ */
+
+.agent-drawer__switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.agent-drawer__switcher::-webkit-scrollbar { display: none; }
+
+.agent-drawer__frame[data-agent-count="1"] .agent-drawer__switcher,
+.agent-drawer__frame:not([data-agent-count]) .agent-drawer__switcher {
+  display: none;
+}
+
+.agent-switcher__avatar {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.agent-switcher__avatar:hover {
+  background: var(--surface-3);
+  color: var(--text-primary);
+}
+
+.agent-switcher__avatar.is-active {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.agent-switcher__status {
+  position: absolute;
+  bottom: -1px;
+  right: -1px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 2px solid var(--surface-0);
+}
+
+.agent-switcher__status--working      { background: var(--info); }
+.agent-switcher__status--needs-you    { background: var(--warning); }
+.agent-switcher__status--review-ready { background: var(--expr-intelligence); }
+.agent-switcher__status--done         { background: var(--success); }
+.agent-switcher__status--failed       { background: var(--error); }
+.agent-switcher__status--paused       { background: var(--text-muted); }
+
+/* ============================================================
+   ZONE 1 — Header
+   ============================================================ */
+
+.agent-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.agent-drawer__identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.agent-drawer__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.agent-drawer__names {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.agent-drawer__name {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+.agent-drawer__scope {
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.agent-drawer__scope::before {
+  content: '·';
+  margin-right: 8px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.agent-drawer__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* ---------- Status pill ---------- */
+
+.agent-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  flex-shrink: 0;
+}
+
+.agent-status-pill__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.agent-status-pill--working {
+  background: var(--info-muted);
+  color: var(--info);
+}
+.agent-status-pill--needs-you {
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+.agent-status-pill--review-ready {
+  background: var(--expr-intelligence-muted);
+  color: var(--expr-intelligence);
+}
+.agent-status-pill--done {
+  background: var(--success-muted);
+  color: var(--success);
+}
+.agent-status-pill--failed {
+  background: var(--error-muted);
+  color: var(--error);
+}
+.agent-status-pill--paused {
+  background: var(--surface-2);
+  color: var(--text-secondary);
+}
+
+/* ============================================================
+   ZONE 2 — Needs you (pinned above scroll)
+   ============================================================ */
+
+.agent-drawer__needs-you {
+  flex-shrink: 0;
+  padding: 12px 16px 4px;
+  background: var(--surface-0);
+}
+
+.agent-drawer__needs-you-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.agent-needs-you__card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--warning-soft-border);
+  background:
+    radial-gradient(
+      320px 160px at 100% 0%,
+      var(--warning-muted),
+      transparent 70%
+    ),
+    var(--surface-1);
+}
+
+.agent-needs-you__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agent-needs-you__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  background: var(--warning-muted);
+  color: var(--warning);
+}
+
+.agent-needs-you__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warning);
+}
+
+.agent-needs-you__prompt {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.agent-needs-you__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* ============================================================
+   ZONE 3 — Scroll region
+   ============================================================ */
+
+.agent-drawer__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  padding: 16px 16px 20px;
+}
+
+/* ---------- Shared zone label ---------- */
+
+.agent-drawer__zone-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+
+  margin-bottom: 8px;
+}
+
+.agent-drawer__zone-count {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text-secondary);
+
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+/* ---------- Summary ---------- */
+
+.agent-drawer__summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-summary__text {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.agent-summary__progress {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+
+.agent-summary__progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width var(--motion-card) var(--ease-standard);
+}
+
+/* ---------- Activity ---------- */
+
+.agent-drawer__activity {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-activity__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.agent-step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+}
+
+/* Connector — visible but subtle; fades toward the next step */
+.agent-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 22px;
+  bottom: -14px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    var(--border-subtle),
+    var(--border-subtle) 70%,
+    transparent
+  );
+}
+
+.agent-step__marker {
+  position: relative;
+  z-index: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.agent-step--running .agent-step__marker {
+  background: var(--info-muted);
+  border-color: transparent;
+  color: var(--info);
+  animation: agent-step-pulse 2s ease-in-out infinite;
+}
+
+.agent-step--done .agent-step__marker {
+  background: var(--success-muted);
+  border-color: transparent;
+  color: var(--success);
+}
+
+.agent-step--failed .agent-step__marker {
+  background: var(--error-muted);
+  border-color: transparent;
+  color: var(--error);
+}
+
+@keyframes agent-step-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--info-muted); }
+  50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+.agent-step__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.agent-step__label {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.agent-step__sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Source chip */
+.agent-source-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.agent-source-chip:hover {
+  background: var(--surface-3);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+/* Reasoning toggle */
+.agent-step__reasoning {
+  margin-top: 2px;
+}
+
+.agent-step__reasoning-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: color var(--motion-base) var(--ease-standard);
+}
+
+.agent-step__reasoning-toggle:hover {
+  color: var(--text-primary);
+}
+
+.agent-step__reasoning-body {
+  margin-top: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+/* ---------- Outputs ---------- */
+
+.agent-drawer__outputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.agent-outputs__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.agent-output-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  border: 1px solid var(--border-subtle);
+  transition:
+    border-color var(--motion-base) var(--ease-standard),
+    background var(--motion-base) var(--ease-standard);
+}
+
+.agent-output-card:hover {
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+.agent-output-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.agent-output-card__kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.agent-output-card__status {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.agent-output-card__status--draft        { color: var(--text-muted); }
+.agent-output-card__status--needs_review { color: var(--warning); }
+.agent-output-card__status--approved     { color: var(--success); }
+.agent-output-card__status--published    { color: var(--accent); }
+
+.agent-output-card__title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.agent-output-card__destination {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.agent-output-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.agent-output-card__review {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 0;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard);
+}
+
+.agent-output-card__review:hover {
+  background: var(--accent);
+  color: var(--surface-0);
+}
+
+/* ---------- Empty ---------- */
+
+.agent-drawer__empty {
+  padding: 40px 16px;
+  text-align: center;
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   ZONE 4 — Composer
+   ============================================================ */
+
+.agent-drawer__composer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 14px 14px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-0);
+}
+
+/* Chips scroll horizontally — never wrap */
+.agent-composer__chips {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 -14px;
+  padding: 0 14px;
+}
+
+.agent-composer__chips::-webkit-scrollbar { display: none; }
+
+.agent-composer__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-1);
+  font-family: var(--font-sans);
+  font-size: 10px;
+  font-weight: 550;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard),
+    background var(--motion-base) var(--ease-standard);
+}
+
+.agent-composer__chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.agent-composer__field {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 6px 6px 6px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  transition: border-color var(--motion-base) var(--ease-standard);
+}
+
+.agent-composer__field:focus-within {
+  border-color: var(--accent);
+}
+
+.agent-composer__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 24px;
+  max-height: 120px;
+  padding: 4px 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  line-height: 1.5;
+  color: var(--text-primary);
+  resize: none;
+}
+
+.agent-composer__input::placeholder {
+  color: var(--text-muted);
+}
+
+.agent-composer__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  border: 0;
+  background: var(--accent);
+  color: var(--surface-0);
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    transform var(--motion-fast) var(--ease-standard);
+}
+
+.agent-composer__send:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.agent-composer__send:disabled {
+  background: var(--surface-3);
+  color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* ============================================================
+   TRIGGER (in shell header)
+   ============================================================ */
+
+.agent-drawer-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--motion-base) var(--ease-standard),
+    color var(--motion-base) var(--ease-standard),
+    border-color var(--motion-base) var(--ease-standard);
+}
+
+.agent-drawer-trigger:hover {
+  background: var(--surface-2);
+  color: var(--text-primary);
+}
+
+.agent-drawer-trigger.is-open {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.agent-drawer-trigger__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--warning);
+  color: var(--surface-0);
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--surface-0);
+}
+
+/* ============================================================
+   Responsive — full-screen on mobile
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .agent-drawer,
+  .agent-drawer--standard,
+  .agent-drawer--expanded {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    border-left: 0;
+  }
+
+  .agent-drawer--peek {
+    top: auto;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-height: 200px;
+  }
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .agent-drawer,
+  .agent-step--running .agent-step__marker,
+  .agent-output-card,
+  .agent-composer__send {
+    animation: none !important;
+    transition: none !important;
+  }
+}
