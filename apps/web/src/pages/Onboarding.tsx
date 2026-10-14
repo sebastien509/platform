@@ -18,7 +18,10 @@ import {
   readPendingHandoff,
   clearPendingHandoff,
 } from '@/features/onboarding/handoff';
-import { claimHandoff, createIdeaFromHandoff } from '@/features/onboarding/claim';
+import { claimHandoff } from '@/features/onboarding/claim';
+import { pushIdeaToDb } from '@/lib/hooks/pushIdeaToDb';
+import { getIdeaAgent } from '@/features/idea-journey/agent';
+import { deriveIdeaTitle } from '@/features/ideas/deriveIdeaTitle';
 
 const STEPS = ['You', 'Role', 'Focus', 'Workspace'] as const;
 type StepId = (typeof STEPS)[number];
@@ -158,55 +161,118 @@ export default function OnboardingPage() {
 
         setSaving(false);
 
-        /* ── Handoff claim — priority over the default landing ──
-         * If the founder arrived from the landing page, the idea is
-         * waiting in the handoff. Claim it → creates the Idea row →
-         * drop them directly into the idea journey (capture stage). */
+        /* ── Handoff claim ──
+         * The founder arrived from the landing page with a handoff.
+         * The draft journey is sitting in localStorage under the
+         * handoff key. Now that we're authenticated and have a
+         * workspace, we:
+         *   1. Mark the handoff claimed (server)
+         *   2. Read the draft journey from localStorage
+         *   3. Run finalize (authenticated) to produce the record
+         *   4. Persist the idea via pushIdeaToDb (real schema)
+         *   5. Migrate the local journey to the new ideaId
+         *   6. Navigate to /ideas/:uuid — validate screen */
         const pendingHandoff = readPendingHandoff();
         if (pendingHandoff) {
           try {
             const claimed = await claimHandoff(pendingHandoff);
 
-            let ideaId = claimed.ideaId ?? null;
+            const store = useJourneyStore.getState();
+            const draftJourney = store.journeys[pendingHandoff];
 
-            /* Fallback: if the edge function couldn't persist the
-             * idea (RLS, table missing), create it client-side. */
-            if (!ideaId && claimed.idea?.content) {
-              ideaId = await createIdeaFromHandoff(
-                claimed.workspaceId,
-                claimed.idea.content,
-              );
-            }
-
-            /* ── Migrate the local journey ──
-             * The draft journey wrote to journeys['hd_xxx'] in
-             * localStorage. Now that the idea exists in the DB,
-             * move the state to journeys['idea_yyy'] so the
-             * authenticated journey page picks it up. */
-            if (ideaId) {
-              const store = useJourneyStore.getState();
-              const draftJourney = store.journeys[pendingHandoff];
-
-              if (draftJourney) {
-                store.setJourney(ideaId, {
-                  ...draftJourney,
-                  ideaId,
+            if (draftJourney) {
+              /* Run finalize authenticated — produces the record */
+              let finalizedData: { title?: string; overview?: string; structured?: any } | null = null;
+              try {
+                finalizedData = await getIdeaAgent().finalize({
+                  structured: draftJourney.structured,
+                  synthesisOverview: draftJourney.synthesisOverview,
+                  research: draftJourney.researchEntries ?? [],
+                  rawCapture: draftJourney.rawCapture,
                 });
-                console.log('[onboarding] journey migrated', {
-                  from: pendingHandoff,
-                  to: ideaId,
-                });
+              } catch (finalizeErr) {
+                console.warn('[onboarding] finalize failed, using draft state', finalizeErr);
               }
 
+              const derivedTitle =
+                finalizedData?.title ??
+                deriveIdeaTitle(draftJourney.structured, draftJourney.rawCapture);
+              const finalStructured = finalizedData?.structured ?? draftJourney.structured;
+              const finalOverview =
+                finalizedData?.overview ?? draftJourney.synthesisOverview ?? null;
+
+              const structuredWithResearch = {
+                ...(finalStructured as unknown as Record<string, unknown>),
+                researchEntries: draftJourney.researchEntries ?? [],
+                researchRun: draftJourney.researchRun ?? null,
+                synthesisProposals: draftJourney.synthesisProposals ?? [],
+                synthesisOverview: draftJourney.synthesisOverview ?? null,
+                reviewNotes: draftJourney.reviewNotes ?? {},
+                overview: finalOverview,
+              };
+
+              const created = await pushIdeaToDb({
+                title: derivedTitle,
+                structured: structuredWithResearch,
+                capture_payload: {
+                  exchanges: draftJourney.capture?.exchanges ?? [],
+                  rawCapture: draftJourney.rawCapture ?? claimed.content ?? '',
+                },
+                clean_payload: {
+                  fields: draftJourney.clean?.fields ?? {},
+                },
+                validation: {
+                  decision: null,
+                  note: null,
+                  decidedAt: null,
+                  createdVentureId: null,
+                },
+              });
+
+              /* Migrate the local journey to the new ideaId key */
+              store.setJourney(created.id, {
+                ...draftJourney,
+                ideaId: created.id,
+                serverId: created.id,
+              } as any);
+
+              console.log('[onboarding] journey migrated', {
+                from: pendingHandoff,
+                to: created.id,
+              });
+
               clearPendingHandoff();
-              navigate(`/ideas/${ideaId}`, { replace: true });
+              navigate(`/ideas/${created.id}`, { replace: true });
+              return;
+            }
+
+            /* Handoff claimed but no draft journey found in
+             * localStorage. Fall back to a fresh idea seed with the
+             * raw content — the founder starts at capture. */
+            if (claimed.content) {
+              const created = await pushIdeaToDb({
+                title: claimed.content.slice(0, 80),
+                structured: {},
+                capture_payload: { exchanges: [], rawCapture: claimed.content },
+                clean_payload: { fields: {} },
+                validation: { decision: null, note: null, decidedAt: null, createdVentureId: null },
+                stage: 'capture',
+              });
+              clearPendingHandoff();
+              navigate(`/ideas/${created.id}`, { replace: true });
               return;
             }
 
             clearPendingHandoff();
           } catch (e) {
             console.warn('[onboarding] handoff claim failed:', e);
-            /* fall through to default behaviour */
+            setSaving(false);
+            setError(
+              e instanceof Error
+                ? `Could not save your idea — ${e.message}`
+                : 'Could not save your idea. Try again.',
+            );
+            return;
           }
         }
 

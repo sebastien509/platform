@@ -166,7 +166,7 @@ async function handleClaim(userId: string, handoffId: string) {
   if (fetchErr) return { error: 'lookup_failed', message: fetchErr.message };
   if (!handoff) return { error: 'not_found', message: 'Handoff not found.' };
 
-  // Idempotency — if already claimed by this user, return the same result
+  // Idempotency — return the same content on re-claim
   if (handoff.status === 'claimed') {
     if (handoff.claimed_by_user_id !== userId) {
       return {
@@ -176,8 +176,7 @@ async function handleClaim(userId: string, handoffId: string) {
     }
     return {
       handoffId: handoff.id,
-      workspaceId: handoff.claimed_workspace_id,
-      ideaId: handoff.claimed_idea_id,
+      content: (handoff.payload as any)?.content ?? '',
       status: 'claimed',
     };
   }
@@ -190,7 +189,7 @@ async function handleClaim(userId: string, handoffId: string) {
     return { error: 'expired', message: 'This handoff has expired.' };
   }
 
-  // Resolve the founder's workspace — the earliest-joined membership
+  // Resolve the founder's workspace (for the record)
   const { data: membership } = await db
     .from('memberships')
     .select('workspace_id, role')
@@ -199,75 +198,30 @@ async function handleClaim(userId: string, handoffId: string) {
     .limit(1)
     .maybeSingle();
 
-  if (!membership) {
-    return {
-      error: 'no_workspace',
-      message: 'No workspace found for this founder.',
-    };
-  }
-
-  const workspaceId = membership.workspace_id;
-
-  // Create the Idea — writes into the ideas table
-  // (adjust columns to match your schema if different)
-  const ideaId = crypto.randomUUID();
-  const { error: ideaErr } = await db.from('ideas').insert({
-    id: ideaId,
-    user_id: userId,
-    workspace_id: workspaceId,
-    raw_input: handoff.payload?.content ?? '',
-    status: 'captured',
-    source: 'landing',
-    source_handoff_id: handoff.id,
-  });
-
-  if (ideaErr) {
-    // Idea table might not exist yet — return the payload so the
-    // client can create it themselves.
-    console.warn('[handoffs] idea insert failed:', ideaErr.message);
-    await db
-      .from('handoffs')
-      .update({
-        status: 'claimed',
-        claimed_by_user_id: userId,
-        claimed_workspace_id: workspaceId,
-        claimed_at: new Date().toISOString(),
-      })
-      .eq('id', handoffId);
-
-    return {
-      handoffId: handoff.id,
-      workspaceId,
-      idea: handoff.payload,
-      status: 'claimed',
-      warning: 'idea_not_persisted',
-      message: ideaErr.message,
-    };
-  }
-
-  // Mark the handoff claimed
+  /* Mark the handoff claimed. The CLIENT persists the idea row
+   * via pushIdeaToDb — same path as the normal graduation flow.
+   * This keeps the schema alignment in one place (usePushIdea /
+   * pushIdeaToDb) rather than duplicating it in the edge function. */
   await db
     .from('handoffs')
     .update({
       status: 'claimed',
       claimed_by_user_id: userId,
-      claimed_workspace_id: workspaceId,
-      claimed_idea_id: ideaId,
+      claimed_workspace_id: membership?.workspace_id ?? null,
       claimed_at: new Date().toISOString(),
     })
     .eq('id', handoffId);
 
-  console.log('[handoffs] claimed', {
+  console.log('[handoffs] claimed (client will persist idea)', {
     handoffId,
-    ideaId,
-    workspaceId,
     userId,
+    workspaceId: membership?.workspace_id,
   });
 
   return {
     handoffId: handoff.id,
-    workspaceId,
-    ideaId,
+    content: (handoff.payload as any)?.content ?? '',
+    workspaceId: membership?.workspace_id ?? null,
     status: 'claimed',
   };
 }

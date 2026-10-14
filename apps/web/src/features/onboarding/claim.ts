@@ -4,13 +4,11 @@ const HANDOFFS_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/handoffs
 
 export interface ClaimResult {
   handoffId: string;
-  workspaceId: string;
+  workspaceId?: string | null;
   ideaId?: string;
   status: 'claimed';
-  /** Present when the ideas table couldn't be written — the client
-   *  should create the idea itself and redirect. */
-  idea?: { content?: string };
-  warning?: string;
+  /** The founder's raw idea text. Present after claim. */
+  content?: string;
   error?: string;
   message?: string;
 }

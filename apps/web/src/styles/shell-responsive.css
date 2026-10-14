@@ -1,0 +1,357 @@
+
+/* ============================================================
+   IV — Shell Responsive
+   Global navigation, mobile drawer, content canvas,
+   venture shell, compact headers and container queries.
+   ============================================================ */
+
+   .iv-nav-shell {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  .iv-nav-shell__workspace {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+  }
+  
+  .iv-nav-shell__main {
+    position: relative;
+    flex: 1 1 0%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+  }
+  
+  /* Global sidebar */
+  
+  .iv-primary-sidebar {
+    position: relative;
+    z-index: 30;
+    min-width: 0;
+    min-height: 0;
+    max-width: 240px;
+  }
+  
+  .iv-primary-sidebar__brand {
+    position: relative;
+    min-width: 0;
+  }
+  
+  .iv-primary-sidebar__mobile-close {
+    display: none;
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 10px;
+    background: var(--surface-2);
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+  
+  /* Mobile controls are hidden on desktop. */
+  
+  .iv-nav-shell__mobile-bar,
+  .iv-nav-shell__backdrop {
+    display: none;
+  }
+  
+  /* ContentGrid: preserve decorative pattern, fix layout */
+  
+  .content-grid {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  
+  .content-grid__pattern {
+    pointer-events: none;
+  }
+  
+  .content-grid__content {
+    position: relative;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
+  
+  .content-grid--fill {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+  }
+  
+  .content-grid--fill > .content-grid__content {
+    display: flex;
+    flex: 1 1 0%;
+    flex-direction: column;
+    min-height: 0;
+  }
+  
+  .content-grid--fill > .content-grid__content > * {
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+  }
+  
+  /* Venture nested shell */
+  
+  .venture-shell__scroll {
+    flex: 1 1 0%;
+    min-width: 0;
+    min-height: 0;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: clip;
+    overscroll-behavior-y: contain;
+    container-type: inline-size;
+  }
+  
+  .venture-shell__content,
+  .venture-page,
+  .venture-page__body,
+  .venture-page-stack,
+  .venture-sections,
+  .venture-section-slot {
+    min-width: 0;
+    max-width: 100%;
+  }
+  
+  /* Tighter venture page top rhythm */
+  
+  .venture-page {
+    gap: 14px;
+    padding-top: 16px;
+  }
+  
+  .venture-page__header {
+    gap: 5px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .venture-page__lede {
+    margin: 0;
+  }
+  
+  .venture-page__body {
+    gap: 16px;
+  }
+  
+  .venture-page-stack {
+    gap: 20px;
+  }
+  
+  .venture-sections {
+    gap: 20px;
+    padding-top: 0;
+  }
+  
+  /* Container-aware layout */
+  
+  @container (max-width: 900px) {
+    .venture-section-slot[data-width="wide"],
+    .venture-section-slot[data-width="half"] {
+      grid-column: span 12;
+    }
+  
+    .venture-section-slot[data-width="compact"] {
+      grid-column: span 6;
+    }
+  
+    .venture-bento > .span-7,
+    .venture-bento > .span-8,
+    .venture-bento > .span-9,
+    .venture-bento__hero {
+      grid-column: span 12;
+    }
+  }
+  
+  @container (max-width: 650px) {
+    .venture-section-slot[data-width] {
+      grid-column: span 12;
+    }
+  
+    .venture-bento {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  
+    .venture-bento > * {
+      grid-column: 1 / -1 !important;
+    }
+  
+    .venture-page {
+      padding-inline: 14px;
+    }
+  
+    .venture-page__title {
+      font-size: clamp(23px, 5vw, 30px);
+    }
+  
+    .venture-sections {
+      gap: 16px;
+    }
+  }
+  
+  /* ============================================================
+     Mobile navigation
+     ============================================================ */
+  
+  @media (max-width: 767px) {
+    .iv-nav-shell__workspace {
+      width: 100%;
+    }
+  
+    .iv-primary-sidebar {
+      position: fixed !important;
+      top: 0;
+      bottom: 0;
+      left: 0;
+  
+      z-index: 81;
+      width: min(280px, 84vw) !important;
+      max-width: 84vw;
+      height: 100dvh !important;
+  
+      background: var(--surface-1);
+      box-shadow: 14px 0 40px rgb(32 39 54 / 0.12);
+  
+      transform: translateX(-105%);
+      visibility: hidden;
+      pointer-events: none;
+  
+      transition:
+        transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 250ms;
+    }
+  
+    .iv-primary-sidebar.is-open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+  
+    .iv-primary-sidebar__mobile-close {
+      display: inline-flex;
+    }
+  
+    .iv-nav-shell__backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: rgb(32 39 54 / 0.30);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      cursor: pointer;
+    }
+  
+    .iv-nav-shell__mobile-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+  
+      min-width: 0;
+      min-height: 48px;
+      padding: 0 14px;
+  
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--surface-1);
+    }
+  
+    .iv-nav-shell__menu-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+  
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+      background: var(--surface-1);
+  
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+  
+    .iv-nav-shell__mobile-logo {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+      object-fit: contain;
+    }
+  
+    .iv-nav-shell__mobile-label {
+      min-width: 0;
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 650;
+      color: var(--text-primary);
+    }
+  
+    .iv-nav-shell__main {
+      width: 100%;
+    }
+  
+    .venture-page {
+      padding-top: 12px;
+      padding-inline: 14px;
+      gap: 14px;
+    }
+  
+    .venture-page__header {
+      gap: 5px;
+    }
+  
+    .venture-page__title {
+      font-size: 25px;
+    }
+  
+    .venture-page__actions {
+      gap: 8px;
+      margin-top: 6px;
+    }
+  
+    .venture-page__body {
+      gap: 14px;
+    }
+  
+    .page-shell {
+      width: 100%;
+      min-width: 0;
+      padding-inline: 16px;
+    }
+  
+    .page-header {
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-primary-sidebar {
+      transition: none !important;
+    }
+  }
+  
