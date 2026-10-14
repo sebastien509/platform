@@ -13,6 +13,10 @@ import type { CaptureExchange, CaptureState, CaptureSignal } from '@/lib/types';
 interface CaptureStageProps {
   initialState: CaptureState;
   isRevisit?: boolean;
+  /** Optional seed — the founder's raw idea (from the landing handoff).
+   *  When provided, it's passed to the agent as initial context AND
+   *  pre-filled in the first answer input. */
+  seedCapture?: string;
   onComplete: (state: CaptureState) => void;
   onChange?: (state: CaptureState) => void;
   onAdvance?: () => void;
@@ -23,6 +27,7 @@ const MAX_FOLLOW_UPS = 5;
 export function CaptureStage({
   initialState,
   isRevisit = false,
+  seedCapture,
   onComplete,
   onChange,
   onAdvance,
@@ -60,7 +65,7 @@ export function CaptureStage({
     (async () => {
       try {
         const out = await getIdeaAgent().captureNext({
-          rawCapture: '',
+          rawCapture: seedCapture?.trim() ?? '',
           exchanges: [],
           covered: [],
           followUpsRemaining: MAX_FOLLOW_UPS,
@@ -280,7 +285,9 @@ export function CaptureStage({
     ? isRevisitComplete
       ? ''
       : state.exchanges[currentStepIndex]?.founderAnswer ?? ''
-    : '';
+    : state.exchanges.length === 0
+      ? seedCapture ?? ''
+      : '';
 
   return (
     <IdeaStage>

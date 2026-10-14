@@ -265,7 +265,8 @@ export function IdeaJourney({ journey, onChange }: IdeaJourneyProps) {
           >
             {currentStage === 'capture' && (
               <CaptureStage
-                initialState={journey.capture}
+          seedCapture={journey.rawCapture}
+          initialState={journey.capture}
                 isRevisit={isRevisitCapture}
                 onChange={(s) => commit((latest) => ({ ...latest, capture: s }))}
                 onComplete={handleCaptureComplete as any}
