@@ -1,0 +1,89 @@
+
+/* ============================================================
+   IV — NAVBAR & PAGE SPACING
+   Warm Canvas × Electric Intelligence
+   ============================================================ */
+
+/* Shell: no artificial separation between header and main */
+
+.iv-nav-shell__workspace {
+    min-width: 0;
+    min-height: 0;
+    row-gap: 0;
+  }
+  
+  .iv-nav-shell__workspace > .iv-topbar {
+    flex-shrink: 0;
+    margin: 0;
+  }
+  
+  .iv-nav-shell__main {
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .iv-nav-shell__main > .content-grid {
+    margin: 0;
+  }
+  
+  .iv-nav-shell__main .content-grid__content {
+    margin-top: 0;
+  }
+  
+  /* Page interiors: deliberate top breathing room */
+  
+  .iv-nav-shell__main .page-shell {
+    padding-top: 36px;
+  }
+  
+  .iv-nav-shell__main .page-shell > :first-child {
+    margin-top: 0;
+  }
+  
+  /* Venture operating pages */
+  
+  .venture-shell__scroll {
+    margin-top: 0;
+  }
+  
+  .venture-shell__scroll .venture-page {
+    padding-top: 32px;
+  }
+  
+  /* Page titles and subtitles */
+  
+  .iv-nav-shell__main .page-header {
+    margin-top: 0;
+    padding-top: 0;
+  }
+  
+  .iv-nav-shell__main .page-header__description {
+    margin-top: 7px;
+  }
+  
+  /* Tablet */
+  
+  @media (max-width: 1024px) {
+    .iv-nav-shell__main .page-shell {
+      padding-top: 28px;
+    }
+  
+    .venture-shell__scroll .venture-page {
+      padding-top: 26px;
+    }
+  }
+  
+  /* Mobile */
+  
+  @media (max-width: 767px) {
+    .iv-nav-shell__main .page-shell {
+      padding-top: 24px;
+    }
+  
+    .venture-shell__scroll .venture-page {
+      padding-top: 22px;
+    }
+  }
+  

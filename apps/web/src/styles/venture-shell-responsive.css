@@ -1,0 +1,464 @@
+
+/* ============================================================
+   IV — VENTURE SHELL RESPONSIVE
+   Batch 1B
+
+   Applies to:
+   - VentureSidebar
+   - VentureShell
+   - VentureHeader
+   - Existing Topbar
+
+   No data, API, routing or OPS behavior changes.
+   ============================================================ */
+
+   .iv-venture-shell {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+  }
+  
+  .iv-venture-shell__main {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 0;
+  }
+  
+  /* ============================================================
+     VENTURE SIDEBAR — DESKTOP
+     ============================================================ */
+  
+  .iv-venture-sidebar {
+    position: relative;
+    z-index: 20;
+    min-width: 0;
+    min-height: 0;
+    max-width: 176px;
+  }
+  
+  .iv-venture-sidebar__mobile-header {
+    display: none;
+  }
+  
+  .iv-venture-sidebar__group-heading {
+    display: block;
+  }
+  
+  .iv-venture-sidebar__collapsed-only {
+    display: none;
+  }
+  
+  .iv-venture-sidebar__link {
+    min-width: 0;
+  }
+  
+  .iv-venture-sidebar__active-indicator {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 2px;
+    height: 16px;
+    border-radius: 999px;
+    transform: translateY(-50%);
+  }
+  
+  .iv-venture-sidebar[data-collapsed="true"]
+  .iv-venture-sidebar__active-indicator {
+    display: none;
+  }
+  
+  .iv-venture-sidebar__toggle {
+    display: flex;
+  }
+  
+  .iv-venture-shell__mobile-nav,
+  .iv-venture-shell__backdrop {
+    display: none;
+  }
+  
+  /* ============================================================
+     VENTURE HEADER — RESPONSIVE CONTAINER
+     ============================================================ */
+  
+  .iv-venture-header {
+    min-width: 0;
+    background: var(--surface-1);
+    container-type: inline-size;
+  }
+  
+  .iv-venture-header__inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  
+    width: 100%;
+    min-width: 0;
+    min-height: 56px;
+    padding: 8px 24px;
+  }
+  
+  .iv-venture-header__identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  
+  .iv-venture-header__name {
+    min-width: 0;
+    margin: 0;
+  
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+  }
+  
+  .iv-venture-header__status {
+    flex-shrink: 0;
+  }
+  
+  .iv-venture-header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+  
+    flex: 0 0 auto;
+    min-width: 0;
+  
+    font-family: var(--font-sans);
+    font-size: 12px;
+  }
+  
+  .iv-venture-header__run-dock,
+  .iv-venture-header__agent-trigger {
+    min-width: 0;
+  }
+  
+  .iv-venture-header__separator {
+    width: 1px;
+    height: 20px;
+    flex-shrink: 0;
+    background: var(--border-subtle);
+  }
+  
+  .iv-venture-header__health {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    white-space: nowrap;
+  }
+  
+  .iv-venture-header__health-label {
+    color: var(--text-muted);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  
+  .iv-venture-header__overview {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  /* Adapt when the available header is narrower,
+     regardless of viewport width. */
+  
+  @container (max-width: 900px) {
+    .iv-venture-header__inner {
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      padding: 10px 18px;
+    }
+  
+    .iv-venture-header__identity {
+      flex-basis: 100%;
+    }
+  
+    .iv-venture-header__actions {
+      width: 100%;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+  
+    .iv-venture-header__name {
+      font-size: 16px;
+    }
+  }
+  
+  @container (max-width: 560px) {
+    .iv-venture-header__inner {
+      padding: 10px 14px;
+    }
+  
+    .iv-venture-header__name {
+      font-size: 15px;
+    }
+  
+    .iv-venture-header__actions {
+      gap: 8px 12px;
+    }
+  
+    .iv-venture-header__separator {
+      display: none;
+    }
+  
+    .iv-venture-header__health-label {
+      display: none;
+    }
+  
+    .iv-venture-header__overview {
+      padding: 6px 9px;
+    }
+  }
+  
+  /* ============================================================
+     TOPBAR — PRESERVE COMPONENT, CHANGE LAYOUT ONLY
+     ============================================================ */
+  
+  .iv-nav-shell__workspace > header {
+    min-width: 0;
+    max-width: 100%;
+  }
+  
+  .iv-nav-shell__workspace > header > div {
+    min-width: 0;
+  }
+  
+  /* Avoid text labels dictating overall shell width. */
+  
+  .iv-nav-shell__workspace > header button,
+  .iv-nav-shell__workspace > header span {
+    min-width: 0;
+  }
+  
+  /* ============================================================
+     VENTURE MOBILE DRAWER
+     ============================================================ */
+  
+  @media (max-width: 767px) {
+    .iv-venture-sidebar {
+      position: fixed !important;
+  
+      top: 0;
+      bottom: 0;
+      left: 0;
+  
+      z-index: 91;
+  
+      width: min(280px, 84vw) !important;
+      max-width: 84vw;
+      height: 100dvh !important;
+  
+      background: var(--surface-1);
+      box-shadow: 14px 0 40px rgb(32 39 54 / 0.14);
+  
+      transform: translateX(-105%);
+      visibility: hidden;
+      pointer-events: none;
+  
+      transition:
+        transform 250ms cubic-bezier(0.16, 1, 0.3, 1),
+        visibility 250ms;
+    }
+  
+    .iv-venture-sidebar.is-mobile-open {
+      transform: translateX(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+  
+    .iv-venture-sidebar__mobile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  
+      flex-shrink: 0;
+      gap: 12px;
+  
+      min-height: 56px;
+      padding: 10px 16px;
+  
+      border-bottom: 1px solid var(--border-subtle);
+  
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+  
+    .iv-venture-sidebar__close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+  
+      width: 34px;
+      height: 34px;
+  
+      border: 1px solid var(--border-subtle);
+      border-radius: 9px;
+  
+      background: var(--surface-1);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+  
+    /* Show labels in the mobile drawer even if
+       the desktop sidebar store says collapsed. */
+  
+    .iv-venture-sidebar__collapsed-only {
+      display: block;
+    }
+  
+    .iv-venture-sidebar .iv-venture-sidebar__link {
+      width: 100%;
+      min-height: 36px;
+      justify-content: flex-start;
+  
+      padding: 8px 12px;
+      margin-inline: 0;
+  
+      opacity: 1;
+    }
+  
+    .iv-venture-sidebar__label {
+      display: inline;
+    }
+  
+    .iv-venture-sidebar__toggle {
+      display: none;
+    }
+  
+    .iv-venture-sidebar__active-indicator {
+      display: block !important;
+    }
+  
+    .iv-venture-shell__backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+  
+      display: block;
+      width: 100%;
+      height: 100%;
+  
+      border: none;
+      background: rgb(32 39 54 / 0.3);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+  
+      cursor: pointer;
+    }
+  
+    .iv-venture-shell__mobile-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+  
+      flex-shrink: 0;
+      min-height: 42px;
+      padding: 5px 14px;
+  
+      border-bottom: 1px solid var(--border-subtle);
+      background: var(--surface-1);
+    }
+  
+    .iv-venture-shell__mobile-nav-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+  
+      padding: 5px 9px;
+  
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+  
+      background: var(--surface-1);
+      color: var(--text-primary);
+  
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 650;
+  
+      cursor: pointer;
+    }
+  
+    .iv-venture-shell__mobile-nav-icon {
+      color: var(--text-muted);
+    }
+  
+    .iv-venture-shell__main {
+      width: 100%;
+    }
+  
+    /* Compact existing global Topbar,
+       retaining all its interactive controls. */
+  
+    .iv-nav-shell__workspace > header {
+      gap: 8px;
+      height: 48px;
+      padding-inline: 10px;
+    }
+  
+    .iv-nav-shell__workspace > header > div:first-child {
+      flex: 0 1 auto;
+      min-width: 0;
+      max-width: 42%;
+    }
+  
+    .iv-nav-shell__workspace > header > div:first-child button {
+      max-width: 100%;
+      gap: 5px;
+      padding-inline: 6px;
+    }
+  
+    .iv-nav-shell__workspace > header > div:first-child button span {
+      max-width: 80px;
+    }
+  
+    .iv-nav-shell__workspace > header > div:nth-child(2) {
+      flex: 1 1 0%;
+      min-width: 34px;
+    }
+  
+    .iv-nav-shell__workspace > header > div:nth-child(2) > div {
+      max-width: 100%;
+    }
+  
+    .iv-nav-shell__workspace > header > div:nth-child(2) button {
+      justify-content: center;
+      padding-inline: 8px;
+    }
+  
+    /* Notifications + account remain accessible. */
+  
+    .iv-nav-shell__workspace > header > div:nth-child(3) {
+      flex-shrink: 0;
+    }
+  
+    .iv-nav-shell__workspace > header > div:nth-child(3)
+    > div:last-child button {
+      padding-right: 4px;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-venture-sidebar {
+      transition: none !important;
+    }
+  }
+  

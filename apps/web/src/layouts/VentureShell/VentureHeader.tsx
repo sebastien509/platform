@@ -1,4 +1,7 @@
+
+import type { CSSProperties } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { useUIStore } from '@/lib/stores/uiStore';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils/cn';
@@ -35,21 +38,19 @@ const STATUS_LABELS: Record<string, string> = {
   archived: 'Archived',
 };
 
-/**
- * VentureHeader — the venture's identity strip.
- *
- * Just the venture name, status pill, run dock, agent trigger,
- * health %, and view overview button. Navigation between venture
- * pages lives in VentureSidebar, not here — one nav surface.
- */
-export function VentureHeader({ venture }: VentureHeaderProps) {
+export function VentureHeader({
+  venture,
+}: VentureHeaderProps) {
   const navigate = useNavigate();
-  const { pendingCheckpointCount } = useUIStore();
+
+  const pendingCheckpointCount = useUIStore(
+    (s) => s.pendingCheckpointCount
+  );
 
   if (!venture) {
     return (
-      <header className="shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-1)]">
-        <div className="flex h-14 items-center px-6 gap-6">
+      <header className="iv-venture-header iv-venture-header--loading shrink-0 border-b border-[var(--border-subtle)] bg-[var(--surface-1)]">
+        <div className="iv-venture-header__inner">
           <div className="h-4 w-32 animate-pulse rounded bg-[var(--surface-2)]" />
           <div className="ml-auto h-4 w-24 animate-pulse rounded bg-[var(--surface-2)]" />
         </div>
@@ -58,62 +59,104 @@ export function VentureHeader({ venture }: VentureHeaderProps) {
   }
 
   const healthValues = Object.values(
-    (venture.health as unknown as Record<string, number>) || {}
-  ).filter((v): v is number => typeof v === 'number');
+    venture.health || {}
+  ).filter(
+    (value): value is number =>
+      typeof value === 'number'
+  );
+
   const avgHealth = healthValues.length
-    ? Math.round(healthValues.reduce((a, b) => a + b, 0) / healthValues.length)
+    ? Math.round(
+        healthValues.reduce(
+          (sum, value) => sum + value,
+          0
+        ) / healthValues.length
+      )
     : 0;
+
   const healthColor =
     avgHealth > 70
       ? 'text-[var(--success)]'
       : avgHealth > 40
-      ? 'text-[var(--warning)]'
-      : 'text-[var(--error)]';
+        ? 'text-[var(--warning)]'
+        : 'text-[var(--error)]';
 
-  const statusKey = (venture.status || '').toLowerCase();
+  const statusKey = (
+    venture.status || ''
+  ).toLowerCase();
+
   const statusClass =
-    STATUS_STYLES[statusKey] || 'bg-[var(--surface-2)] text-[var(--text-muted)]';
-  const statusLabel = STATUS_LABELS[statusKey] || venture.status || 'Active';
+    STATUS_STYLES[statusKey] ||
+    'bg-[var(--surface-2)] text-[var(--text-muted)]';
+
+  const statusLabel =
+    STATUS_LABELS[statusKey] ||
+    venture.status ||
+    'Active';
 
   const hue = placeholderHue(
-    (venture as any).ideaId ?? venture.id
+    (venture as HeaderVenture & { ideaId?: string }).ideaId ??
+      venture.id
   );
 
   return (
     <header
-      className="venture-header--tinted shrink-0 border-b border-[var(--border-subtle)]"
-      style={{ '--venture-hue': String(hue) } as React.CSSProperties}
+      className="iv-venture-header venture-header--tinted shrink-0 border-b border-[var(--border-subtle)]"
+      style={
+        {
+          '--venture-hue': String(hue),
+        } as CSSProperties
+      }
     >
-      <div className="flex h-14 items-center px-6 gap-6">
-        <div className="flex items-center gap-3 min-w-0">
-          <h1 className="text-lg font-semibold text-[var(--text-primary)] truncate">
+      <div className="iv-venture-header__inner">
+        <div className="iv-venture-header__identity">
+          <h1 className="iv-venture-header__name">
             {venture.name || 'Untitled venture'}
           </h1>
-          <Badge className={cn('capitalize text-2xs', statusClass)}>
+
+          <Badge
+            className={cn(
+              'iv-venture-header__status capitalize text-2xs',
+              statusClass
+            )}
+          >
             {statusLabel}
           </Badge>
         </div>
 
-        <div className="flex items-center gap-3 ml-auto text-sm shrink-0">
-          <RunDock />
+        <div className="iv-venture-header__actions">
+          <div className="iv-venture-header__run-dock">
+            <RunDock />
+          </div>
 
-          <AgentDrawerTrigger />
+          <div className="iv-venture-header__agent-trigger">
+            <AgentDrawerTrigger />
+          </div>
 
-          <span className="h-5 w-px bg-[var(--border-subtle)]" aria-hidden />
+          <span
+            className="iv-venture-header__separator"
+            aria-hidden="true"
+          />
 
           {healthValues.length > 0 && (
-            <div className="flex items-center gap-2">
-              <span className="text-2xs uppercase tracking-wider text-[var(--text-muted)]">
+            <div className="iv-venture-header__health">
+              <span className="iv-venture-header__health-label">
                 Health
               </span>
-              <span className={cn('font-semibold tabular-nums', healthColor)}>
+
+              <span
+                className={cn(
+                  'font-semibold tabular-nums',
+                  healthColor
+                )}
+              >
                 {avgHealth}%
               </span>
             </div>
           )}
 
           {pendingCheckpointCount > 0 && (
-            <Badge className="animate-pulse motion-reduce:animate-none bg-[var(--warning-muted)] text-[var(--warning)] text-2xs">
+            <Badge className="iv-venture-header__checkpoint animate-pulse motion-reduce:animate-none bg-[var(--warning-muted)] text-[var(--warning)] text-2xs">
               {pendingCheckpointCount} checkpoint
               {pendingCheckpointCount > 1 ? 's' : ''}
             </Badge>
@@ -121,11 +164,15 @@ export function VentureHeader({ venture }: VentureHeaderProps) {
 
           <button
             type="button"
-            onClick={() => navigate(`/ventures/${venture.id}`)}
+            onClick={() =>
+              navigate(`/ventures/${venture.id}`)
+            }
             className={cn(
+              'iv-venture-header__overview',
               'rounded-lg px-3 py-1 text-2xs font-medium',
               'bg-[var(--accent-muted)] text-[var(--accent)]',
-              'hover:bg-[var(--accent-muted)]/80 transition-colors'
+              'hover:bg-[var(--accent-muted)]/80',
+              'transition-colors'
             )}
           >
             View Overview

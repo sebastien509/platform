@@ -10,50 +10,71 @@
    PAGE CHROME
    ============================================================ */
 
-.page-shell {
-  padding-block: 32px 72px;
-  padding-inline: clamp(24px, 3.2vw, 56px);
-}
-
-.page-header {
-  padding-top: 4px;
-  padding-bottom: 20px;
-  margin-bottom: 4px;
-}
-
-.page-header__title {
-  font-family: var(--font-display);
-  font-size: clamp(26px, 2.8vw, 34px);
-  font-weight: 700;
-  line-height: 1.06;
-  letter-spacing: -0.035em;
-  color: var(--text-primary);
-}
-
-.page-header__description {
-  margin-top: 10px;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--text-secondary);
-  max-width: 60ch;
-}
-
-@media (min-width: 1280px) {
-  .page-shell {
-    padding-block: 40px 88px;
-  }
-}
-
-@media (max-width: 900px) {
-  .page-shell {
-    padding-block: 24px 56px;
-    padding-inline: 20px;
-  }
-}
-
 /* ============================================================
-   SECTIONS — one rhythm, no orphan rules
+   PAGE CHROME — UNIFIED SPACING
    ============================================================ */
+
+   .page-shell {
+    padding-block: 36px 72px;
+    padding-inline: clamp(24px, 3.2vw, 56px);
+  }
+  
+  /* PageContainer used by global pages */
+  .page-container {
+    padding-top: 36px;
+  }
+  
+  /* Do not combine automatic sibling margins with page gaps */
+  .page-shell > * + * {
+    margin-top: 0;
+  }
+  
+  .page-header {
+    padding-top: 0;
+    padding-bottom: 12px;
+    margin-bottom: 0;
+  }
+  
+  .page-header__title {
+    font-family: var(--font-display);
+    font-size: clamp(26px, 2.8vw, 34px);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    color: var(--text-primary);
+  }
+  
+  .page-header__description {
+    margin-top: 7px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+    max-width: 60ch;
+  }
+  
+  @media (min-width: 1280px) {
+    .page-shell {
+      padding-block: 40px 88px;
+    }
+  
+    .page-container {
+      padding-top: 40px;
+    }
+  }
+  
+  @media (max-width: 900px) {
+    .page-shell {
+      padding-block: 24px 56px;
+      padding-inline: 20px;
+    }
+  
+    .page-container {
+      padding-top: 24px;
+    }
+  }
+  /* =====================================================
+   SECTIONS — one rhythm, no orphan rules
+   ============================================================ */ */
 
 .venture-sections {
   gap: 28px 20px;

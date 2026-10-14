@@ -1,6 +1,11 @@
+
 import {
-  NavLink,
-  useParams } from 'react-router-dom';
+  useEffect,
+  useRef,
+} from 'react';
+
+import { NavLink, useParams } from 'react-router-dom';
+
 import {
   LayoutDashboard,
   Target,
@@ -17,7 +22,9 @@ import {
   Plug,
   ChevronLeft,
   ChevronRight,
+  X,
 } from 'lucide-react';
+
 import { useUIStore } from '@/lib/stores/uiStore';
 import { cn } from '@/lib/utils/cn';
 import type { LucideIcon } from 'lucide-react';
@@ -27,7 +34,8 @@ const COLLAPSED_ICON_OPACITY = 'opacity-60';
 interface VentureNavItem {
   label: string;
   segment: string;
-  icon: LucideIcon;  soon?: boolean;
+  icon: LucideIcon;
+  soon?: boolean;
 }
 
 interface VentureNavGroup {
@@ -35,80 +43,247 @@ interface VentureNavGroup {
   items: VentureNavItem[];
 }
 
+interface VentureSidebarProps {
+  mobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
 const VENTURE_NAV: VentureNavGroup[] = [
   {
     header: 'Overview',
     items: [
-      { label: 'Overview', segment: '', icon: LayoutDashboard },
+      {
+        label: 'Overview',
+        segment: '',
+        icon: LayoutDashboard,
+      },
     ],
   },
   {
     header: 'Build',
     items: [
-      { label: 'Strategy', segment: 'strategy', icon: Target },
-      { label: 'Product', segment: 'product', icon: Package },
-      { label: 'Engineering', segment: 'engineering', icon: Code },
+      {
+        label: 'Strategy',
+        segment: 'strategy',
+        icon: Target,
+      },
+      {
+        label: 'Product',
+        segment: 'product',
+        icon: Package,
+      },
+      {
+        label: 'Engineering',
+        segment: 'engineering',
+        icon: Code,
+      },
     ],
   },
   {
     header: 'Launch',
     items: [
-      { label: 'GTM', segment: 'gtm', icon: Megaphone },
-      { label: 'Campaigns', segment: 'campaigns', icon: Send },
-      { label: 'Sales', segment: 'sales', icon: Users },
+      {
+        label: 'GTM',
+        segment: 'gtm',
+        icon: Megaphone,
+      },
+      {
+        label: 'Campaigns',
+        segment: 'campaigns',
+        icon: Send,
+      },
+      {
+        label: 'Sales',
+        segment: 'sales',
+        icon: Users,
+      },
     ],
   },
   {
     header: 'Grow',
     items: [
-      { label: 'Growth', segment: 'growth', icon: TrendingUp },
-      { label: 'Funding', segment: 'funding', icon: Wallet },
+      {
+        label: 'Growth',
+        segment: 'growth',
+        icon: TrendingUp,
+      },
+      {
+        label: 'Funding',
+        segment: 'funding',
+        icon: Wallet,
+      },
     ],
   },
   {
     header: 'System',
     items: [
-      { label: 'Knowledge', segment: 'knowledge', icon: Library },
-      { label: 'Analytics', segment: 'analytics', icon: BarChart3, soon: true },
-      { label: 'Outcomes', segment: 'outcomes', icon: Trophy },
-      { label: 'Connectors', segment: 'connectors', icon: Plug },
+      {
+        label: 'Knowledge',
+        segment: 'knowledge',
+        icon: Library,
+      },
+      {
+        label: 'Analytics',
+        segment: 'analytics',
+        icon: BarChart3,
+        soon: true,
+      },
+      {
+        label: 'Outcomes',
+        segment: 'outcomes',
+        icon: Trophy,
+      },
+      {
+        label: 'Connectors',
+        segment: 'connectors',
+        icon: Plug,
+      },
     ],
   },
 ];
 
-export function VentureSidebar() {
+export function VentureSidebar({
+  mobileOpen = false,
+  onMobileClose,
+}: VentureSidebarProps) {
   const { ventureId } = useParams<{ ventureId: string }>();
-  const collapsed = useUIStore((s) => s.ventureSidebarCollapsed);
-  const toggle = useUIStore((s) => s.toggleVentureSidebar);
-  const expand = useUIStore((s) => s.setVentureSidebarCollapsed);
+
+  const collapsed = useUIStore(
+    (s) => s.ventureSidebarCollapsed
+  );
+
+  const toggle = useUIStore(
+    (s) => s.toggleVentureSidebar
+  );
+
+  const expand = useUIStore(
+    (s) => s.setVentureSidebarCollapsed
+  );
+
+  const sidebarRef = useRef<HTMLElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const base = `/ventures/${ventureId}`;
 
   const handleNavClick = () => {
-    if (collapsed) expand(false);
+    onMobileClose?.();
+
+    // Preserve the original desktop click-to-expand behavior.
+    // Mobile clicks close the mobile drawer instead.
+    if (
+      collapsed &&
+      !window.matchMedia('(max-width: 767px)').matches
+    ) {
+      expand(false);
+    }
   };
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const mobileQuery = window.matchMedia(
+      '(max-width: 767px)'
+    );
+
+    if (!mobileQuery.matches) return;
+
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onMobileClose?.();
+      }
+
+      if (event.key !== 'Tab') return;
+
+      const sidebar = sidebarRef.current;
+      if (!sidebar) return;
+
+      const focusable = Array.from(
+        sidebar.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled])'
+        )
+      ).filter((element) => element.getClientRects().length > 0);
+
+      if (!focusable.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (
+        !event.shiftKey &&
+        document.activeElement === last
+      ) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [mobileOpen, onMobileClose]);
 
   return (
     <aside
-      style={{ width: collapsed ? 48 : 176 }}
+      ref={sidebarRef}
+      style={{
+        width: collapsed ? 48 : 176,
+      }}
       className={cn(
+        'iv-venture-sidebar',
         'relative flex h-full shrink-0 flex-col',
-        'bg-[var(--surface-1)] border-r border-[var(--border-subtle)]',
-        'transition-[width] duration-200 ease-out'
+        'bg-[var(--surface-1)]',
+        'border-r border-[var(--border-subtle)]',
+        'transition-[width] duration-200 ease-out',
+        mobileOpen && 'is-mobile-open'
       )}
+      // aria-label="Venture navigation"
+      data-collapsed={collapsed}
+      data-mobile-open={mobileOpen}
     >
-      <nav className="flex-1 overflow-y-auto px-2 py-3 space-y-3">
+      <div className="iv-venture-sidebar__mobile-header">
+        <span>Venture navigation</span>
+
+        <button
+          ref={closeButtonRef}
+          type="button"
+          onClick={onMobileClose}
+          aria-label="Close venture navigation"
+          className="iv-venture-sidebar__close"
+        >
+          <X size={18} />
+        </button>
+      </div>
+
+      <nav className="min-h-0 flex-1 space-y-3 overflow-y-auto px-2 py-3">
         {VENTURE_NAV.map((group) => (
           <div key={group.header}>
-            {!collapsed && (
-              <p className="px-3 pb-1 text-2xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                {group.header}
-              </p>
-            )}
+            <p
+              className={cn(
+                'iv-venture-sidebar__group-heading',
+                'px-3 pb-1 text-2xs font-medium',
+                'uppercase tracking-wider',
+                'text-[var(--text-muted)]',
+                collapsed && 'iv-venture-sidebar__collapsed-only'
+              )}
+            >
+              {group.header}
+            </p>
+
             <ul className="space-y-px">
               {group.items.map((item) => {
-                const to = item.segment ? `${base}/${item.segment}` : base;
+                const to = item.segment
+                  ? `${base}/${item.segment}`
+                  : base;
+
                 const Icon = item.icon;
+
                 return (
                   <li key={item.segment || 'index'}>
                     <NavLink
@@ -118,27 +293,45 @@ export function VentureSidebar() {
                       title={collapsed ? item.label : undefined}
                       className={({ isActive }) =>
                         cn(
-                          'relative flex items-center gap-2.5 rounded-md text-sm transition-colors',
+                          'iv-venture-sidebar__link',
+                          'relative flex items-center gap-2.5',
+                          'rounded-md text-sm transition-colors',
                           collapsed
-                            ? 'h-8 w-8 mx-auto justify-center px-0 py-0'
+                            ? 'iv-venture-sidebar__link--collapsed h-8 w-8 mx-auto justify-center px-0 py-0'
                             : 'px-3 py-1.5',
                           isActive
                             ? 'bg-[var(--accent-muted)] text-[var(--accent)] font-medium'
                             : 'text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]',
-                          collapsed && `${COLLAPSED_ICON_OPACITY} hover:opacity-100`
+                          collapsed &&
+                            `${COLLAPSED_ICON_OPACITY} hover:opacity-100`
                         )
                       }
                     >
                       {({ isActive }) => (
                         <>
-                          {isActive && !collapsed && (
+                          {isActive && (
                             <span
-                              className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full"
-                              style={{ background: 'var(--accent)' }}
+                              className="iv-venture-sidebar__active-indicator"
+                              style={{
+                                background: 'var(--accent)',
+                              }}
                             />
                           )}
-                          <Icon className="h-3.5 w-3.5 shrink-0" />
-                          {!collapsed && <span className="truncate">{item.label}</span>}
+
+                          <Icon
+                            className="h-3.5 w-3.5 shrink-0"
+                            aria-hidden="true"
+                          />
+
+                          <span
+                            className={cn(
+                              'iv-venture-sidebar__label truncate',
+                              collapsed &&
+                                'iv-venture-sidebar__collapsed-only'
+                            )}
+                          >
+                            {item.label}
+                          </span>
                         </>
                       )}
                     </NavLink>
@@ -150,16 +343,22 @@ export function VentureSidebar() {
         ))}
       </nav>
 
-      {/* Collapse toggle */}
       <button
         type="button"
         onClick={toggle}
-        aria-label={collapsed ? 'Expand venture menu' : 'Collapse venture menu'}
+        aria-label={
+          collapsed
+            ? 'Expand venture menu'
+            : 'Collapse venture menu'
+        }
         className={cn(
+          'iv-venture-sidebar__toggle',
           'absolute -right-3 top-16 z-10',
-          'flex h-6 w-6 items-center justify-center rounded-full',
+          'flex h-6 w-6 items-center justify-center',
+          'rounded-full',
           'bg-[var(--surface-1)] border border-[var(--border)]',
-          'text-[var(--text-muted)] hover:text-[var(--text-primary)]',
+          'text-[var(--text-muted)]',
+          'hover:text-[var(--text-primary)]',
           'transition-colors'
         )}
       >

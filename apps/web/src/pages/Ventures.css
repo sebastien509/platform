@@ -1,0 +1,560 @@
+
+/* ============================================================
+   IV — Ventures Directory
+   Warm Canvas × Electric Intelligence
+
+   Responsive mobile directory / desktop workspace list
+   ============================================================ */
+
+   .iv-ventures-page {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-bottom: 32px;
+  }
+  
+  /* HEADER */
+  
+  .iv-ventures-page__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 18px;
+  
+    margin-bottom: 26px;
+  }
+  
+  .iv-ventures-page__intro {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 8px;
+  }
+  
+  .iv-ventures-page__eyebrow {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+  }
+  
+  .iv-ventures-page__title {
+    margin: 0;
+  
+    font-family: var(--font-display);
+    font-size: clamp(29px, 3vw, 39px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.045em;
+  
+    color: var(--text-primary);
+  }
+  
+  .iv-ventures-page__description {
+    max-width: 65ch;
+    margin: 2px 0 0;
+  
+    font-family: var(--font-sans);
+    font-size: 13.5px;
+    line-height: 1.65;
+  
+    color: var(--text-secondary);
+  }
+  
+  .iv-ventures-page__new-button {
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  
+  /* DESKTOP NOTICE — MOBILE ONLY */
+  
+  .iv-ventures-page__desktop-note {
+    display: none;
+  }
+  
+  /* GRID */
+  
+  .iv-ventures-page__grid {
+    display: grid;
+  
+    grid-template-columns:
+      repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  
+    align-items: stretch;
+    gap: 16px;
+  
+    width: 100%;
+    min-width: 0;
+  }
+  
+  /* VENTURE CARD */
+  
+  .iv-ventures-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  
+    width: 100%;
+    min-width: 0;
+    min-height: 180px;
+  
+    padding: 20px 22px;
+  
+    border: 1px solid var(--border-subtle);
+    border-radius: 16px;
+  
+    background: var(--surface-1);
+  
+    box-shadow:
+      0 1px 2px rgb(32 39 54 / 3%);
+  
+    text-align: left;
+    font-family: var(--font-sans);
+  
+    cursor: pointer;
+  
+    transition:
+      transform 220ms cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+  
+  .iv-ventures-card:hover {
+    transform: translateY(-3px);
+    border-color: rgb(66 107 250 / 22%);
+  
+    box-shadow:
+      0 5px 12px rgb(32 39 54 / 3%),
+      0 15px 35px rgb(32 39 54 / 5%);
+  }
+  
+  .iv-ventures-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  
+  .iv-ventures-card__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .iv-ventures-card__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 36px;
+    height: 36px;
+  
+    border-radius: 11px;
+  
+    background: var(--accent-muted);
+    color: var(--accent);
+  }
+  
+  .iv-ventures-card__status {
+    display: inline-flex;
+    align-items: center;
+  
+    padding: 5px 10px;
+    border-radius: 999px;
+  
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  
+  .iv-ventures-card__content {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .iv-ventures-card__content h2 {
+    margin: 0;
+  
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 650;
+    line-height: 1.3;
+    letter-spacing: -0.025em;
+  
+    color: var(--text-primary);
+    overflow-wrap: anywhere;
+  }
+  
+  .iv-ventures-card__content p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  
+    overflow: hidden;
+    margin: 7px 0 0;
+  
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  
+  .iv-ventures-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  
+    padding-top: 14px;
+    border-top: 1px solid var(--border-subtle);
+  
+    font-size: 12px;
+    font-weight: 650;
+    color: var(--accent);
+  }
+  
+  .iv-ventures-card__mobile-action {
+    display: none;
+  }
+  
+  /* EMPTY */
+  
+  .iv-ventures-page__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 9px;
+  
+    padding: 48px 30px;
+  
+    border: 1px dashed var(--border);
+    border-radius: 20px;
+  
+    background: var(--surface-1);
+    text-align: center;
+  }
+  
+  .iv-ventures-page__empty-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 54px;
+    height: 54px;
+    margin-bottom: 5px;
+  
+    border-radius: 17px;
+    background: var(--accent-muted);
+    color: var(--accent);
+  }
+  
+  .iv-ventures-page__empty h2 {
+    margin: 0;
+  
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  
+  .iv-ventures-page__empty p {
+    max-width: 35ch;
+    margin: 0;
+  
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  
+  .iv-ventures-page__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 9px;
+    margin-top: 14px;
+  }
+  
+  /* LOADING */
+  
+  .iv-ventures-page__loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  
+    min-height: 200px;
+  
+    font-family: var(--font-sans);
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  
+  /* DIALOG */
+  
+  .iv-ventures-dialog__overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    padding: 20px;
+  
+    background: rgb(32 39 54 / 50%);
+    backdrop-filter: blur(5px);
+  }
+  
+  .iv-ventures-dialog {
+    width: 100%;
+    max-width: 440px;
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+  
+    padding: 28px;
+  
+    border: 1px solid var(--border-subtle);
+    border-radius: 19px;
+  
+    background: var(--surface-1);
+  
+    box-shadow:
+      0 24px 64px rgb(32 39 54 / 20%);
+  }
+  
+  .iv-ventures-dialog__header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  
+  .iv-ventures-dialog__header h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  
+  .iv-ventures-dialog__header p {
+    margin: 6px 0 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+  
+  .iv-ventures-dialog__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  
+    width: 32px;
+    height: 32px;
+  
+    padding: 0;
+  
+    border: 0;
+    border-radius: 9px;
+  
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  
+  .iv-ventures-dialog__close:hover {
+    background: var(--surface-2);
+  }
+  
+  .iv-ventures-dialog__field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 24px;
+  }
+  
+  .iv-ventures-dialog__label {
+    font-size: 12px;
+    font-weight: 650;
+    color: var(--text-primary);
+  }
+  
+  .iv-ventures-dialog__field input {
+    width: 100%;
+    min-width: 0;
+    min-height: 46px;
+  
+    padding: 12px 14px;
+  
+    border: 1px solid var(--border);
+    border-radius: 11px;
+  
+    background: var(--surface-1);
+    color: var(--text-primary);
+  
+    font-family: var(--font-sans);
+    font-size: 14px;
+  
+    outline: none;
+  }
+  
+  .iv-ventures-dialog__field input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-muted);
+  }
+  
+  .iv-ventures-dialog__error {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  
+    margin-top: 12px;
+    padding: 10px 12px;
+  
+    border-radius: 9px;
+    background: var(--error-muted);
+    color: var(--error);
+  
+    font-size: 12px;
+  }
+  
+  .iv-ventures-dialog__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 9px;
+    margin-top: 24px;
+  }
+  
+  /* MOBILE */
+  
+  @media (max-width: 767px) {
+    .iv-ventures-page {
+      padding-bottom: 24px;
+    }
+  
+    .iv-ventures-page__header {
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+  
+    .iv-ventures-page__title {
+      font-size: clamp(29px, 8vw, 38px);
+    }
+  
+    .iv-ventures-page__description {
+      font-size: 13px;
+      line-height: 1.7;
+    }
+  
+    .iv-ventures-page__new-button {
+      margin-top: 0;
+    }
+  
+    .iv-ventures-page__desktop-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 13px;
+  
+      margin-bottom: 20px;
+      padding: 17px;
+  
+      border: 1px solid #dfe6f8;
+      border-radius: 15px;
+  
+      background: #f8faff;
+    }
+  
+    .iv-ventures-page__desktop-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+  
+      width: 36px;
+      height: 36px;
+  
+      border-radius: 10px;
+      background: #ebf0ff;
+      color: #426bfa;
+    }
+  
+    .iv-ventures-page__desktop-copy {
+      min-width: 0;
+    }
+  
+    .iv-ventures-page__desktop-copy strong {
+      display: block;
+  
+      font-size: 12.5px;
+      font-weight: 700;
+      line-height: 1.45;
+      color: #202736;
+    }
+  
+    .iv-ventures-page__desktop-copy p {
+      margin: 6px 0 0;
+  
+      font-size: 12px;
+      line-height: 1.65;
+      color: #667085;
+    }
+  
+    .iv-ventures-page__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+    }
+  
+    .iv-ventures-card {
+      min-height: 160px;
+      padding: 17px 18px;
+      gap: 14px;
+    }
+  
+    .iv-ventures-card__desktop-action {
+      display: none;
+    }
+  
+    .iv-ventures-card__mobile-action {
+      display: inline;
+    }
+  
+    .iv-ventures-page__empty {
+      padding: 35px 20px;
+    }
+  
+    .iv-ventures-dialog {
+      padding: 23px 19px;
+      border-radius: 17px;
+    }
+  }
+  
+  @media (max-width: 380px) {
+    .iv-ventures-page__new-button {
+      width: 100%;
+    }
+  
+    .iv-ventures-dialog__actions {
+      flex-direction: column-reverse;
+      align-items: stretch;
+    }
+  
+    .iv-ventures-dialog__actions > * {
+      width: 100%;
+    }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-ventures-card {
+      transition: none;
+    }
+  
+    .iv-ventures-card:hover {
+      transform: none;
+    }
+  }
+  

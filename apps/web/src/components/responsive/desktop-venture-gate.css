@@ -1,0 +1,21 @@
+/* IV — intentional mobile handoff for operational venture routes */
+.iv-desktop-gate{box-sizing:border-box;width:min(100%,620px);margin:0 auto;padding:clamp(28px,6vw,58px) 20px 60px;color:var(--text-primary,#202736);font-family:var(--font-sans,system-ui);text-align:center}
+.iv-desktop-gate *{box-sizing:border-box}
+.iv-desktop-gate__eyebrow{display:flex;align-items:center;justify-content:center;gap:9px;font-size:10px;font-weight:750;letter-spacing:.16em;color:var(--accent,#426bfa)}
+.iv-desktop-gate__eyebrow span{width:7px;height:7px;border-radius:50%;background:var(--accent,#426bfa)}
+.iv-desktop-gate__visual{position:relative;display:grid;place-items:center;width:min(100%,360px);height:200px;margin:24px auto 30px;border:1px solid var(--border-subtle,#e4e8ef);border-radius:23px;background:radial-gradient(ellipse at 50% 55%,rgba(66,107,250,.10),transparent 69%),#fff;overflow:hidden}
+.iv-desktop-gate__visual:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(66,107,250,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(66,107,250,.04) 1px,transparent 1px);background-size:24px 24px;mask-image:radial-gradient(ellipse,black 0%,transparent 80%)}
+.iv-desktop-gate__monitor{position:relative;display:grid;place-items:center;width:104px;height:104px;border:1px solid #dae4ff;border-radius:26px;background:#f5f7ff;color:var(--accent,#426bfa);box-shadow:0 14px 35px rgba(66,107,250,.07)}
+.iv-desktop-gate__visual-caption{position:absolute;bottom:17px;color:#8b99ae;font-size:9px;font-weight:750;letter-spacing:.14em}
+.iv-desktop-gate h1{max-width:18ch;margin:0 auto;font-family:var(--font-display,var(--font-sans,system-ui));font-size:clamp(27px,6.5vw,39px);line-height:1.13;letter-spacing:-.045em}
+.iv-desktop-gate__description{max-width:49ch;margin:16px auto 0;color:var(--text-secondary,#667085);font-size:13px;line-height:1.75}
+.iv-desktop-gate__assurance{display:flex;align-items:flex-start;justify-content:center;gap:8px;margin:22px auto 0;color:var(--text-secondary,#667085);font-size:11px;line-height:1.5}
+.iv-desktop-gate__assurance svg{flex-shrink:0;color:#0b9d7d}
+.iv-desktop-gate__actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:28px}
+.iv-desktop-gate__actions a{display:inline-flex;min-height:42px;align-items:center;justify-content:center;gap:8px;border-radius:11px;padding:0 16px;font-size:12px;font-weight:700;text-decoration:none;transition:transform .18s ease,background .18s ease}
+.iv-desktop-gate__actions a:hover{transform:translateY(-1px)}
+.iv-desktop-gate__primary{background:var(--accent,#426bfa);color:#fff}
+.iv-desktop-gate__secondary{background:#fff;color:var(--text-primary,#202736);border:1px solid var(--border-subtle,#e4e8ef)}
+.iv-desktop-gate__footer{margin-top:30px;color:var(--text-muted,#8792a2);font-size:11px}
+@media(max-width:430px){.iv-desktop-gate{padding-inline:18px}.iv-desktop-gate__actions{flex-direction:column}.iv-desktop-gate__actions a{width:100%}}
+@media(prefers-reduced-motion:reduce){.iv-desktop-gate__actions a{transition:none}.iv-desktop-gate__actions a:hover{transform:none}}

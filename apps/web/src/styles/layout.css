@@ -39,13 +39,25 @@
 
 
 /* Vertical rhythm between direct children of a shell. */
+.page-shell {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
 
-.page-shell > * + * {
-
-  margin-top: var(--space-10);
-
+  /* Controlled distance from the navbar */
+  padding: 32px clamp(20px, 3vw, 48px) 64px;
 }
 
+/* Let components manage their own internal spacing */
+.page-shell > * + * {
+  margin-top: 0;
+}
+
+@media (max-width: 900px) {
+  .page-shell {
+    padding: 24px clamp(16px, 3vw, 32px) 48px;
+  }
+}
 
 
 /* ---------- PageHeader ---------- */

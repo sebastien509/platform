@@ -1,0 +1,69 @@
+/* ============================================================
+   IV MOBILE TOPBAR — FINAL ALIGNMENT FIX
+   Grid separates branding and account controls.
+   ============================================================ */
+
+   @media (max-width: 767px) {
+    .iv-topbar {
+      display: flex !important;
+      width: 100% !important;
+      min-width: 0;
+      padding-inline: 14px !important;
+      box-sizing: border-box;
+    }
+  
+    .iv-topbar .iv-topbar__inner {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) auto !important;
+      align-items: center;
+      column-gap: 12px;
+  
+      width: 100% !important;
+      min-width: 0;
+      max-width: none !important;
+  
+      margin: 0 !important;
+    }
+  
+    /* Left: hamburger and IV logo */
+    .iv-topbar .iv-topbar__mobile-left {
+      grid-column: 1;
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      min-width: 0;
+    }
+  
+    /* Right: notifications and account avatar */
+    .iv-topbar .iv-topbar__right {
+      grid-column: 2;
+      display: flex !important;
+      align-items: center;
+      justify-content: flex-end !important;
+      gap: 10px;
+  
+      width: auto !important;
+      min-width: 0;
+      margin-left: 0 !important;
+      justify-self: end;
+    }
+  
+    /* Prevent old layout selectors from adding widths */
+    .iv-topbar .iv-topbar__right > * {
+      flex: 0 0 auto;
+    }
+  
+    .iv-topbar .iv-topbar__menu {
+      border: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      border-radius: 8px;
+    }
+  
+    /* Hide the desktop-only elements */
+    .iv-topbar .iv-topbar__venture,
+    .iv-topbar .iv-topbar__search {
+      display: none !important;
+    }
+  }

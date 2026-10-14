@@ -1,0 +1,577 @@
+/* ============================================================
+   IV â€” MOBILE IDEAS + JOURNEY + VALIDATION
+   Additive mobile-only responsive layer.
+   Import after idea-stage.css, validate-bento.css, ideas-bento.css.
+   Desktop styles are unchanged.
+   ============================================================ */
+
+   @media (max-width: 767px) {
+    /* iOS Safari zoom prevention on actual editable controls */
+    .ideas-page input:not([type='checkbox']):not([type='radio']),
+    .ideas-page textarea,
+    .ideas-page select,
+    .journey-shell input:not([type='checkbox']):not([type='radio']),
+    .journey-shell textarea,
+    .journey-shell select,
+    .validate-bento-scroll input:not([type='checkbox']):not([type='radio']),
+    .validate-bento-scroll textarea,
+    .validate-bento-scroll select {
+      font-size: 16px !important;
+      -webkit-text-size-adjust: 100%;
+    }
+  
+    /* JOURNEY SHELL: only the shell main should scroll. */
+    .journey-shell {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .journey-shell__topbar {
+      height: 58px;
+      min-height: 58px;
+      flex: 0 0 58px;
+      padding-inline: 16px;
+    }
+    .journey-shell__wordmark { height: 25px; max-width: 112px; object-fit: contain; }
+    .journey-shell__exit { min-height: 38px; padding: 7px 9px; font-size: 12px; }
+    .journey-shell__main {
+      flex: 1 1 auto;
+      min-width: 0;
+      min-height: 0;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 0;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+      scroll-padding-bottom: 100px;
+    }
+    .idea-journey-shell {
+      width: 100%;
+      min-width: 0;
+      min-height: 100%;
+      height: auto;
+      overflow: visible;
+    }
+    .journey-shell__main .typeform-stage {
+      flex: 1 0 auto;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+      padding: 112px 20px max(56px, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+    }
+    .typeform-stage__panel,
+    .typeform-stage__panel:has(.idea-focus--research) {
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      margin: 0 auto;
+    }
+    .idea-stage { width: 100%; min-width: 0; gap: 22px; }
+    .idea-header {
+      position: absolute;
+      top: 22px;
+      left: 0;
+      right: 0;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding-inline: 20px;
+      max-width: 100%;
+    }
+    .idea-header__icon { width: 42px; height: 42px; flex-shrink: 0; }
+    .idea-header__title { min-width: 0; font-size: clamp(18px, 5vw, 23px); line-height: 1.2; overflow-wrap: anywhere; }
+    .journey-progress {
+      position: relative;
+      top: auto;
+      left: auto;
+      transform: none;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 18px 14px 8px;
+    }
+    .journey-progress__stack { width: auto; max-width: 100%; flex-direction: row; }
+    .journey-progress__node { width: 24px; min-width: 24px; min-height: 28px; }
+    .journey-progress__path { flex-direction: row; align-items: center; gap: 7px; padding: 0 5px; }
+    .journey-progress__label,
+    .journey-progress__tooltip { display: none; }
+    .idea-focus { width: 100%; min-width: 0; gap: 20px; }
+    .idea-focus__subtitle {
+      width: 100%;
+      max-width: 36ch;
+      min-height: 0;
+      margin: 0 auto;
+      font-size: 16px;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+    .idea-focus__subtitle.idea-focus__subtitle--edit { width: auto; max-width: 100%; font-size: 11px; }
+    .idea-input-row { width: 100%; max-width: 100%; min-width: 0; gap: 12px; }
+    .idea-input-wrap { flex: 1 1 auto; min-width: 0; }
+    .idea-input,
+    .idea-input:focus {
+      width: 100%;
+      min-width: 0;
+      min-height: 54px;
+      padding: 12px 0;
+      font-size: 16px !important;
+      line-height: 1.5;
+      border-radius: 0;
+      transform: none;
+    }
+    .idea-input::placeholder { font-size: 16px; }
+    .idea-submit { width: 44px; height: 44px; min-width: 44px; flex: 0 0 44px; margin-bottom: 5px; }
+    .idea-choices { width: 100%; max-width: 100%; gap: 9px; }
+    .idea-choice-btn { min-height: 44px; padding: 10px 16px; font-size: 13px; line-height: 1.4; white-space: normal; }
+    .clean-field-dots { padding: 8px 0; margin-bottom: 0; }
+    .idea-focus--research { align-items: stretch; gap: 18px; }
+    .research-file-list { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .research-file-card { min-width: 0; min-height: 190px; padding: 17px; border-radius: 15px; }
+    .research-file-card__title { font-size: 15px; line-height: 1.35; }
+    .research-file-actions { flex-direction: column-reverse; align-items: stretch; gap: 10px; margin-top: 14px; }
+    .research-file-actions__primary,
+    .research-file-actions__secondary { justify-content: center; min-height: 44px; }
+    .idea-processing { min-height: 170px; padding: 18px 0; }
+    .idea-processing__hex-clip,
+    .idea-processing__hex { width: 170px; height: 170px; }
+    .idea-journey-shell__bg { position: absolute; inset: 0; }
+    .idea-journey-shell__bg-gradient { inset: -35%; filter: blur(55px); }
+  
+    /* IDEAS LISTING: these classes are from ideas-bento.css. */
+    .ideas-page { width: 100%; min-width: 0; max-width: 100%; }
+    .ideas-page,
+    .ideas-page * { box-sizing: border-box; }
+    .ideas-hero { min-width: 0; margin-bottom: 18px; border-radius: 16px; }
+    .ideas-hero .idea-card__cover { height: 78px; }
+    .ideas-hero .iv-card__body { padding: 17px; }
+    .ideas-hero .iv-card__title { font-size: clamp(19px, 5.5vw, 24px); overflow-wrap: anywhere; }
+    .ideas-toolbar { flex-direction: column; align-items: stretch; gap: 12px; margin-bottom: 16px; }
+    .ideas-toolbar__left,
+    .ideas-toolbar__right { width: 100%; min-width: 0; }
+    .ideas-toolbar__right { justify-content: flex-start; flex-wrap: wrap; }
+    .ideas-filters {
+      display: flex;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ideas-filters::-webkit-scrollbar { display: none; }
+    .ideas-filter-chip { flex: 0 0 auto; min-height: 40px; padding-inline: 13px; font-size: 12px; }
+    .ideas-new-btn { min-height: 44px; font-size: 13px; }
+    .ideas-grid { grid-template-columns: minmax(0, 1fr); width: 100%; min-width: 0; gap: 13px; }
+    .idea-bento-card { width: 100%; min-width: 0; min-height: 0; border-radius: 16px; }
+    .idea-bento-card__cover { height: 92px; }
+    .idea-bento-card__body { padding: 16px; }
+    .idea-bento-card__detail { overflow-wrap: anywhere; }
+    .ideas-empty-inline { min-height: 150px; padding: 24px 18px; }
+  
+    /* VALIDATION: preserve the existing card order, decisions and gates. */
+    .journey-shell__main .validate-bento-scroll {
+      width: 100%;
+      min-width: 0;
+      height: auto;
+      min-height: 100%;
+      overflow: visible;
+      overscroll-behavior: auto;
+    }
+    .validate-bento-page {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+      padding: 24px 16px max(58px, env(safe-area-inset-bottom));
+      box-sizing: border-box;
+    }
+    .validate-bento-page__header { align-items: flex-start; gap: 9px; margin-bottom: 18px; }
+    .validate-bento-page__title { font-size: clamp(21px, 6vw, 26px); line-height: 1.25; }
+    .validate-bento { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .validate-bento > * { min-width: 0; }
+    .validate-bento__hero,
+    .validate-bento__research,
+    .validate-bento__gate { grid-column: 1 / -1; grid-row: auto; }
+    .validate-bento__card { padding: 18px; border-radius: 15px; }
+    .validate-bento__hero { padding: 20px; gap: 20px; }
+    .validate-bento__hero-copy { gap: 16px; }
+    .validate-bento__hero-brief { font-size: 15px; line-height: 1.6; }
+    .validate-bento__hero-score-value { font-size: 34px; }
+    .validate-bento__hero-signals { margin-top: 8px; }
+    .validate-bento__hero-signal { padding: 12px 0; }
+    .validate-bento__hero-actions { gap: 12px; padding-top: 14px; }
+    .validate-bento__hero-actions .grid { grid-template-columns: minmax(0, 1fr); gap: 9px; }
+    .validate-bento__hero-actions .grid > button { min-height: 0; padding: 15px; text-align: left; }
+    .validate-bento__hero-actions .grid > button svg { margin-bottom: 7px; }
+    .validate-bento__field { min-height: 0; padding: 18px; }
+    .validate-bento__field-head { flex-wrap: wrap; gap: 8px; }
+    .validate-bento__field-status { margin-left: auto; }
+    .validate-bento__field-headline { font-size: 17px; margin-top: 12px; }
+    .validate-bento__field-caption { font-size: 12px; margin-top: 8px; }
+    .validate-bento__field-metrics { margin-top: 12px; }
+    .validate-bento__research { padding: 0; }
+    .validate-bento__research-head { grid-template-columns: minmax(0, 1fr); gap: 14px; padding: 18px; }
+    .validate-bento__research-left { min-width: 0; gap: 10px; }
+    .validate-bento__research-icon { width: 38px; height: 38px; border-radius: 11px; }
+    .validate-bento__research-count { font-size: 19px; }
+    .validate-bento__research-actions { justify-content: flex-start; align-items: stretch; }
+    .validate-bento__research-link { min-height: 44px; flex: 1 1 auto; }
+    .validate-bento__research-list { padding-inline: 10px; }
+    .validate-bento__research-row { flex-wrap: wrap; gap: 9px; padding: 13px 8px; }
+    .validate-bento__research-row-body { flex: 1 1 150px; min-width: 0; }
+    .validate-bento__research-row-confidence { margin-left: auto; }
+    .validate-bento .upgrade-bar {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 12px;
+      padding: 18px;
+    }
+    .validate-bento .upgrade-bar__icon { width: 40px; height: 40px; }
+    .validate-bento .upgrade-bar__actions {
+      grid-column: 1;
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+    .validate-bento .upgrade-bar__actions > * { width: 100%; min-height: 44px; justify-content: center; }
+    .grad-morph__killed { width: 100%; flex-direction: column; gap: 12px; padding: 20px; }
+    .grad-morph__killed-actions { width: 100%; }
+    .grad-morph__killed-btn { min-height: 44px; }
+  }
+  
+  @media (max-width: 375px) {
+    .journey-shell__main .typeform-stage { padding-top: 104px; padding-inline: 15px; }
+    .idea-header { padding-inline: 15px; }
+    .idea-header__icon { width: 36px; height: 36px; }
+    .idea-header__title { font-size: 18px; }
+    .idea-choice-btn { padding-inline: 13px; }
+    .validate-bento-page { padding-inline: 13px; }
+    .validate-bento__card { padding: 16px; }
+  }
+  
+  @media (max-width: 767px) and (max-height: 650px) {
+    .journey-shell__main .typeform-stage { padding-top: 92px; padding-bottom: 32px; }
+    .idea-header { top: 14px; }
+    .journey-progress { padding-top: 10px; }
+  }
+  
+  @media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+    .idea-journey-shell__bg-gradient { animation: none; }
+    .idea-choice-btn,
+    .idea-submit,
+    .research-file-card,
+    .validate-bento__card,
+    .idea-bento-card { transition: none; }
+  }
+
+  /* ============================================================
+   IDEA JOURNEY — MOBILE SPACING FIX
+   Capture / validation / early journey screens only
+   Keeps desktop untouched
+   ============================================================ */
+
+@media (max-width: 767px) {
+  /* ------------------------------------------------------------
+     Shell rhythm
+     ------------------------------------------------------------ */
+  .journey-shell__topbar {
+    padding-inline: 16px;
+  }
+
+  .journey-shell__main {
+    padding-top: 0;
+  }
+
+  /* ------------------------------------------------------------
+     Header — move lower and stop overlap
+     ------------------------------------------------------------ */
+  .idea-header {
+    top: calc(var(--iv-layout-topbar-height) + 24px);
+    left: 0;
+    right: 0;
+
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+
+    gap: 12px;
+    padding-inline: 24px;
+  }
+
+  .idea-header__icon {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+    opacity: 0.98;
+  }
+
+  .idea-header__title {
+    font-size: clamp(19px, 5.2vw, 24px);
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    max-width: 100%;
+  }
+
+  /* If title + icon are in a row wrapper */
+  .idea-header__row,
+  .idea-header__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  /* ------------------------------------------------------------
+     Stage — start lower so header never crashes into content
+     ------------------------------------------------------------ */
+  .idea-stage {
+    padding-top: 132px !important;
+    padding-inline: 0;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  /* ------------------------------------------------------------
+     Main content block
+     ------------------------------------------------------------ */
+  .idea-focus {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding-inline: 24px;
+    padding-bottom: 32px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+
+    gap: 20px;
+  }
+
+  /* Question / prompt */
+  .idea-focus__subtitle,
+  .idea-focus__question,
+  .idea-capture__question,
+  .idea-capture__prompt {
+    width: 100%;
+    margin: 18px 0 0;
+    font-size: 17px;
+    line-height: 1.58;
+    text-align: left;
+    color: var(--text-secondary);
+    max-width: 30ch;
+  }
+
+  /* More breathing room between question and answer/input */
+  .idea-focus__subtitle + *,
+  .idea-focus__question + *,
+  .idea-capture__question + *,
+  .idea-capture__prompt + * {
+    margin-top: 14px !important;
+  }
+
+  /* ------------------------------------------------------------
+     Input area
+     ------------------------------------------------------------ */
+  .idea-input-row,
+  .idea-answer-row,
+  .idea-capture__input-row,
+  .idea-focus__input-wrap {
+    width: 100%;
+    margin-top: 6px;
+  }
+
+  .idea-focus input,
+  .idea-focus textarea,
+  .idea-input,
+  .idea-answer-input,
+  .idea-capture__input,
+  .idea-capture__textarea {
+    width: 100%;
+    min-height: 52px;
+    font-size: 16px !important; /* prevents iOS zoom */
+    line-height: 1.5;
+    padding: 12px 0;
+  }
+
+  .idea-focus textarea,
+  .idea-capture__textarea {
+    min-height: 110px;
+  }
+
+  .idea-focus input::placeholder,
+  .idea-focus textarea::placeholder,
+  .idea-input::placeholder,
+  .idea-answer-input::placeholder,
+  .idea-capture__input::placeholder,
+  .idea-capture__textarea::placeholder {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* ------------------------------------------------------------
+     CTA / next button row
+     ------------------------------------------------------------ */
+  .idea-actions,
+  .idea-answer-actions,
+  .idea-capture__actions {
+    width: 100%;
+    margin-top: 6px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .idea-choice-btn,
+  .idea-next-btn,
+  .idea-primary-action {
+    min-height: 46px;
+  }
+
+  /* ------------------------------------------------------------
+     Side progress / left rail
+     Move it down so it aligns with the lower content
+     ------------------------------------------------------------ */
+  .idea-progress,
+  .idea-stage__progress,
+  .idea-rail {
+    top: calc(var(--iv-layout-topbar-height) + 150px) !important;
+  }
+
+  /* If the vertical progress rail causes crowding on small screens,
+     keep it lighter and tighter rather than removing it */
+  .idea-progress__label,
+  .idea-stage__progress-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+  }
+}
+
+@media (max-width: 560px) {
+  .idea-header {
+    top: calc(var(--iv-layout-topbar-height) + 28px);
+    padding-inline: 20px;
+    gap: 20px;
+  }
+
+  .idea-header__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .idea-header__title {
+    font-size: 18px;
+  }
+
+  .idea-stage {
+    padding-top: 138px !important;
+  }
+
+  .idea-focus {
+    padding-inline: 20px;
+    gap: 18px;
+  }
+
+  .idea-focus__subtitle,
+  .idea-focus__question,
+  .idea-capture__question,
+  .idea-capture__prompt {
+    margin-top: 20px;
+    font-size: 16px;
+    line-height: 1.62;
+    max-width: 100%;
+  }
+
+  .idea-focus textarea,
+  .idea-capture__textarea {
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 420px) {
+  .idea-header {
+    top: calc(var(--iv-layout-topbar-height) + 30px);
+    padding-inline: 18px;
+  }
+
+  .idea-stage {
+    padding-top: 144px !important;
+  }
+
+  .idea-focus {
+    padding-inline: 18px;
+    padding-bottom: 28px;
+  }
+
+  .idea-focus__subtitle,
+  .idea-focus__question,
+  .idea-capture__question,
+  .idea-capture__prompt {
+    margin-top: 22px;
+  }
+}
+
+/* ============================================================
+   IV — IDEA JOURNEY MOBILE HEADER ALIGNMENT
+   Icon and title at consistent visual size and baseline.
+   Desktop remains unchanged.
+   ============================================================ */
+
+   @media (max-width: 767px) {
+    .idea-header {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+  
+      gap: 12px;
+      width: 100%;
+    }
+  
+    .idea-header__icon {
+      display: block;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 44px;
+  
+      object-fit: contain;
+      object-position: center;
+  
+      margin: 0;
+      transform: translateY(-2px);
+    }
+  
+    .idea-header__title {
+      display: block;
+      margin: 0;
+  
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+    }
+  }
+  
+  @media (max-width: 420px) {
+    .idea-header {
+      gap: 10px;
+    }
+  
+    .idea-header__icon {
+      width: 40px;
+      height: 40px;
+      flex-basis: 40px;
+    }
+  
+    .idea-header__title {
+      font-size: 19px;
+    }
+  }
