@@ -116,10 +116,14 @@ export default function DraftJourneyPage() {
    * Once the founder reaches synthesize-complete, we've delivered
    * the value. Now ask for signup — the idea stays in localStorage
    * until they claim it. */
-  const synthesizeComplete =
-    journey.stageStates.synthesize === 'complete';
+  /* Gate at RESEARCH-complete. The draft journey stops here —
+   * synthesize belongs to the authenticated side so finalize runs
+   * with a session and the founder sees the bridge screen before
+   * validate. */
+  const researchComplete =
+    journey.stageStates.research === 'complete';
 
-  if (synthesizeComplete) {
+  if (researchComplete) {
     const next = `/onboarding?handoff=${handoffId}`;
     const loginUrl = `/login?next=${encodeURIComponent(next)}`;
 

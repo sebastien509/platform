@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, RefreshCw } from 'lucide-react';
+import { ArrowRight, Check } from 'lucide-react';
 import { IdeaStage, IdeaProcessing } from '../primitives';
 import { getIdeaAgent } from '../agent';
 import { IdeaAgentError } from '../agent/types';
-import type { IdeaJourney, StructuredIdeaField } from '@/lib/types';
+import type { IdeaJourney } from '@/lib/types';
 
 interface SynthesisStageProps {
   journey: IdeaJourney;
@@ -17,13 +17,6 @@ interface SynthesisStageProps {
   onContinue?: () => void;
   onReviewAgain?: () => void;
 }
-
-const FIELDS: Array<{ key: 'problem' | 'persona' | 'value' | 'sector'; label: string }> = [
-  { key: 'problem', label: 'Problem' },
-  { key: 'persona', label: 'Persona' },
-  { key: 'value', label: 'Value' },
-  { key: 'sector', label: 'Sector' },
-];
 
 export function SynthesisStage({
   journey,
@@ -103,11 +96,6 @@ export function SynthesisStage({
     }
   }
 
-  function handleReviewAgain() {
-    firedRef.current = false;
-    onChange({ ...journey, finalized: undefined });
-  }
-
   /* ============================================================
      Render
      ============================================================ */
@@ -171,13 +159,18 @@ export function SynthesisStage({
     );
   }
 
+  /* ── Bridge view ──
+   * Synthesize exists to run finalize and hand off to validate.
+   * The 4 cards are read once — in Validation. This screen shows
+   * the outcome (title + brief) + a single decision button. No
+   * duplicate field editing. */
   return (
     <IdeaStage>
       <div className="synth-stage">
         <div className="synth-hero">
           <div className="synth-hero__eyebrow">
             <Check className="h-3 w-3" />
-            Your idea card
+            Synthesized
           </div>
           <h2 className="synth-hero__title">{finalized.title}</h2>
           {finalized.overview && (
@@ -185,38 +178,28 @@ export function SynthesisStage({
           )}
         </div>
 
-        <div className="synth-outcomes">
-          {FIELDS.map((f) => {
-            const field = finalized.structured[f.key] as
-              | StructuredIdeaField
-              | null
-              | undefined;
-            return (
-              <article key={f.key} className="synth-outcome">
-                <span className="synth-outcome__label">{f.label}</span>
-                <p className="synth-outcome__value">
-                  {field?.value || '—'}
-                </p>
-              </article>
-            );
-          })}
-        </div>
+        <ul className="synth-signals">
+          <li className="synth-signal">
+            <Check className="h-3.5 w-3.5" />
+            {research.length} research {research.length === 1 ? 'thread' : 'threads'} synthesized
+          </li>
+          <li className="synth-signal">
+            <Check className="h-3.5 w-3.5" />
+            Four fields refined
+          </li>
+          <li className="synth-signal">
+            <Check className="h-3.5 w-3.5" />
+            Ready to review and decide
+          </li>
+        </ul>
 
         <div className="synth-actions">
-          <button
-            type="button"
-            className="synth-btn synth-btn--ghost"
-            onClick={handleReviewAgain}
-          >
-            <RefreshCw className="h-3.5 w-3.5" />
-            Regenerate
-          </button>
           <button
             type="button"
             className="synth-btn synth-btn--primary"
             onClick={onContinue}
           >
-            Looks good — continue
+            Review and decide
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>

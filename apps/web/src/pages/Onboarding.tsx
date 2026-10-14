@@ -20,7 +20,6 @@ import {
 } from '@/features/onboarding/handoff';
 import { claimHandoff } from '@/features/onboarding/claim';
 import { pushIdeaToDb } from '@/lib/hooks/pushIdeaToDb';
-import { getIdeaAgent } from '@/features/idea-journey/agent';
 import { deriveIdeaTitle } from '@/features/ideas/deriveIdeaTitle';
 
 const STEPS = ['You', 'Role', 'Focus', 'Workspace'] as const;
@@ -181,34 +180,23 @@ export default function OnboardingPage() {
             const draftJourney = store.journeys[pendingHandoff];
 
             if (draftJourney) {
-              /* Run finalize authenticated — produces the record */
-              let finalizedData: { title?: string; overview?: string; structured?: any } | null = null;
-              try {
-                finalizedData = await getIdeaAgent().finalize({
-                  structured: draftJourney.structured,
-                  synthesisOverview: draftJourney.synthesisOverview,
-                  research: draftJourney.researchEntries ?? [],
-                  rawCapture: draftJourney.rawCapture,
-                });
-              } catch (finalizeErr) {
-                console.warn('[onboarding] finalize failed, using draft state', finalizeErr);
-              }
+              /* Do NOT run finalize here — SynthesisStage runs it
+               * on /ideas/:id where the founder is authenticated.
+               * We push the raw draft state and start the founder at
+               * the synthesize stage. */
 
-              const derivedTitle =
-                finalizedData?.title ??
-                deriveIdeaTitle(draftJourney.structured, draftJourney.rawCapture);
-              const finalStructured = finalizedData?.structured ?? draftJourney.structured;
-              const finalOverview =
-                finalizedData?.overview ?? draftJourney.synthesisOverview ?? null;
+              const derivedTitle = deriveIdeaTitle(
+                draftJourney.structured,
+                draftJourney.rawCapture,
+              );
 
               const structuredWithResearch = {
-                ...(finalStructured as unknown as Record<string, unknown>),
+                ...(draftJourney.structured as unknown as Record<string, unknown>),
                 researchEntries: draftJourney.researchEntries ?? [],
                 researchRun: draftJourney.researchRun ?? null,
                 synthesisProposals: draftJourney.synthesisProposals ?? [],
                 synthesisOverview: draftJourney.synthesisOverview ?? null,
                 reviewNotes: draftJourney.reviewNotes ?? {},
-                overview: finalOverview,
               };
 
               const created = await pushIdeaToDb({
@@ -227,6 +215,9 @@ export default function OnboardingPage() {
                   decidedAt: null,
                   createdVentureId: null,
                 },
+                /* Start the authenticated journey at synthesize.
+                 * SynthesisStage fires finalize once we land there. */
+                stage: 'synthesize',
               });
 
               /* Migrate the local journey to the new ideaId key */
