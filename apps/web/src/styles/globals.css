@@ -16,6 +16,7 @@
 @import '../components/containers/containers.css';
 @import '../components/agents/agents.css';
 @import './responsive-foundation.css';
+@import './shell-responsive.css';
 
 @import './features/grad-morph.css';
 @import '../layouts/JourneyShell/journey-shell.css';
