@@ -9,6 +9,10 @@ interface SynthesisStageProps {
   journey: IdeaJourney;
   onChange: (next: IdeaJourney) => void;
   acknowledgmentSatisfied: boolean;
+  /** Draft mode — skip the finalize LLM call. The founder isn't
+   *  authenticated yet, and finalize persists the record. The auth
+   *  gate in DraftJourneyPage takes over from here. */
+  draftMode?: boolean;
   onGoToResearch?: () => void;
   onContinue?: () => void;
   onReviewAgain?: () => void;
@@ -25,6 +29,7 @@ export function SynthesisStage({
   journey,
   onChange,
   acknowledgmentSatisfied,
+  draftMode = false,
   onGoToResearch,
   onContinue,
 }: SynthesisStageProps) {
@@ -44,10 +49,24 @@ export function SynthesisStage({
     if (!acknowledgmentSatisfied) return;
     if (finalized) return;
     if (firedRef.current) return;
+
+    /* Draft mode — synthesize marks complete, no LLM call. The
+     * finalize step runs from /ideas/:id after sign-in, where the
+     * founder is authenticated and the write is safe. */
+    if (draftMode) {
+      firedRef.current = true;
+      onChange({
+        ...journey,
+        stageStates: { ...journey.stageStates, synthesize: 'complete' },
+        updatedAt: new Date().toISOString(),
+      });
+      return;
+    }
+
     firedRef.current = true;
     void runFinalize();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [acknowledgmentSatisfied, finalized]);
+  }, [acknowledgmentSatisfied, finalized, draftMode]);
 
   async function runFinalize() {
     setLoading(true);

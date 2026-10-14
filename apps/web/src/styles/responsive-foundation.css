@@ -1,0 +1,173 @@
+/* ============================================================
+   IV â€” Responsive Foundation / Batch 1
+   Place at src/styles/responsive-foundation.css
+   Load LAST, after polish.css and the feature styles.
+   CSS-only: does not change sidebar behavior or routing.
+   ============================================================ */
+
+   :root {
+    --iv-page-max: 1440px;
+    --iv-page-gutter: clamp(16px, 2.6vw, 40px);
+    --iv-page-section-gap: clamp(18px, 2vw, 28px);
+  }
+  
+  /* Prevent implicit min-content widths from pushing into the sidebar. */
+  .page-shell,
+  .page-container,
+  .venture-page,
+  .venture-page-stack,
+  .venture-sections,
+  .venture-shell__content,
+  .venture-shell__scroll,
+  .section,
+  .section__body,
+  .section-grid,
+  .venture-bento,
+  .venture-bento__card,
+  .ops-grid-wrap,
+  .ops-grid,
+  .ops-card {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+  
+  /* Restore distinct page widths accidentally unified by polish.css. */
+  .page-shell,
+  .page-container {
+    width: 100%;
+    max-width: min(100%, var(--iv-page-max));
+    margin-inline: auto;
+    padding-inline: var(--iv-page-gutter);
+  }
+  
+  .page-shell--reading { max-width: min(100%, 1080px); }
+  .page-shell--wide { max-width: min(100%, 1680px); }
+  
+  /* Venture pages own their existing gutters; avoid double padding. */
+  .venture-page {
+    width: 100%;
+    max-width: min(100%, var(--venture-page-max, 1560px));
+    padding-inline: var(--venture-page-gutter, var(--iv-page-gutter));
+    gap: var(--iv-page-section-gap);
+  }
+  
+  .venture-page__body,
+  .venture-page-stack,
+  .venture-sections,
+  .venture-bento {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* A shrinkable, real scrolling region. No blanket overflow hiding. */
+  .venture-shell__scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: clip;
+    overscroll-behavior-y: contain;
+  }
+  
+  .venture-shell__content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+  
+  /* Keep headings close to the section below, not floating in whitespace. */
+  .venture-page__header,
+  .page-header {
+    min-width: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+  }
+  
+  .venture-page__header { gap: 5px; }
+  .venture-page__lede { max-width: 68ch; line-height: 1.5; }
+  .page-header__description { margin-top: 5px; }
+  
+  .venture-page__body,
+  .venture-page-stack { gap: var(--iv-page-section-gap); }
+  .venture-sections { gap: var(--iv-page-section-gap) 16px; padding-top: 0; }
+  .venture-page-stack > * + * { margin-top: 0; }
+  
+  /* Fit OPS within available space; never insist on 280px+ when narrow. */
+  .ops-grid {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+    justify-content: stretch;
+  }
+  .ops-card { width: 100%; max-width: 100%; }
+  
+  /* Other generated grids should adapt instead of clipping. */
+  .resources-grid,
+  .collection-cards,
+  .outcome-cards,
+  .section-kanban__cols,
+  .section-comparison__grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  }
+  
+  /* Protect long venture output from forcing wider columns. */
+  .venture-page :is(pre, code, .artifact-frame) { max-width: 100%; }
+  .venture-page pre { overflow-x: auto; }
+  .venture-page :is(img, video, canvas, iframe) { max-width: 100%; }
+  .venture-page :is(.venture-bento__title, .venture-bento__body, .section__title,
+    .section-narrative__title, .section-narrative__body, .ops-card__verb,
+    .ops-card__description) { overflow-wrap: anywhere; }
+  
+  /* Content-width-responsive bento, independent of sidebar state. */
+  .venture-page { container-type: inline-size; }
+  
+  @container (max-width: 960px) {
+    .venture-bento > :is(.span-3, .span-4, .span-5, .span-6,
+      .span-7, .span-8, .span-9),
+    .venture-bento__hero:not(.venture-bento__hero--span-12) {
+      grid-column: span 6;
+    }
+    .venture-section-slot[data-width='wide'],
+    .venture-section-slot[data-width='compact'] { grid-column: span 6; }
+    .overview-sectors__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  
+  @container (max-width: 660px) {
+    .venture-bento,
+    .venture-sections { grid-template-columns: minmax(0, 1fr); }
+    .venture-bento > *,
+    .venture-bento__hero,
+    .venture-section-slot[data-width] { grid-column: 1 / -1 !important; }
+    .overview-sectors__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .section-metric-row__items { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .embedded-agent-card { grid-template-columns: minmax(0, 1fr) auto; }
+  }
+  
+  /* Viewport-dependent outer gutters and chrome reserve. */
+  @media (max-width: 900px) {
+    :root { --iv-page-gutter: clamp(16px, 3vw, 24px); }
+    .page-shell { padding-block: 18px 48px; }
+    .venture-page { --venture-page-gutter: clamp(16px, 3vw, 24px); }
+    .page-header { align-items: flex-start; }
+  }
+  
+  @media (max-width: 640px) {
+    :root { --iv-page-gutter: 16px; --iv-page-section-gap: 16px; }
+    .page-shell { padding-block: 16px 40px; }
+    .venture-page { --venture-page-gutter: 16px; padding-top: 12px; }
+    .venture-page__title { font-size: clamp(24px, 6vw, 30px); }
+    .page-header__title { font-size: clamp(24px, 6vw, 30px); }
+    .ops-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .overview-sectors__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .drawer-shell:not(.drawer-shell--sheet) { max-width: 100vw; }
+    .modal-shell-positioner { padding: 16px; }
+    .modal-shell { width: 100%; max-width: 100%; max-height: calc(100dvh - 32px); }
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .venture-shell__scroll { scroll-behavior: auto; }
+  }

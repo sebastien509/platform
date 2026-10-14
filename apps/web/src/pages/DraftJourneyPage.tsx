@@ -156,6 +156,7 @@ export default function DraftJourneyPage() {
     <IdeaJourney
       journey={journey}
       onChange={(next) => setJourney(handoffId!, next)}
+      draftMode
     />
   );
 }

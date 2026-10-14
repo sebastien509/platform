@@ -16,11 +16,13 @@ import type {
   WorkspacePlan,
 } from '@/lib/types';
 
+
 interface IdeaJourneyProps {
   journey: IdeaJourneyType;
   onChange: (next: IdeaJourneyType) => void;
   plan?: WorkspacePlan;
   onUpgrade?: () => void;
+  draftMode?: boolean;  // NEW — skips finalize for unauthenticated drafts
 }
 
 const STAGE_ORDER: IdeaStage[] = [
@@ -60,7 +62,7 @@ function buildAdvancedState(
   };
 }
 
-export function IdeaJourney({ journey, onChange }: IdeaJourneyProps) {
+export function IdeaJourney({ journey, onChange, draftMode = false }: IdeaJourneyProps) {
   const currentStage = journey.currentStage;
   const previousStageRef = useRef<IdeaStage | null>(null);
   /* Track the CURRENT ideaId — memoized callbacks (handleJump,
@@ -304,6 +306,7 @@ export function IdeaJourney({ journey, onChange }: IdeaJourneyProps) {
                 journey={journey}
                 onChange={onChange}
                 acknowledgmentSatisfied={acknowledgmentSatisfied}
+                draftMode={draftMode}
                 onGoToResearch={() => handleJump('research')}
                 onContinue={handleSynthesizeContinue}
                 onReviewAgain={handleSynthesizeReviewAgain}
