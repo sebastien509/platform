@@ -547,14 +547,12 @@ async function handleFinalize(input: any) {
   }
 }
 
+const PUBLIC_METHODS = new Set(['captureNext','cleanNext','researchThread','synthesize']);
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: CORS });
   if (req.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'POST only' }), { status: 405, headers: { ...CORS, 'Content-Type': 'application/json' } });
-  }
-  const userId = await verifyAuth(req);
-  if (!userId) {
-    return new Response(JSON.stringify({ error: 'not authenticated', retryable: false }), { status: 401, headers: { ...CORS, 'Content-Type': 'application/json' } });
   }
   let body: { method?: string; input?: any };
   try { body = await req.json(); } catch {
@@ -563,6 +561,12 @@ serve(async (req) => {
   const { method, input } = body;
   if (!method || typeof method !== 'string') {
     return new Response(JSON.stringify({ error: 'method required', retryable: false }), { status: 400, headers: { ...CORS, 'Content-Type': 'application/json' } });
+  }
+  if (!PUBLIC_METHODS.has(method)) {
+    const userId = await verifyAuth(req);
+    if (!userId) {
+      return new Response(JSON.stringify({ error: 'not authenticated', retryable: false }), { status: 401, headers: { ...CORS, 'Content-Type': 'application/json' } });
+    }
   }
   try {
     let output: any;
