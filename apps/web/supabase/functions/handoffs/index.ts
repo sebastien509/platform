@@ -115,6 +115,40 @@ async function handlePreview(handoffId: string) {
   };
 }
 
+/* ────────── get ────────── */
+
+/**
+ * Public fetch — returns the payload content along with metadata.
+ * Safe to expose: the handoff ID is a 20-char random token, and the
+ * payload contains only the founder's own raw input. Used by the
+ * draft journey at /draft/:handoffId.
+ */
+async function handleGet(handoffId: string) {
+  if (!handoffId) return { error: 'missing_id' };
+
+  const db = admin();
+  const { data, error } = await db
+    .from('handoffs')
+    .select('id, type, status, payload, expires_at, created_at')
+    .eq('id', handoffId)
+    .maybeSingle();
+
+  if (error) return { error: 'lookup_failed', message: error.message };
+  if (!data) return { error: 'not_found', message: 'Handoff not found.' };
+
+  if (data.status === 'pending' && new Date(data.expires_at) < new Date()) {
+    return { error: 'expired', message: 'This handoff has expired.' };
+  }
+
+  return {
+    id: data.id,
+    type: data.type,
+    status: data.status,
+    content: (data.payload as any)?.content ?? null,
+    expiresAt: data.expires_at,
+  };
+}
+
 /* ────────── claim ────────── */
 
 async function handleClaim(userId: string, handoffId: string) {
@@ -271,6 +305,10 @@ serve(async (req) => {
 
       case 'preview':
         output = await handlePreview(input?.handoffId);
+        break;
+
+      case 'get':
+        output = await handleGet(input?.handoffId);
         break;
 
       case 'claim': {

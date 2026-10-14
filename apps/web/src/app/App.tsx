@@ -36,6 +36,7 @@ import LoginPage from '@/pages/Login';
 import AuthCallbackPage from '@/pages/AuthCallback';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import OnboardingPage from '@/pages/Onboarding';
+import DraftJourneyPage from '@/pages/DraftJourneyPage';
 import { RequireOnboarding } from '@/features/auth/RequireOnboarding';
 import ResearchReportViewerPage from '@/pages/idea/ResearchReportViewer';
 import SharedSurface from '@/pages/share/SharedSurface';
@@ -72,6 +73,10 @@ function AppRoutes() {
       <Route path="/login" element={<LoginPage />} />
         <Route path="/invite/:token" element={<AcceptInvitePage />} />
       <Route path="/auth/callback" element={<AuthCallbackPage />} />
+
+      {/* Public draft journey — no auth. Founder sees the
+          value before we ask them to sign in. */}
+      <Route path="/draft/:handoffId" element={<DraftJourneyPage />} />
 
       {/* Protected — everything below requires a session */}
       <Route element={<AuthGuard />}>

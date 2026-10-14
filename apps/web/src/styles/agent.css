@@ -394,3 +394,15 @@ input.agent-needs-you__input:-webkit-autofill:focus {
 .onboarding-actions {
   margin-top: 12px;
 }
+
+.onboarding-card.is-wide {
+  max-width: 520px;
+}
+.onboarding-fineprint {
+  margin: 12px 0 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+  max-width: 380px;
+}

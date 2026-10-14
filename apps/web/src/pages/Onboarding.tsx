@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useCurrentUser } from '@/features/auth/useCurrentUser';
+import { useJourneyStore } from '@/lib/stores/journeyStore';
 import {
   readHandoffFromUrl,
   savePendingHandoff,
@@ -177,12 +178,32 @@ export default function OnboardingPage() {
               );
             }
 
-            clearPendingHandoff();
-
+            /* ── Migrate the local journey ──
+             * The draft journey wrote to journeys['hd_xxx'] in
+             * localStorage. Now that the idea exists in the DB,
+             * move the state to journeys['idea_yyy'] so the
+             * authenticated journey page picks it up. */
             if (ideaId) {
+              const store = useJourneyStore.getState();
+              const draftJourney = store.journeys[pendingHandoff];
+
+              if (draftJourney) {
+                store.setJourney(ideaId, {
+                  ...draftJourney,
+                  ideaId,
+                });
+                console.log('[onboarding] journey migrated', {
+                  from: pendingHandoff,
+                  to: ideaId,
+                });
+              }
+
+              clearPendingHandoff();
               navigate(`/ideas/${ideaId}`, { replace: true });
               return;
             }
+
+            clearPendingHandoff();
           } catch (e) {
             console.warn('[onboarding] handoff claim failed:', e);
             /* fall through to default behaviour */
