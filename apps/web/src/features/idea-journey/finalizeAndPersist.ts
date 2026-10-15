@@ -18,26 +18,32 @@ import type { IdeaJourney } from '@/lib/types';
  */
 export async function finalizeAndPersist(
   journey: IdeaJourney,
+  /** When provided, skip the LLM call and use this data. Set by
+   *  SynthesisStage which has already run finalize and produced
+   *  the same blob the founder saw on the bridge screen. */
+  alreadyFinalized?: {
+    title?: string;
+    overview?: string;
+    structured?: any;
+  } | null,
 ): Promise<string> {
-  /* 1. Finalize — authenticated at this point. Produces title,
-   *    overview, and 4 refined fields. */
   let finalized: {
     title?: string;
     overview?: string;
     structured?: any;
-  } | null = null;
+  } | null = alreadyFinalized ?? null;
 
-  try {
-    finalized = await getIdeaAgent().finalize({
-      structured: journey.structured,
-      synthesisOverview: journey.synthesisOverview,
-      research: journey.researchEntries ?? [],
-      rawCapture: journey.rawCapture,
-    });
-  } catch (e) {
-    /* If finalize fails, fall back to the local structured + the
-     * derived title. The founder still gets a saved record. */
-    console.warn('[finalizeAndPersist] finalize failed, using local state', e);
+  if (!finalized) {
+    try {
+      finalized = await getIdeaAgent().finalize({
+        structured: journey.structured,
+        synthesisOverview: journey.synthesisOverview,
+        research: journey.researchEntries ?? [],
+        rawCapture: journey.rawCapture,
+      });
+    } catch (e) {
+      console.warn('[finalizeAndPersist] finalize failed, using local state', e);
+    }
   }
 
   const fallbackTitle =

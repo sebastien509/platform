@@ -44,7 +44,11 @@ export default function LocalJourneyPage() {
       onChange={(next) => setJourney(storeKey, next)}
       onValidate={async () => {
         try {
-          const newIdeaId = await finalizeAndPersist(journey);
+          /* Reuse the finalize output SynthesisStage already produced. */
+          const newIdeaId = await finalizeAndPersist(
+            journey,
+            journey.finalized ?? null,
+          );
           navigate(`/ideas/${newIdeaId}`, { replace: true });
         } catch (e) {
           console.error('[LocalJourney] finalizeAndPersist failed', e);

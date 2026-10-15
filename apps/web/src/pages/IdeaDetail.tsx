@@ -165,7 +165,27 @@ export default function IdeaDetailPage() {
    * (un-synced) ideas.
    */
   const dbStage = !isLocal && dbIdea ? (dbIdea as any).stage : null;
-  const effectiveStage = dbStage ?? journey.currentStage;
+  const localStage = journey.currentStage;
+
+  /* Prefer whichever is further along so a migrated local journey
+   * (still at 'synthesize') doesn't fight the DB (already 'validate'). */
+  const STAGE_ORDER_LOCAL = [
+    'capture',
+    'clean',
+    'research',
+    'synthesize',
+    'validate',
+    'transition',
+  ];
+  const localIdx = STAGE_ORDER_LOCAL.indexOf(
+    localStage === 'transition' ? 'transition' : localStage,
+  );
+  const dbIdx = dbStage
+    ? STAGE_ORDER_LOCAL.indexOf(
+        dbStage === 'transitioned' ? 'transition' : dbStage,
+      )
+    : -1;
+  const effectiveStage = localIdx >= dbIdx ? localStage : dbStage;
 
   const isPostSynthesis = !RAIL_STAGES.includes(
     effectiveStage as (typeof RAIL_STAGES)[number],
@@ -199,7 +219,12 @@ export default function IdeaDetailPage() {
       onChange={(next) => setJourney(ideaId, next)}
       onValidate={async () => {
         try {
-          const newIdeaId = await finalizeAndPersist(journey);
+          /* SynthesisStage already ran finalize — reuse its output
+           * so we don't hit OpenAI twice. */
+          const newIdeaId = await finalizeAndPersist(
+            journey,
+            journey.finalized ?? null,
+          );
           navigate(`/ideas/${newIdeaId}`, { replace: true });
         } catch (e) {
           console.error('[IdeaDetail] finalizeAndPersist failed', e);
