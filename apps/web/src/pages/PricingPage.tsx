@@ -180,7 +180,8 @@ export default function PricingPage() {
   }
 
   return (
-    <PageContainer>
+    <div className="pricing-page-scroll">
+    <PageContainer width="wide">
       <header className="pricing-hero">
         <span className="pricing-hero__eyebrow">
           {signedIn ? 'Plans & pricing' : 'Built for founders who ship'}
@@ -212,7 +213,15 @@ export default function PricingPage() {
       )}
 
       <div className="pricing-grid">
-        {CARDS.map((card) => {
+        {(() => {
+          /* Sort order: paid tiers ascend, then free/current last.
+           * But if the user is already on a paid tier, the current
+           * one moves to the end so it never crowds the pitch. */
+          const order: TierKey[] = ['pro', 'founder', 'team', 'free'];
+          const sorted = [...CARDS].sort(
+            (a, b) => order.indexOf(a.key) - order.indexOf(b.key),
+          );
+          return sorted.map((card) => {
           const cta = ctaFor(card.key, currentTier);
           const isCurrent = cta.kind === 'current';
           const isHighlight = Boolean(card.highlightLabel);
@@ -281,8 +290,9 @@ export default function PricingPage() {
                 </Button>
               </div>
             </article>
-          );
-        })}
+            );
+          });
+        })()}
       </div>
 
       <p className="pricing-footnote">
@@ -290,5 +300,6 @@ export default function PricingPage() {
         page — no questions asked.
       </p>
     </PageContainer>
+    </div>
   );
 }

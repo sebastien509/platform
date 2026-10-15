@@ -71,7 +71,7 @@ export function VentureCountGate({
             <button
               type="button"
               className="venture-gate__btn venture-gate__btn--primary"
-              onClick={() => navigate('/billing')}
+              onClick={() => navigate('/pricing')}
             >
               Choose a plan
               <ArrowRight className="h-3.5 w-3.5" />

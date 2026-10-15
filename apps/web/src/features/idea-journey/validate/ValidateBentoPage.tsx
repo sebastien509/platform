@@ -273,7 +273,7 @@ export function ValidateBentoPage({
   const gateState: GateState = useMemo(() => {
     if (planLoading || !effectivePlan) return 'none';
     const tier = effectivePlan.tier;
-    if (tier === 'starter') return 'free_to_pro';
+    if (tier === 'free') return 'free_to_pro';
     if (tier === 'pro' && planExhausted) return 'pro_to_founder';
     return 'none';
   }, [effectivePlan, planLoading, planExhausted]);
@@ -412,7 +412,7 @@ export function ValidateBentoPage({
             gated={
               journey.validation.decision !== 'kill' &&
               !journey.createdVentureId &&
-              workspacePlan?.tier === 'starter'
+              workspacePlan?.tier === 'free'
             }
           />
         )}

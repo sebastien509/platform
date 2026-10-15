@@ -42,7 +42,7 @@ export function PlanGateBanner({
         <button
           type="button"
           className="plan-gate-banner__cta"
-          onClick={() => navigate('/billing')}
+          onClick={() => navigate('/pricing')}
         >
           See plans
           <ArrowRight className="h-3.5 w-3.5" />

@@ -31,11 +31,12 @@ export function useWorkspacePlan() {
     const ws: any = workspace.data ?? {};
     const rawTier = ws.plan_tier ?? ws.tier;
 
-    /* If the tier is missing or unknown → treat as paid. */
+    /* Missing/unknown tier → 'free'. Never silently unlock the
+     * venture OS for a workspace we can't classify. */
     const tier: TierKey =
       rawTier && DB_TIER_TO_KEY[rawTier]
         ? DB_TIER_TO_KEY[rawTier]
-        : 'pro';
+        : 'free';
 
     const cfg = TIER_CONFIG[tier];
 
@@ -55,7 +56,7 @@ export function useWorkspacePlan() {
       venturesUsed: activeVentures.length,
       ventureNames,
       ventureLimit: ventureLimit === Infinity ? 999 : ventureLimit,
-    } as WorkspacePlan;
+    };
   }, [workspace.data, ventures.data]);
 
   const isLoading = workspace.isLoading || ventures.isLoading;
@@ -63,7 +64,7 @@ export function useWorkspacePlan() {
     !isLoading && plan.venturesUsed >= plan.ventureLimit;
 
   /* The full tier config — for gates that need more than the plan. */
-  const config = TIER_CONFIG[DB_TIER_TO_KEY[plan.tier] ?? 'pro'];
+  const config = TIER_CONFIG[plan.tier];
 
   return { plan, config, isLoading, exhausted };
 }

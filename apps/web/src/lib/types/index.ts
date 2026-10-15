@@ -472,6 +472,7 @@ export interface ApiResponse<T = any> {
    ============================================================ */
 
 import type { AgentKey } from '@/components/agents/identity/agentColors';
+import type { TierKey } from '@/lib/config/tiers';
 
 /* ---------- Knowledge ---------- */
 
@@ -868,7 +869,9 @@ export interface AcknowledgmentState {
 export type GraduationState = 'idle' | 'morphing' | 'confirmed';
 
 export interface WorkspacePlan {
-  tier: 'starter' | 'pro' | 'founder' | 'team';
+  /** Canonical tier key. DB 'starter' is normalized to 'free' by
+   *  useWorkspacePlan — downstream code only ever sees TierKey. */
+  tier: TierKey;
   /** Ventures already in use against the plan. */
   venturesUsed: number;
   /** Venture names, for the "already in use by X" copy. */

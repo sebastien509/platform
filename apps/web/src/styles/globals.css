@@ -612,231 +612,147 @@
   opacity: 0.75;
 }
 
-/* ============================================================
-   PRICING — tier cards
-   ============================================================ */
 .pricing-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 32px 0 24px;
-  max-width: 720px;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 8px;
+  padding: 0 4px;
 }
 .pricing-hero__eyebrow {
+  display: inline-block;
   font-family: var(--font-sans);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
+  margin-bottom: 12px;
 }
 .pricing-hero__title {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 34px;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--text-primary);
-}
-.pricing-hero__lede {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-secondary);
-  max-width: 56ch;
-}
-.pricing-hero__meta {
-  margin: 4px 0 0;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.pricing-error {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  margin-bottom: 16px;
-  border-radius: 10px;
-  background: var(--error-muted, var(--surface-2));
-  color: var(--error);
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-}
-
-.pricing-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 16px;
-  margin: 8px 0 32px;
-}
-@media (max-width: 1100px) {
-  .pricing-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .pricing-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.pricing-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 24px 20px 20px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle);
-  background: var(--surface-1);
-  transition: border-color 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
-}
-.pricing-card.is-highlight {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent), 0 12px 32px -16px rgba(79, 70, 229, 0.4);
-}
-.pricing-card.is-current {
-  border-color: var(--success);
-}
-
-.pricing-card__badge {
-  position: absolute;
-  top: -10px;
-  left: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--accent);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.pricing-card__current-badge {
-  position: absolute;
-  top: -10px;
-  right: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--success);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.pricing-card__head {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.pricing-card__name {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-.pricing-card__price {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-.pricing-card__amount {
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 700;
+  margin: 0 0 12px;
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 40px;
+  line-height: 1.1;
   letter-spacing: -0.02em;
   color: var(--text-primary);
 }
-.pricing-card__cadence {
+.pricing-hero__lede {
+  margin: 0 0 8px;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.pricing-hero__meta {
+  margin: 0;
   font-family: var(--font-sans);
   font-size: 13px;
   color: var(--text-muted);
 }
-.pricing-card__tagline {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--text-secondary);
-  min-height: 34px;
+
+@media (max-width: 720px) {
+  .pricing-hero__title { font-size: 30px; }
+  .pricing-hero__lede { font-size: 15px; }
+  .pricing-card { padding: 22px 18px 20px; }
+  .pricing-card__amount { font-size: 28px; }
 }
 
-.pricing-card__features {
-  list-style: none;
-  padding: 0;
-  margin: 0;
+.pricing-error {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-  flex: 1;
-}
-.pricing-card__feature {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  line-height: 1.5;
-  color: var(--text-primary);
-}
-.pricing-card__check {
-  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: var(--success-muted);
-  color: var(--success);
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.pricing-card__cta {
-  padding-top: 8px;
+  gap: 8px;
+  max-width: 720px;
+  margin: 0 auto 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #dc2626 8%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, #dc2626 28%, var(--border-subtle));
+  color: #b91c1c;
+  font-family: var(--font-sans);
+  font-size: 13px;
 }
 
 .pricing-footnote {
-  margin: 0 0 32px;
-  font-family: var(--font-sans);
-  font-size: 12.5px;
-  color: var(--text-muted);
   text-align: center;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 24px auto 0;
+  line-height: 1.6;
 }
 
-/* Wrapper only — never redefine the original bricks */
-
-.iv-hex-mark {
-  position: relative;
-  display: inline-block;
-  flex-shrink: 0;
-  vertical-align: middle;
-  overflow: hidden;
+/* ============================================================
+   Pricing page — full-height scroll container
+   #root is height:100vh; overflow:hidden globally, so any page
+   that grows tall (pricing, marketing) needs its own internal
+   scroll region. This mirrors the app-shell pattern.
+   ============================================================ */
+.pricing-page-scroll {
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 60px;
 }
 
-.iv-hex-mark__scale {
-  position: absolute;
-  display: block;
-  transform-origin: center;
+/* Give the PageContainer inside it room to breathe on mobile */
+@media (max-width: 720px) {
+  .pricing-page-scroll { padding-bottom: 40px; }
 }
 
-.iv-hex-mark--static .iv-hex-node,
-.iv-hex-mark--static .iv-hex-brick {
-  animation-play-state: paused;
+/* ============================================================
+   Pricing polish — green "Best value" badge + darker button hover
+   ============================================================ */
+
+/* Founder Premium badge — green accent, not the default blue */
+.pricing-card__badge {
+  background: #16a34a;                     /* Tailwind green-600 */
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.28);
+}
+.pricing-card__badge svg { color: #ffffff; }
+
+/* Founder Premium card — green-tinted instead of accent-tinted */
+.pricing-card.is-highlight {
+  border-color: rgba(22, 163, 74, 0.42);
+  background: linear-gradient(180deg,
+    rgba(22, 163, 74, 0.05),
+    var(--surface-2));
+  box-shadow: 0 8px 24px rgba(22, 163, 74, 0.10);
+}
+.pricing-card.is-highlight:hover {
+  border-color: rgba(22, 163, 74, 0.55);
+  box-shadow: 0 12px 28px rgba(22, 163, 74, 0.14);
+}
+
+/* Buttons — darker on hover, plus a slightly deeper active state */
+.pricing-card .btn,
+.pricing-card button {
+  transition:
+    background-color 140ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    border-color 140ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    color 140ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 140ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Primary (Upgrade) — darken the accent on hover */
+.pricing-card .btn:hover:not(:disabled),
+.pricing-card button:hover:not(:disabled) {
+  filter: brightness(0.92);
+  transform: translateY(-1px);
+}
+.pricing-card .btn:active:not(:disabled),
+.pricing-card button:active:not(:disabled) {
+  filter: brightness(0.86);
+  transform: translateY(0);
+}
+
+/* Outline (Downgrade / Start free) — darker border on hover */
+.pricing-card .btn--outline:hover:not(:disabled),
+.pricing-card button[data-variant="outline"]:hover:not(:disabled) {
+  border-color: color-mix(in srgb, var(--text-primary) 24%, var(--border-subtle));
+  background: color-mix(in srgb, var(--text-primary) 3%, transparent);
 }

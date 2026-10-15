@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useWorkspacePlan } from './useWorkspacePlan';
 import { useTierStore } from '@/lib/stores/tierStore';
-import { DB_TIER_TO_KEY, type TierKey } from '@/lib/config/tiers';
 
 /**
  * useSyncTier — mirrors the resolved tier into the sync store.
@@ -16,8 +15,7 @@ export function useSyncTier() {
   const setTier = useTierStore((s) => s.setTier);
 
   useEffect(() => {
-    const normalized: TierKey =
-      DB_TIER_TO_KEY[plan.tier as string] ?? 'pro';
-    setTier(normalized);
+    /* plan.tier is already a normalized TierKey — no mapping needed. */
+    setTier(plan.tier);
   }, [plan.tier, setTier]);
 }
