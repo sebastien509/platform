@@ -23,6 +23,10 @@ interface IdeaJourneyProps {
   plan?: WorkspacePlan;
   onUpgrade?: () => void;
   draftMode?: boolean;  // NEW — skips finalize for unauthenticated drafts
+  /** Called when the founder is ready to move to validate.
+   *  The parent owns persistence + navigation — validate is a
+   *  DB-driven stage, not a journey stage. */
+  onValidate?: () => void | Promise<void>;
 }
 
 const STAGE_ORDER: IdeaStage[] = [

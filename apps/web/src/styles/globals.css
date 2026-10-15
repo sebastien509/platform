@@ -819,3 +819,24 @@
   color: var(--text-muted);
   text-align: center;
 }
+
+/* Wrapper only — never redefine the original bricks */
+
+.iv-hex-mark {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+.iv-hex-mark__scale {
+  position: absolute;
+  display: block;
+  transform-origin: center;
+}
+
+.iv-hex-mark--static .iv-hex-node,
+.iv-hex-mark--static .iv-hex-brick {
+  animation-play-state: paused;
+}

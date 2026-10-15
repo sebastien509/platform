@@ -1,0 +1,405 @@
+
+/* ============================================================
+   IV OVERVIEW — ECLECTIC BENTO REFINEMENT
+
+   Additive styling only.
+   Does not change page layout, data, or functionality.
+
+   Direction:
+   80% neutral / 20% restrained color
+   Warm canvas + quiet colored surfaces
+   ============================================================ */
+
+   .ivo-page {
+    --ivo-electric: #426bfa;
+    --ivo-orchid: #9368cc;
+    --ivo-mint: #389b81;
+    --ivo-amber: #b68b4f;
+    --ivo-slate: #7488af;
+  
+    --ivo-soft-blue: #f4f6ff;
+    --ivo-soft-orchid: #faf7ff;
+    --ivo-soft-mint: #f5faf8;
+    --ivo-soft-amber: #fefaf4;
+  }
+  
+  /* ============================================================
+     GENERAL BENTO DEPTH
+     ============================================================ */
+  
+  .ivo-page .ivo-card {
+    position: relative;
+    isolation: isolate;
+  
+    overflow: hidden;
+  
+    border-color: rgba(223, 228, 238, .85);
+  
+    box-shadow:
+      0 2px 4px rgba(25, 36, 60, .025),
+      0 10px 27px rgba(25, 36, 60, .025);
+  
+    transition:
+      transform 220ms ease,
+      border-color 220ms ease,
+      box-shadow 220ms ease;
+  }
+  
+  .ivo-page .ivo-card:hover {
+    transform: translateY(-2px);
+  
+    box-shadow:
+      0 5px 14px rgba(25, 36, 60, .035),
+      0 18px 36px rgba(25, 36, 60, .045);
+  }
+  
+  /* Keep actual card content above decorative glows. */
+  
+  .ivo-page .ivo-card > * {
+    position: relative;
+    z-index: 1;
+  }
+  
+  /* ============================================================
+     01 — CURRENT FOCUS: ELECTRIC BLUE
+     ============================================================ */
+  
+  .ivo-page .ivo-card--focus {
+    border-color: #d9e2fc;
+  
+    background:
+      radial-gradient(
+        ellipse at 95% 0%,
+        rgba(66, 107, 250, .13) 0%,
+        transparent 52%
+      ),
+      radial-gradient(
+        ellipse at 12% 100%,
+        rgba(150, 117, 225, .075) 0%,
+        transparent 55%
+      ),
+      rgba(255, 255, 255, .94);
+  }
+  
+  .ivo-page .ivo-card--focus::after {
+    content: "";
+    position: absolute;
+  
+    top: -62px;
+    right: -54px;
+  
+    width: 165px;
+    height: 165px;
+  
+    border: 1px solid rgba(66, 107, 250, .1);
+    border-radius: 50%;
+  
+    box-shadow:
+      0 0 0 25px rgba(66, 107, 250, .025),
+      0 0 0 52px rgba(66, 107, 250, .018);
+  
+    pointer-events: none;
+  }
+  
+  .ivo-page .ivo-card--focus .ivo-eyebrow {
+    color: var(--ivo-electric);
+  }
+  
+  .ivo-page .ivo-primary-action {
+    box-shadow:
+      0 5px 12px rgba(66, 107, 250, .14);
+  }
+  
+  /* ============================================================
+     02 — CONTEXT: QUIET ORCHID
+     ============================================================ */
+  
+  .ivo-page .ivo-card--context {
+    border-color: #ece4f7;
+  
+    background:
+      radial-gradient(
+        ellipse at 98% 5%,
+        rgba(154, 113, 209, .105),
+        transparent 63%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--context .ivo-card__icon {
+    color: var(--ivo-orchid);
+  }
+  
+  .ivo-page .ivo-card--context .ivo-eyebrow {
+    color: #9a78bc;
+  }
+  
+  /* ============================================================
+     03 — REVIEWS: MUTED AMBER
+     ============================================================ */
+  
+  .ivo-page .ivo-card--reviews {
+    border-color: #f0e7d9;
+  
+    background:
+      radial-gradient(
+        ellipse at 100% 0%,
+        rgba(226, 183, 112, .105),
+        transparent 60%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--reviews .ivo-card__icon {
+    color: var(--ivo-amber);
+  }
+  
+  .ivo-page .ivo-card--reviews .ivo-count {
+    background: #fcf1df;
+    color: #a57937;
+  }
+  
+  .ivo-page .ivo-card--reviews .ivo-eyebrow {
+    color: #ac8a5b;
+  }
+  
+  /* ============================================================
+     04 — OPERATIONS: QUIET MINT
+     ============================================================ */
+  
+  .ivo-page .ivo-card--operations {
+    border-color: #dfede8;
+  
+    background:
+      radial-gradient(
+        ellipse at 100% 0%,
+        rgba(83, 176, 147, .075),
+        transparent 52%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--operations .ivo-eyebrow {
+    color: #529a84;
+  }
+  
+  /* OPS rows remain almost white */
+  
+  .ivo-page .ivo-run {
+    border-color: #e5eeec;
+    background: rgba(255, 255, 255, .85);
+  }
+  
+  .ivo-page .ivo-run:hover {
+    border-color: #bfded4;
+    background: #f8fcfa;
+  }
+  
+  /*
+   * Preserve the original animated IV hex.
+   * Do not introduce icon tiles or backgrounds.
+   */
+  
+  .ivo-page .ivo-run .iv-hex-mark,
+  .ivo-page .ivo-recent-run .iv-hex-mark {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  
+  /* ============================================================
+     05 — JOURNEY: FRESH BLUE-WHITE
+     ============================================================ */
+  
+  .ivo-page .ivo-card--journey {
+    background:
+      radial-gradient(
+        ellipse at 100% 95%,
+        rgba(66, 107, 250, .055),
+        transparent 58%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-journey-summary strong {
+    color: #344a86;
+  }
+  
+  .ivo-page .ivo-progress-track {
+    background: #e9eef8;
+  }
+  
+  .ivo-page .ivo-progress-track > span {
+    background: linear-gradient(
+      90deg,
+      #426bfa,
+      #7f91e8
+    );
+  }
+  
+  /* ============================================================
+     06 — LATEST OUTPUTS: SOFT SLATE
+     ============================================================ */
+  
+  .ivo-page .ivo-card--outputs {
+    border-color: #e2e8f1;
+  
+    background:
+      radial-gradient(
+        ellipse at 90% 0%,
+        rgba(111, 144, 200, .07),
+        transparent 50%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--outputs .ivo-eyebrow {
+    color: #7487af;
+  }
+  
+  .ivo-page .ivo-output {
+    background: rgba(255, 255, 255, .9);
+    border-color: #e7eaf2;
+  }
+  
+  .ivo-page .ivo-output:nth-child(4n + 1)
+  .ivo-output__preview {
+    background: #eff3ff;
+  }
+  
+  .ivo-page .ivo-output:nth-child(4n + 2)
+  .ivo-output__preview {
+    background: #f5f0fc;
+  }
+  
+  .ivo-page .ivo-output:nth-child(4n + 3)
+  .ivo-output__preview {
+    background: #eff8f4;
+  }
+  
+  .ivo-page .ivo-output:nth-child(4n + 4)
+  .ivo-output__preview {
+    background: #faf4eb;
+  }
+  
+  /*
+   * The paper preview itself remains white.
+   * Only its outer preview environment changes.
+   */
+  
+  .ivo-page .ivo-output__paper {
+    background: #fff;
+  }
+  
+  /* ============================================================
+     07 — RECOMMENDED NEXT: SOFT LAVENDER
+     ============================================================ */
+  
+  .ivo-page .ivo-card--recommended {
+    border-color: #e7e1f5;
+  
+    background:
+      radial-gradient(
+        ellipse at 100% 0%,
+        rgba(149, 113, 220, .12),
+        transparent 62%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--recommended .ivo-card__icon {
+    color: var(--ivo-orchid);
+  }
+  
+  .ivo-page .ivo-card--recommended .ivo-eyebrow {
+    color: #9475bc;
+  }
+  
+  /* ============================================================
+     08 — LATEST OPS: KEEP MOSTLY NEUTRAL
+     ============================================================ */
+  
+  .ivo-page .ivo-card--recent-ops {
+    background: #fff;
+  }
+  
+  .ivo-page .ivo-recent-run:hover {
+    background: #fafbfe;
+  }
+  
+  /* ============================================================
+     09 — RECENT CHANGES: SUBTLE BLUE
+     ============================================================ */
+  
+  .ivo-page .ivo-card--activity {
+    background:
+      radial-gradient(
+        ellipse at 100% 100%,
+        rgba(66, 107, 250, .055),
+        transparent 54%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-activity-item__dot {
+    box-shadow: 0 0 0 4px rgba(144, 158, 183, .08);
+  }
+  
+  .ivo-page .ivo-activity-item--positive
+  .ivo-activity-item__dot {
+    box-shadow: 0 0 0 4px rgba(76, 177, 139, .10);
+  }
+  
+  .ivo-page .ivo-activity-item--warning
+  .ivo-activity-item__dot {
+    box-shadow: 0 0 0 4px rgba(212, 166, 85, .12);
+  }
+  
+  /* ============================================================
+     10 — KNOWLEDGE: WARM LAVENDER WHITE
+     ============================================================ */
+  
+  .ivo-page .ivo-card--knowledge {
+    border-color: #e7e4f1;
+  
+    background:
+      radial-gradient(
+        ellipse at 100% 0%,
+        rgba(152, 137, 210, .095),
+        transparent 62%
+      ),
+      #fff;
+  }
+  
+  .ivo-page .ivo-card--knowledge .ivo-card__icon {
+    color: #8677c3;
+  }
+  
+  /* ============================================================
+     INTERACTION FINISHES
+     ============================================================ */
+  
+  .ivo-page .ivo-inline-action svg,
+  .ivo-page .ivo-text-action svg {
+    transition: transform 180ms ease;
+  }
+  
+  .ivo-page .ivo-inline-action:hover svg,
+  .ivo-page .ivo-text-action:hover svg {
+    transform: translateX(2px);
+  }
+  
+  /* No additional motion for reduced-motion users */
+  
+  @media (prefers-reduced-motion: reduce) {
+    .ivo-page .ivo-card,
+    .ivo-page .ivo-inline-action svg,
+    .ivo-page .ivo-text-action svg {
+      transition: none;
+    }
+  
+    .ivo-page .ivo-card:hover {
+      transform: none;
+    }
+  }
+  

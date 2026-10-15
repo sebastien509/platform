@@ -10,11 +10,8 @@ interface MonetizationGateProps {
 }
 
 /**
- * MonetizationGate — the upgrade entry point.
- *
- * Thin horizontal bar. Fires when the founder's plan is
- * exhausted. The primary CTA opens /pricing where the founder
- * picks a tier and pays through Stripe Checkout.
+ * Mobile-ready inline upgrade prompt.
+ * Retains plan exhaustion rules, callbacks, and /pricing navigation.
  */
 export function MonetizationGate({
   plan,
@@ -27,7 +24,10 @@ export function MonetizationGate({
   if (!exhausted) return null;
 
   const usedBy = plan.ventureNames[0] ?? 'your current venture';
-  const isPaid = plan.tier === 'pro' || plan.tier === 'founder' || plan.tier === 'team';
+  const isPaid =
+    plan.tier === 'pro' ||
+    plan.tier === 'founder' ||
+    plan.tier === 'team';
 
   function handleUpgrade() {
     if (onUpgrade) {
@@ -38,8 +38,8 @@ export function MonetizationGate({
   }
 
   return (
-    <div className="upgrade-bar">
-      <span className="upgrade-bar__icon">
+    <section className="upgrade-bar" aria-label="Venture plan limit reached">
+      <span className="upgrade-bar__icon" aria-hidden="true">
         <TrendingUp className="h-4 w-4" />
       </span>
 
@@ -61,20 +61,26 @@ export function MonetizationGate({
       <div className="upgrade-bar__actions">
         {onKeepResearching && (
           <Button
+            type="button"
             size="sm"
             variant="ghost"
             onClick={onKeepResearching}
-            className="gap-1.5"
+            className="upgrade-bar__secondary gap-1.5"
           >
             Keep researching
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
           </Button>
         )}
-        <Button size="sm" onClick={handleUpgrade} className="gap-1.5">
-          <Sparkles className="h-3.5 w-3.5" />
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleUpgrade}
+          className="upgrade-bar__primary gap-1.5"
+        >
+          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
           {isPaid ? 'Change plan' : 'See plans'}
         </Button>
       </div>
-    </div>
+    </section>
   );
 }

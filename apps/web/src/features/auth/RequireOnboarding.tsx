@@ -23,6 +23,14 @@ import { useHasMembership } from './useHasMembership';
  * invitee who signed up via the invite link.
  */
 export function RequireOnboarding() {
+  /* Local draft journeys live outside this guard — they don't
+     require a workspace. Belt-and-suspenders in case they get
+     nested under this route accidentally. */
+  const __loc = window.location.pathname;
+  if (__loc.startsWith('/ideas/local/')) {
+    return <Outlet />;
+  }
+
   const { data: me, isLoading, isError } = useCurrentUser();
   const invite = usePendingInvite();
   const hasMembership = useHasMembership();

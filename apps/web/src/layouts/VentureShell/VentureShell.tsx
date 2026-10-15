@@ -6,8 +6,16 @@ import {
   useState,
 } from 'react';
 
-import { Outlet, useLocation, useParams } from 'react-router-dom';
-import { Menu, PanelLeftClose } from 'lucide-react';
+import {
+  Outlet,
+  useLocation,
+  useParams,
+} from 'react-router-dom';
+
+import {
+  Menu,
+  PanelLeftClose,
+} from 'lucide-react';
 
 import { VentureHeader } from './VentureHeader';
 import { VentureSidebar } from './VentureSidebar';
@@ -18,14 +26,15 @@ import { LoadingSkeleton } from '@/components/shared/LoadingSkeleton';
 import { useAgentDrawerStore } from '@/lib/stores/agentDrawerStore';
 import { useDeliverablesStore } from '@/lib/deliverables';
 
+import { VentureIntelligence } from
+  '@/features/venture-intelligence/VentureIntelligence';
+
 export function VentureShell() {
   const { ventureId } = useParams<{ ventureId: string }>();
   const location = useLocation();
 
-  const {
-    data: ventureData,
-    isLoading,
-  } = useVenture(ventureId!);
+  const { data: ventureData, isLoading } =
+    useVenture(ventureId!);
 
   const venture = ventureData ?? undefined;
 
@@ -40,7 +49,8 @@ export function VentureShell() {
   const [mobileVentureNavOpen, setMobileVentureNavOpen] =
     useState(false);
 
-  const mobileNavButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileNavButtonRef =
+    useRef<HTMLButtonElement>(null);
 
   const closeMobileVentureNav = useCallback(() => {
     setMobileVentureNavOpen(false);
@@ -75,7 +85,10 @@ export function VentureShell() {
     return () => {
       document.removeEventListener('keydown', onKeyDown);
     };
-  }, [mobileVentureNavOpen, closeMobileVentureNav]);
+  }, [
+    mobileVentureNavOpen,
+    closeMobileVentureNav,
+  ]);
 
   return (
     <div className="iv-venture-shell flex h-full w-full min-w-0 overflow-hidden">
@@ -128,6 +141,16 @@ export function VentureShell() {
         <div className="venture-shell__scroll">
           <Outlet />
         </div>
+
+        {ventureId && !isLoading && (
+          <VentureIntelligence
+            key={ventureId}
+            ventureId={ventureId}
+            ventureName={venture?.name ?? 'This venture'}
+            pathname={location.pathname}
+            suspended={mobileVentureNavOpen}
+          />
+        )}
       </div>
     </div>
   );

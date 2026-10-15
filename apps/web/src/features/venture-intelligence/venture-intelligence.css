@@ -1,0 +1,335 @@
+
+/* ============================================================
+   IV INTELLIGENCE — CONTEXTUAL FLOATING GLASS
+
+   Minimal briefing, not a chatbot.
+   Desktop: 460px floating panel
+   Mobile: responsive floating panel
+   Page-aware word-by-word transitions
+   ============================================================ */
+
+   .iv-intelligence,
+   .iv-intelligence * {
+     box-sizing: border-box;
+   }
+   
+   .iv-intelligence {
+     --vi-blue: #426bfa;
+     --vi-ink: #202736;
+     --vi-muted: #667085;
+   
+     position: fixed;
+     top: 115px;
+     right: 24px;
+     z-index: 1100;
+   
+     width: max-content;
+     max-width: calc(100vw - 40px);
+   
+     font-family: var(--font-sans, sans-serif);
+     color: var(--vi-ink);
+   
+     pointer-events: none;
+   }
+   
+   .iv-intelligence > * {
+     pointer-events: auto;
+   }
+   
+   /* ---------- Minimized launcher ---------- */
+   
+   .iv-intelligence__launcher {
+     display: inline-flex;
+     align-items: center;
+     gap: 9px;
+   
+     min-height: 41px;
+     padding: 10px 15px;
+   
+     border: 1px solid rgba(255, 255, 255, 0.75);
+     border-radius: 100px;
+   
+     background: rgba(255, 255, 255, 0.38);
+   
+     backdrop-filter: blur(30px) saturate(165%);
+     -webkit-backdrop-filter: blur(30px) saturate(165%);
+   
+     box-shadow:
+       0 5px 24px rgba(25, 37, 65, 0.07),
+       inset 0 1px rgba(255, 255, 255, 0.8);
+   
+     color: var(--vi-blue);
+     font-size: 12px;
+     font-weight: 650;
+   
+     cursor: pointer;
+   
+     transition:
+       background 200ms ease,
+       transform 200ms ease;
+   }
+   
+   .iv-intelligence__launcher:hover {
+     background: rgba(255, 255, 255, 0.66);
+     transform: translateY(-1px);
+   }
+   
+   /* ---------- Expanded glass surface ---------- */
+   
+   .iv-intelligence__panel {
+     position: relative;
+     isolation: isolate;
+   
+     width: min(460px, calc(100vw - 40px));
+     min-width: min(460px, calc(100vw - 40px));
+   
+     max-height: min(480px, calc(100dvh - 135px));
+     overflow-y: auto;
+     overflow-x: hidden;
+   
+     padding: 22px 27px 31px;
+   
+     border: 1px solid rgba(166, 183, 255, 0.48);
+     border-radius: 22px;
+   
+     background:
+       radial-gradient(
+         ellipse at 85% 12%,
+         rgba(66, 107, 250, 0.16) 0%,
+         transparent 58%
+       ),
+       radial-gradient(
+         ellipse at 8% 95%,
+         rgba(145, 105, 255, 0.11) 0%,
+         transparent 55%
+       ),
+       rgba(255, 255, 255, 0.42);
+   
+     backdrop-filter: blur(38px) saturate(170%);
+     -webkit-backdrop-filter: blur(38px) saturate(170%);
+   
+     box-shadow:
+       0 10px 40px rgba(27, 43, 75, 0.10),
+       0 0 28px rgba(66, 107, 250, 0.07),
+       inset 0 1px rgba(255, 255, 255, 0.85);
+   
+     animation: vi-appear 260ms ease both;
+   }
+   
+   @keyframes vi-appear {
+     from {
+       opacity: 0;
+       transform: translateY(-7px);
+     }
+   
+     to {
+       opacity: 1;
+       transform: translateY(0);
+     }
+   }
+   
+   /* ---------- Minimal header ---------- */
+   
+   .iv-intelligence__top {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+   
+     margin-bottom: 22px;
+   }
+   
+/* IV Intelligence — standalone animated hex */
+
+.iv-intelligence__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  
+    width: 50px;
+    height: 50px;
+    flex: 0 0 50px;
+  
+    padding: 0;
+    margin: 0;
+  
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+  
+    overflow: visible;
+  }
+  
+  .iv-intelligence__icon .iv-hex-mark {
+    margin: 0;
+  }
+  
+  /* Standalone hex inside minimized launcher */
+  
+  .iv-intelligence__launcher .iv-hex-mark {
+    margin: 0;
+  }
+   
+   .iv-intelligence__close {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+   
+     width: 30px;
+     height: 30px;
+   
+     border: 0;
+     border-radius: 50%;
+   
+     background: transparent;
+     color: #8c95a7;
+   
+     cursor: pointer;
+   }
+   
+   .iv-intelligence__close:hover {
+     background: rgba(255, 255, 255, 0.45);
+     color: var(--vi-ink);
+   }
+   
+   /* ---------- Contextual content ---------- */
+   
+   .iv-intelligence__message {
+     min-width: 0;
+   }
+   
+   .iv-intelligence__label {
+     display: block;
+   
+     margin-bottom: 13px;
+   
+     font-size: 10px;
+     font-weight: 650;
+     letter-spacing: 0.065em;
+   
+     color: var(--vi-blue);
+   }
+   
+   .iv-intelligence__headline {
+     min-height: 24px;
+     margin: 0;
+   
+     font-family: var(--font-display, sans-serif);
+     font-size: 19px;
+     font-weight: 650;
+     line-height: 1.4;
+     letter-spacing: -0.025em;
+   
+     color: var(--vi-ink);
+     overflow-wrap: anywhere;
+   }
+   
+   .iv-intelligence__description {
+     min-height: 30px;
+     margin: 13px 0 0;
+   
+     max-width: 48ch;
+   
+     font-size: 12.5px;
+     font-weight: 450;
+     line-height: 1.8;
+   
+     color: var(--vi-muted);
+     overflow-wrap: anywhere;
+   }
+   
+   .iv-intelligence__words {
+     white-space: normal;
+   }
+   
+   /* Word-by-word reveal */
+   
+   .iv-intelligence__cursor {
+     display: inline-block;
+   
+     width: 2px;
+     height: 0.8em;
+     margin-left: 4px;
+   
+     border-radius: 2px;
+     background: var(--vi-blue);
+   
+     vertical-align: -0.08em;
+   
+     animation: vi-blink 850ms step-end infinite;
+   }
+   
+   @keyframes vi-blink {
+     50% {
+       opacity: 0;
+     }
+   }
+   
+   /* Keyboard accessibility */
+   
+   .iv-intelligence button:focus-visible {
+     outline: 2px solid var(--vi-blue);
+     outline-offset: 3px;
+   }
+   
+   /* ---------- Tablet ---------- */
+   
+   @media (min-width: 768px) and (max-width: 1050px) {
+     .iv-intelligence {
+       right: 16px;
+     }
+   
+     .iv-intelligence__panel {
+       width: min(430px, calc(100vw - 32px));
+       min-width: min(430px, calc(100vw - 32px));
+     }
+   }
+   
+   /* ---------- Mobile ---------- */
+   
+   @media (max-width: 767px) {
+     .iv-intelligence {
+       top: auto;
+       right: 15px;
+       bottom: max(20px, env(safe-area-inset-bottom));
+   
+       max-width: calc(100vw - 30px);
+     }
+   
+     .iv-intelligence__panel {
+       width: min(460px, calc(100vw - 30px));
+       min-width: 0;
+   
+       max-height: 65dvh;
+   
+       padding: 21px 22px 25px;
+       border-radius: 19px;
+     }
+   
+     .iv-intelligence__top {
+       margin-bottom: 18px;
+     }
+   
+     .iv-intelligence__headline {
+       font-size: 18px;
+     }
+   
+     .iv-intelligence__description {
+       font-size: 12px;
+       line-height: 1.7;
+     }
+   }
+   
+   /* ---------- Reduced motion ---------- */
+   
+   @media (prefers-reduced-motion: reduce) {
+     .iv-intelligence__panel,
+     .iv-intelligence__cursor {
+       animation: none;
+     }
+   
+     .iv-intelligence__launcher {
+       transition: none;
+     }
+   }
+   

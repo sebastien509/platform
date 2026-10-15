@@ -1,194 +1,911 @@
-import { useParams, useNavigate } from 'react-router-dom';
+
+import { useMemo } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import './venture-overview-eclectic.css';
+import {
+  Activity,
+  ArrowRight,
+  ArrowUpRight,
+  BookOpen,
+  CheckCircle2,
+  ChevronRight,
+  CircleDot,
+  Clock3,
+  FileText,
+  Layers3,
+  MessageSquareText,
+  Play,
+  Target,
+  Workflow,
+} from 'lucide-react';
+
 import { PageContainer } from '@/components/primary';
 import { LoadingSkeleton } from '@/components/shared/LoadingSkeleton';
+import { IVHexMark } from '@/components/shared/IVHexMark';
+
 import {
   useVentureOverview,
-  type JourneyStep,
-  type NextAction,
 } from '@/features/venture-overview/useVentureOverview';
+
+import { useRuns } from '@/lib/hooks/useRuns';
+import { useDeliverables } from '@/lib/hooks/useDeliverables';
 import { useAgentDrawerStore } from '@/lib/stores/agentDrawerStore';
-import { cn } from '@/lib/utils/cn';
-import {
-  ArrowRight, AlertTriangle, Sparkles, Check, Clock, Play,
-  Layers3, Activity, CheckCircle2, ChevronRight, Target,
-  CircleDot, FileCheck2, Workflow, ArrowUpRight,
-} from 'lucide-react';
-import './venture-overview-electric.css';
 
-type Severity = NextAction['severity'];
-const SEVERITY_ICON = {
-  critical: AlertTriangle,
-  warning: AlertTriangle,
-  info: Sparkles,
-  none: Check,
-};
-const SEVERITY_LABEL: Record<Severity, string> = {
-  critical: 'Action required',
-  warning: 'Recommended focus',
-  info: 'Next step',
-  none: 'Up to date',
-};
+import './venture-overview-intelligence.css';
 
-function JourneyTile({ step, onClick }: { step: JourneyStep; onClick: () => void }) {
-  const statusLabel = step.state === 'complete' ? 'Complete'
-    : step.state === 'needs_review' ? 'Needs review'
-    : step.state === 'in_progress' ? 'In progress' : 'Not started';
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn('ov2-stage', `ov2-stage--${step.state}`)}
-      aria-label={`${step.label}, ${statusLabel}, ${step.validatedCount} of ${step.opTarget} validated outputs`}
-    >
-      <span className="ov2-stage__top">
-        <span className="ov2-stage__name">{step.label}</span>
-        {step.state === 'complete'
-          ? <CheckCircle2 size={15} aria-hidden="true" />
-          : <ChevronRight size={15} aria-hidden="true" />}
-      </span>
-      <span className="ov2-stage__track" aria-hidden="true">
-        <span style={{ width: `${step.percent}%` }} />
-      </span>
-      <span className="ov2-stage__bottom">
-        <span>{statusLabel}</span>
-        <span>{step.validatedCount}/{step.opTarget}</span>
-      </span>
-    </button>
+type LooseRecord = Record<string, unknown>;
+
+function readString(
+  value: unknown,
+  fallback = ''
+): string {
+  return typeof value === 'string' && value.trim()
+    ? value
+    : fallback;
+}
+
+function formatDate(value: unknown): string {
+  const date = new Date(readString(value));
+
+  if (Number.isNaN(date.getTime())) return '';
+
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function getRunTitle(run: LooseRecord): string {
+  return readString(
+    run.opVerb,
+    readString(
+      run.objective,
+      'Venture operation'
+    )
   );
 }
 
-function NextActionCard({
+function getRunStatus(run: LooseRecord): string {
+  return readString(run.status, 'unknown');
+}
+
+function getRunPage(run: LooseRecord): string {
+  return readString(run.page, 'overview');
+}
+
+function getRunTime(run: LooseRecord): string {
+  return readString(
+    run.completedAt,
+    readString(run.startedAt)
+  );
+}
+
+function getOutputTime(output: LooseRecord): string {
+  return readString(
+    output.validatedAt,
+    readString(output.createdAt)
+  );
+}
+
+function getOutputPage(output: LooseRecord): string {
+  return readString(output.pageId, 'knowledge');
+}
+
+function isRunning(status: string): boolean {
+  return [
+    'running',
+    'queued',
+    'pending',
+    'in_progress',
+    'processing',
+  ].includes(status);
+}
+
+function isActionable(status: string): boolean {
+  return status === 'needs_you' ||
+    status === 'review_ready';
+}
+
+function statusText(status: string): string {
+  const labels: Record<string, string> = {
+    needs_you: 'Needs your input',
+    review_ready: 'Ready for review',
+    running: 'Running',
+    queued: 'Queued',
+    pending: 'Pending',
+    in_progress: 'In progress',
+    processing: 'Processing',
+    done: 'Completed',
+    failed: 'Failed',
+    validated: 'Validated',
+    draft: 'Draft',
+  };
+
+  return labels[status] ??
+    status.replace(/_/g, ' ');
+}
+
+function SectionHeading({
+  eyebrow,
+  title,
+  subtitle,
   action,
   onAction,
 }: {
-  action: NextAction;
-  onAction: () => void;
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  action?: string;
+  onAction?: () => void;
 }) {
-  const Icon = SEVERITY_ICON[action.severity];
   return (
-    <section className={cn('ov2-next', `ov2-next--${action.severity}`)} aria-labelledby="ov2-next-title">
-      <div className="ov2-next__intro">
-        <span className="ov2-next__icon"><Icon size={18} aria-hidden="true" /></span>
-        <div>
-          <p className="ov2-eyebrow">{SEVERITY_LABEL[action.severity]}</p>
-          <h2 id="ov2-next-title">{action.title}</h2>
-        </div>
+    <div className="ivo-section-heading">
+      <div>
+        {eyebrow && (
+          <span className="ivo-eyebrow">{eyebrow}</span>
+        )}
+
+        <h2>{title}</h2>
+
+        {subtitle && <p>{subtitle}</p>}
       </div>
-      <p className="ov2-next__description">{action.why}</p>
-      <button type="button" className="ov2-primary-action" onClick={onAction}>
-        {action.primaryLabel}<ArrowRight size={15} aria-hidden="true" />
-      </button>
-    </section>
+
+      {action && onAction && (
+        <button
+          type="button"
+          className="ivo-text-action"
+          onClick={onAction}
+        >
+          {action}
+          <ArrowUpRight size={15} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function EmptyState({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof FileText;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="ivo-empty">
+      <Icon size={19} strokeWidth={1.6} />
+      <strong>{title}</strong>
+      <p>{description}</p>
+    </div>
   );
 }
 
 export default function OverviewPage() {
-  const { ventureId } = useParams<{ ventureId: string }>();
+  const { ventureId } = useParams<{
+    ventureId: string;
+  }>();
+
   const navigate = useNavigate();
+
+  const openDrawer = useAgentDrawerStore(
+    state => state.openDrawer
+  );
+
   const {
-    venture, journey, narrative, nextAction, activity, needsYou,
-    isLoading, relativeTime, stats,
+    venture,
+    journey,
+    narrative,
+    nextAction,
+    activity,
+    needsYou,
+    isLoading,
+    relativeTime,
+    stats,
   } = useVentureOverview(ventureId);
-  const openDrawer = useAgentDrawerStore((s) => s.openDrawer);
+
+  const { runs } = useRuns({
+    ventureId,
+    hydrate: false,
+  });
+
+  const { data: deliverables } = useDeliverables({
+    ventureId,
+  });
+
+  const runRecords = useMemo(
+    () => (runs ?? []) as unknown as LooseRecord[],
+    [runs]
+  );
+
+  const outputRecords = useMemo(
+    () => (deliverables ?? []) as unknown as LooseRecord[],
+    [deliverables]
+  );
+
+  const runningRuns = useMemo(
+    () =>
+      runRecords
+        .filter(run =>
+          isRunning(getRunStatus(run))
+        )
+        .sort((a, b) =>
+          getRunTime(b).localeCompare(getRunTime(a))
+        )
+        .slice(0, 4),
+    [runRecords]
+  );
+
+  const recentRuns = useMemo(
+    () =>
+      [...runRecords]
+        .sort((a, b) =>
+          getRunTime(b).localeCompare(getRunTime(a))
+        )
+        .slice(0, 4),
+    [runRecords]
+  );
+
+  const latestOutputs = useMemo(
+    () =>
+      [...outputRecords]
+        .sort((a, b) =>
+          getOutputTime(b).localeCompare(
+            getOutputTime(a)
+          )
+        )
+        .slice(0, 4),
+    [outputRecords]
+  );
+
+  const pendingReviews = needsYou.filter(
+    run => isActionable(run.status)
+  );
+
+  const nextNeedsYou = needsYou.find(
+    run => run.status === 'needs_you'
+  );
+
+  const firstReview = pendingReviews[0];
+
+  const nextIncomplete = journey.find(
+    step => step.state !== 'complete'
+  );
+
+  const progress = stats.totalPages > 0
+    ? Math.round(
+        (stats.completePages / stats.totalPages) * 100
+      )
+    : 0;
+
+  const base = `/ventures/${ventureId}`;
+
+  const goTo = (page: string) => {
+    navigate(`${base}/${page}`);
+  };
+
+  const openRun = (run: LooseRecord) => {
+    const id = readString(run.id);
+
+    if (id) {
+      openDrawer(id);
+    } else {
+      goTo(getRunPage(run));
+    }
+  };
+
+  const handleNextAction = () => {
+    if (
+      nextAction.severity === 'critical' &&
+      nextNeedsYou
+    ) {
+      openDrawer(nextNeedsYou.id);
+      return;
+    }
+
+    if (nextAction.primaryTo) {
+      navigate(nextAction.primaryTo);
+    }
+  };
+
+  const handleReview = () => {
+    if (firstReview) {
+      openDrawer(firstReview.id);
+    }
+  };
 
   if (isLoading) {
     return (
-      <PageContainer width="wide">
-        <LoadingSkeleton count={4} className="h-24" />
+      <PageContainer
+        width="wide"
+        className="ivo-page"
+      >
+        <LoadingSkeleton
+          count={5}
+          className="h-28"
+        />
       </PageContainer>
     );
   }
 
-  // The funnel percentage measures completed pages, NOT business health.
-  const funnelPercent = stats.totalPages > 0
-    ? Math.round((stats.completePages / stats.totalPages) * 100) : 0;
-  const reviewedCount = journey.filter((s) => s.state === 'needs_review').length;
-  const nextNeedsYou = needsYou.find((run) => run.status === 'needs_you');
-  const goToAction = () => {
-    // This action actually opens the relevant run instead of merely navigating
-    // to the current overview route.
-    if (nextAction.severity === 'critical' && nextNeedsYou) {
-      openDrawer(nextNeedsYou.id);
-      return;
-    }
-    navigate(nextAction.primaryTo);
-  };
-
   return (
-    <PageContainer width="wide" className="ov2-page">
-      <header className="ov2-hero">
-        <div className="ov2-hero__content">
-          <div className="ov2-hero__kicker"><CircleDot size={13} /> Venture workspace</div>
-          <h1>{venture?.name ?? 'Venture overview'}</h1>
-          <p>{narrative}</p>
-          <div className="ov2-hero__shortcuts">
-            <button type="button" onClick={() => navigate(`/ventures/${ventureId}/strategy`)}>
-              Open Strategy <ArrowUpRight size={14} />
-            </button>
-            <button type="button" onClick={() => navigate(`/ventures/${ventureId}/knowledge`)}>
-              Venture knowledge <ArrowUpRight size={14} />
-            </button>
-          </div>
+    <PageContainer
+      width="wide"
+      className="ivo-page"
+    >
+      {/* Page identity */}
+
+      <header className="ivo-page-header">
+        <div className="ivo-page-header__copy">
+          <span className="ivo-eyebrow">
+            VENTURE / OVERVIEW
+          </span>
+
+          <h1>
+            {venture?.name ?? 'Your venture'}
+          </h1>
+
+          <p>
+            Your work, decisions, and next moves
+            — in one place.
+          </p>
         </div>
-        <div className="ov2-hero__score" aria-label={`${funnelPercent}% of funnel pages complete`}>
-          <span className="ov2-hero__score-label">Funnel completion</span>
-          <strong>{funnelPercent}<span>%</span></strong>
-          <div className="ov2-hero__score-track"><span style={{ width: `${funnelPercent}%` }} /></div>
-          <small>{stats.completePages} of {stats.totalPages} workflow pages complete</small>
+
+        <div className="ivo-page-header__signal">
+          <CircleDot size={13} />
+          Live workspace
         </div>
       </header>
 
-      <div className="ov2-summary" aria-label="Venture execution summary">
-        <div className="ov2-summary__item"><span className="ov2-summary__icon is-blue"><Workflow size={18}/></span><div><strong>{stats.runs}</strong><span>OPS runs</span></div></div>
-        <div className="ov2-summary__item"><span className="ov2-summary__icon is-violet"><FileCheck2 size={18}/></span><div><strong>{stats.outputs}</strong><span>Outputs</span></div></div>
-        <div className="ov2-summary__item"><span className="ov2-summary__icon is-mint"><CheckCircle2 size={18}/></span><div><strong>{stats.completePages}/{stats.totalPages}</strong><span>Pages complete</span></div></div>
-        <div className="ov2-summary__item"><span className="ov2-summary__icon is-amber"><AlertTriangle size={18}/></span><div><strong>{needsYou.length}</strong><span>Need review</span></div></div>
-      </div>
+      {/* Bento workspace */}
 
-      <div className="ov2-focus-grid">
-        <NextActionCard action={nextAction} onAction={goToAction} />
-        <section className="ov2-insight" aria-labelledby="ov2-progress-title">
-          <div className="ov2-section-title"><span className="ov2-section-icon is-violet"><Target size={17}/></span><div><p className="ov2-eyebrow">Execution insight</p><h2 id="ov2-progress-title">Where things stand</h2></div></div>
-          <p className="ov2-insight__copy">Progress is measured from validated outputs against each workflow page's target. It does not represent business health or market validation.</p>
-          <div className="ov2-insight__legend"><span><i className="is-done"/> {stats.completePages} complete</span><span><i className="is-review"/> {reviewedCount} need review</span></div>
-          <button type="button" className="ov2-inline-link" onClick={() => navigate(`/ventures/${ventureId}/analytics`)}>View venture analytics <ArrowUpRight size={14}/></button>
+      <div className="ivo-bento">
+
+        {/* 01. Founder briefing */}
+
+        <section
+          className="ivo-card ivo-card--focus"
+          aria-labelledby="ivo-focus-title"
+        >
+          <div className="ivo-focus__top">
+            <span className="ivo-eyebrow">
+              YOUR CURRENT FOCUS
+            </span>
+
+            <span className="ivo-focus__status">
+              <span className="ivo-status-dot" />
+              Based on venture activity
+            </span>
+          </div>
+
+          <div className="ivo-focus__main">
+            <h2 id="ivo-focus-title">
+              {nextAction.title}
+            </h2>
+
+            <p>
+              {nextAction.why || narrative}
+            </p>
+          </div>
+
+          <div className="ivo-focus__bottom">
+            <button
+              type="button"
+              className="ivo-primary-action"
+              onClick={handleNextAction}
+            >
+              {nextAction.primaryLabel}
+              <ArrowUpRight size={16} />
+            </button>
+
+            <span className="ivo-focus__summary">
+              {stats.completePages} of {stats.totalPages}
+              {' '}venture stages complete
+            </span>
+          </div>
         </section>
-      </div>
 
-      <section className="ov2-section ov2-journey" aria-labelledby="ov2-journey-title">
-        <div className="ov2-section-heading"><div><span className="ov2-eyebrow">From strategy to growth</span><h2 id="ov2-journey-title">Venture journey</h2></div><span className="ov2-section-heading__meta">{stats.completePages} of {stats.totalPages} complete</span></div>
-        <div className="ov2-journey__grid">{journey.map((step) => <JourneyTile key={step.key} step={step} onClick={() => navigate(`/ventures/${ventureId}/${step.key}`)} />)}</div>
-      </section>
+        {/* 02. Venture context */}
 
-      <div className="ov2-bottom-grid">
-        <section className="ov2-section" aria-labelledby="ov2-needs-title">
-          <div className="ov2-section-heading"><div className="ov2-title-with-icon"><span className="ov2-section-icon is-amber"><Layers3 size={16}/></span><h2 id="ov2-needs-title">Needs your review</h2></div>{needsYou.length > 0 && <span className="ov2-count">{needsYou.length}</span>}</div>
-          {needsYou.length === 0 ? (
-            <div className="ov2-empty"><span className="ov2-empty__symbol is-mint"><Check size={19}/></span><strong>All clear for now</strong><p>Paused runs and review-ready outputs will appear here.</p></div>
-          ) : (
-            <ul className="ov2-list">{needsYou.map((run) => (
-              <li key={run.id} className="ov2-list__item">
-                <span className="ov2-list__dot is-amber" aria-hidden="true" />
-                <div className="ov2-list__body"><strong>{(run as any).opVerb ?? run.objective ?? 'Run'}</strong><span>{run.status === 'needs_you' ? 'Answer required' : 'Ready for review'}</span></div>
-                <button type="button" onClick={() => openDrawer(run.id)} aria-label={`Open ${(run as any).opVerb ?? run.objective ?? 'run'}`}><Play size={13}/> Open</button>
-              </li>
-            ))}</ul>
+        <section
+          className="ivo-card ivo-card--context"
+          aria-labelledby="ivo-context-title"
+        >
+          <div className="ivo-card__top">
+            <BookOpen
+              size={20}
+              className="ivo-card__icon"
+            />
+
+            <ArrowUpRight
+              size={17}
+              className="ivo-card__corner"
+            />
+          </div>
+
+          <div>
+            <span className="ivo-eyebrow">
+              VENTURE CONTEXT
+            </span>
+
+            <h2 id="ivo-context-title">
+              What has changed?
+            </h2>
+
+            <p>
+              Add research, customer feedback,
+              new evidence, or an important
+              change in direction.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="ivo-inline-action"
+            onClick={() => goTo('knowledge')}
+          >
+            Update venture context
+            <ArrowRight size={15} />
+          </button>
+        </section>
+
+        {/* 03. Founder reviews */}
+
+        <section
+          className="ivo-card ivo-card--reviews"
+          aria-labelledby="ivo-reviews-title"
+        >
+          <div className="ivo-card__top">
+            <MessageSquareText
+              size={20}
+              className="ivo-card__icon"
+            />
+
+            <span className="ivo-count">
+              {pendingReviews.length}
+            </span>
+          </div>
+
+          <div>
+            <span className="ivo-eyebrow">
+              FOUNDER DECISIONS
+            </span>
+
+            <h2 id="ivo-reviews-title">
+              {pendingReviews.length > 0
+                ? 'Your input is needed'
+                : 'Nothing waiting on you'}
+            </h2>
+
+            <p>
+              {pendingReviews.length > 0
+                ? `${pendingReviews.length} ${
+                    pendingReviews.length === 1
+                      ? 'operation needs'
+                      : 'operations need'
+                  } review or additional context.`
+                : 'Operations requiring your decision will appear here.'}
+            </p>
+          </div>
+
+          {pendingReviews.length > 0 && (
+            <button
+              type="button"
+              className="ivo-inline-action"
+              onClick={handleReview}
+            >
+              Review next item
+              <ArrowRight size={15} />
+            </button>
           )}
         </section>
-        <section className="ov2-section" aria-labelledby="ov2-activity-title">
-          <div className="ov2-section-heading"><div className="ov2-title-with-icon"><span className="ov2-section-icon is-cyan"><Activity size={16}/></span><h2 id="ov2-activity-title">Recent execution</h2></div><button type="button" className="ov2-inline-link" onClick={() => navigate(`/ventures/${ventureId}/analytics`)}>Analytics <ArrowUpRight size={13}/></button></div>
+
+        {/* 04. Active operations */}
+
+        <section
+          className="ivo-card ivo-card--operations"
+          aria-labelledby="ivo-running-title"
+        >
+          <SectionHeading
+            eyebrow="LIVE EXECUTION"
+            title="Operations in progress"
+            subtitle="Work currently moving through your venture."
+          />
+
+          {runningRuns.length === 0 ? (
+            <EmptyState
+              icon={Workflow}
+              title="No active operations"
+              description="Running OPS will appear here when execution begins."
+            />
+          ) : (
+            <div className="ivo-run-list">
+              {runningRuns.map((run, index) => {
+                const status = getRunStatus(run);
+                const page = getRunPage(run);
+                const id = readString(
+                  run.id,
+                  `run-${index}`
+                );
+
+                return (
+                  <button
+                    type="button"
+                    className="ivo-run"
+                    key={id}
+                    onClick={() => openRun(run)}
+                  >
+                    <IVHexMark
+                      size="sm"
+                      animated
+                    />
+
+                    <span className="ivo-run__content">
+                      <strong>
+                        {getRunTitle(run)}
+                      </strong>
+
+                      <span>
+                        {page} · {statusText(status)}
+                      </span>
+                    </span>
+
+                    <ChevronRight size={16} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 05. Journey / progress */}
+
+        <section
+          className="ivo-card ivo-card--journey"
+          aria-labelledby="ivo-journey-title"
+        >
+          <SectionHeading
+            eyebrow="VENTURE PROGRESS"
+            title="From idea to venture"
+            subtitle="Stage completion based on validated outputs."
+          />
+
+          <div className="ivo-journey-summary">
+            <strong>{progress}%</strong>
+            <span>
+              {stats.completePages} of {stats.totalPages}
+              {' '}stages complete
+            </span>
+          </div>
+
+          <div
+            className="ivo-progress-track"
+            aria-label={`${progress}% of venture stages complete`}
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progress}
+          >
+            <span
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+
+          <div className="ivo-journey-list">
+            {journey.map(step => (
+              <button
+                key={step.key}
+                type="button"
+                className={[
+                  'ivo-journey-item',
+                  `ivo-journey-item--${step.state}`,
+                ].join(' ')}
+                onClick={() => goTo(step.key)}
+              >
+                <span className="ivo-journey-item__mark">
+                  {step.state === 'complete' ? (
+                    <CheckCircle2 size={16} />
+                  ) : (
+                    <CircleDot size={15} />
+                  )}
+                </span>
+
+                <span className="ivo-journey-item__name">
+                  {step.label}
+                </span>
+
+                <span className="ivo-journey-item__count">
+                  {step.validatedCount}/{step.opTarget}
+                </span>
+
+                <ChevronRight size={14} />
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* 06. Latest outputs */}
+
+        <section
+          className="ivo-card ivo-card--outputs"
+          aria-labelledby="ivo-outputs-title"
+        >
+          <SectionHeading
+            eyebrow="KNOWLEDGE CREATED"
+            title="Latest outputs"
+            subtitle="Recent deliverables recorded by your OPS."
+            action="Open knowledge"
+            onAction={() => goTo('knowledge')}
+          />
+
+          {latestOutputs.length === 0 ? (
+            <EmptyState
+              icon={FileText}
+              title="No outputs yet"
+              description="Documents and deliverables will appear as operations produce them."
+            />
+          ) : (
+            <div className="ivo-output-grid">
+              {latestOutputs.map((output, index) => {
+                const id = readString(
+                  output.id,
+                  `output-${index}`
+                );
+
+                const title = readString(
+                  output.title,
+                  'Untitled deliverable'
+                );
+
+                const page = getOutputPage(output);
+                const status = readString(
+                  output.status,
+                  'saved'
+                );
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className="ivo-output"
+                    onClick={() => goTo(page)}
+                  >
+                    <span className="ivo-output__preview">
+                      <span className="ivo-output__paper">
+                        <FileText size={21} />
+
+                        <span />
+                        <span />
+                        <span />
+                      </span>
+                    </span>
+
+                    <span className="ivo-output__details">
+                      <strong title={title}>
+                        {title}
+                      </strong>
+
+                      <span>
+                        {page} · {statusText(status)}
+                      </span>
+
+                      <small>
+                        {formatDate(getOutputTime(output))}
+                      </small>
+                    </span>
+
+                    <ArrowUpRight
+                      size={15}
+                      className="ivo-output__arrow"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 07. Recommended focus */}
+
+        <section
+          className="ivo-card ivo-card--recommended"
+          aria-labelledby="ivo-recommended-title"
+        >
+          <div className="ivo-card__top">
+            <Target
+              size={20}
+              className="ivo-card__icon"
+            />
+
+            <span className="ivo-eyebrow">
+              WHAT'S NEXT
+            </span>
+          </div>
+
+          <h2 id="ivo-recommended-title">
+            {nextIncomplete
+              ? `Make progress in ${nextIncomplete.label}`
+              : 'Keep learning from your outcomes'}
+          </h2>
+
+          <p>
+            {nextIncomplete
+              ? `${nextIncomplete.validatedCount} of ${
+                  nextIncomplete.opTarget
+                } expected validated outputs are recorded for this stage.`
+              : 'Your defined venture stages are complete. Continue tracking evidence and results.'}
+          </p>
+
+          <button
+            type="button"
+            className="ivo-inline-action"
+            onClick={() =>
+              goTo(nextIncomplete?.key ?? 'outcomes')
+            }
+          >
+            {nextIncomplete
+              ? `Explore ${nextIncomplete.label} OPS`
+              : 'View outcomes'}
+
+            <ArrowRight size={15} />
+          </button>
+        </section>
+
+        {/* 08. Recent OPS */}
+
+        <section
+          className="ivo-card ivo-card--recent-ops"
+          aria-labelledby="ivo-recent-ops-title"
+        >
+          <SectionHeading
+            eyebrow="EXECUTION HISTORY"
+            title="Latest operations"
+            subtitle="The most recent OPS records."
+          />
+
+          {recentRuns.length === 0 ? (
+            <EmptyState
+              icon={Play}
+              title="No operations recorded"
+              description="Your execution history will build as OPS run."
+            />
+          ) : (
+            <div className="ivo-recent-list">
+              {recentRuns.map((run, index) => {
+                const id = readString(
+                  run.id,
+                  `recent-${index}`
+                );
+
+                const status = getRunStatus(run);
+
+                return (
+                  <button
+                    key={id}
+                    type="button"
+                    className="ivo-recent-run"
+                    onClick={() => openRun(run)}
+                  >
+                    <span className="ivo-recent-run__icon">
+                      {isRunning(status) ? (
+                        <IVHexMark size="xs" />
+                      ) : status === 'done' ? (
+                        <CheckCircle2 size={16} />
+                      ) : (
+                        <Clock3 size={16} />
+                      )}
+                    </span>
+
+                    <span>
+                      <strong>
+                        {getRunTitle(run)}
+                      </strong>
+
+                      <small>
+                        {statusText(status)}
+                        {' · '}
+                        {getRunPage(run)}
+                      </small>
+                    </span>
+
+                    <ArrowUpRight size={15} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        {/* 09. Changes and decisions */}
+
+        <section
+          className="ivo-card ivo-card--activity"
+          aria-labelledby="ivo-activity-title"
+        >
+          <SectionHeading
+            eyebrow="VENTURE HISTORY"
+            title="Recent changes"
+            subtitle="A timeline of recorded activity and outputs."
+            action="View outcomes"
+            onAction={() => goTo('outcomes')}
+          />
+
           {activity.length === 0 ? (
-            <div className="ov2-empty"><span className="ov2-empty__symbol is-blue"><Clock size={18}/></span><strong>Ready for first activity</strong><p>Runs and saved outputs will build this timeline automatically.</p></div>
+            <EmptyState
+              icon={Activity}
+              title="Your timeline starts here"
+              description="Completed work and saved evidence will build your venture history."
+            />
           ) : (
-            <ul className="ov2-list">{activity.map((entry) => (
-              <li key={entry.id} className="ov2-list__item">
-                <span className={cn('ov2-list__dot', `is-${entry.tone}`)} aria-hidden="true"/>
-                <div className="ov2-list__body"><strong>{entry.text}</strong></div>
-                <time className="ov2-list__time" dateTime={entry.timestamp}>{relativeTime(entry.timestamp)}</time>
-              </li>
-            ))}</ul>
+            <div className="ivo-activity-list">
+              {activity.slice(0, 6).map(item => (
+                <div
+                  className={[
+                    'ivo-activity-item',
+                    `ivo-activity-item--${item.tone}`,
+                  ].join(' ')}
+                  key={item.id}
+                >
+                  <span className="ivo-activity-item__dot" />
+
+                  <div>
+                    <p>{item.text}</p>
+
+                    <time dateTime={item.timestamp}>
+                      {relativeTime(item.timestamp)}
+                    </time>
+                  </div>
+                </div>
+              ))}
+            </div>
           )}
         </section>
+
+        {/* 10. Knowledge entry */}
+
+        <section
+          className="ivo-card ivo-card--knowledge"
+          aria-labelledby="ivo-knowledge-title"
+        >
+          <div className="ivo-card__top">
+            <Layers3
+              size={20}
+              className="ivo-card__icon"
+            />
+
+            <ArrowUpRight
+              size={17}
+              className="ivo-card__corner"
+            />
+          </div>
+
+          <div>
+            <span className="ivo-eyebrow">
+              CONTINUOUS LEARNING
+            </span>
+
+            <h2 id="ivo-knowledge-title">
+              Keep your venture informed.
+            </h2>
+
+            <p>
+              Bring new findings, research,
+              and customer evidence back
+              into the workspace.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="ivo-inline-action"
+            onClick={() => goTo('knowledge')}
+          >
+            Open knowledge
+            <ArrowRight size={15} />
+          </button>
+        </section>
+
       </div>
     </PageContainer>
   );

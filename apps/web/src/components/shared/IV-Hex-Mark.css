@@ -1,0 +1,421 @@
+
+/* ============================================================
+   IV HEX MARK — ORIGINAL LOADING NETWORK, MINIATURIZED
+
+   Original classes:
+   .iv-hex-net
+   .iv-hex-node
+   .iv-hex-node--center
+   .iv-hex-node--c1 through c37
+   .iv-hex-node--r1 through r3
+   .iv-hex-brick / --b / --c
+
+   Keeps original 200px geometry and keyframes.
+   Only scales the entire network as one visual object.
+
+   Does not change IVLoadingScreen.
+   ============================================================ */
+
+   .iv-hex-mark {
+    --iv-mark-size: 38px;
+    --iv-mark-scale: 0.15;
+  
+    position: relative;
+    display: inline-block;
+  
+    width: var(--iv-mark-size);
+    height: var(--iv-mark-size);
+  
+    min-width: var(--iv-mark-size);
+    flex: 0 0 var(--iv-mark-size);
+  
+    vertical-align: middle;
+    overflow: visible;
+    isolation: isolate;
+  }
+  
+  /* Sizes are visual containers, not individual brick sizes. */
+  
+  .iv-hex-mark--xs {
+    --iv-mark-size: 28px;
+    --iv-mark-scale: 0.11;
+  }
+  
+  .iv-hex-mark--sm {
+    --iv-mark-size: 38px;
+    --iv-mark-scale: 0.15;
+  }
+  
+  .iv-hex-mark--md {
+    --iv-mark-size: 50px;
+    --iv-mark-scale: 0.20;
+  }
+  
+  .iv-hex-mark--lg {
+    --iv-mark-size: 72px;
+    --iv-mark-scale: 0.28;
+  }
+  
+  /* ============================================================
+     ORIGINAL 200px HEX NETWORK
+     ============================================================ */
+  
+  .iv-hex-mark .iv-hex-net {
+    position: absolute;
+  
+    top: 50%;
+    left: 50%;
+  
+    width: 200px;
+    height: 200px;
+  
+    transform:
+      translate(-50%, -50%)
+      scale(var(--iv-mark-scale));
+  
+    transform-origin: center;
+  
+    filter:
+      drop-shadow(
+        0 0 24px rgb(66 107 250 / 7%)
+      );
+  
+    pointer-events: none;
+  }
+  
+  /* Original nodes */
+  
+  .iv-hex-mark .iv-hex-node {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+  
+    display: block;
+  
+    width: 30px;
+    height: 30px;
+  
+    transition: transform 0.3s ease;
+  }
+  
+  /* Center */
+  
+  .iv-hex-mark .iv-hex-node--center {
+    margin-left: -15px;
+    margin-top: -15px;
+  
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite;
+  }
+  
+  /* ============================================================
+     ORIGINAL THREE INTERSECTING BARS
+     NOT HEXAGON CLIP-PATH SHAPES
+     ============================================================ */
+  
+  .iv-hex-mark .iv-hex-brick {
+    position: absolute;
+  
+    display: block;
+    top: 5px;
+  
+    width: 3px;
+    height: 70px;
+  
+    border-radius: 4px;
+    background: #426bfa;
+  
+    box-shadow:
+      0 0 7px rgb(66 107 250 / 20%),
+      0 0 17px rgb(66 107 250 / 6%);
+  
+    transform-origin: center center;
+  
+    animation:
+      iv-hex-fade-warm
+      2.4s ease-in-out infinite;
+  }
+  
+  .iv-hex-mark .iv-hex-brick--b {
+    transform: rotate(60deg);
+  }
+  
+  .iv-hex-mark .iv-hex-brick--c {
+    transform: rotate(-60deg);
+  }
+  
+  /* ============================================================
+     ORIGINAL NETWORK POSITIONS
+     ============================================================ */
+  
+  .iv-hex-mark .iv-hex-node--c1 {
+    margin-left: -47px;
+    margin-top: -15px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c2 {
+    margin-left: -31px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c3 {
+    margin-left: 1px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c4 {
+    margin-left: 17px;
+    margin-top: -15px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c5 {
+    margin-left: -31px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c6 {
+    margin-left: 1px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c7 {
+    margin-left: -63px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c8 {
+    margin-left: 33px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c9 {
+    margin-left: -15px;
+    margin-top: 41px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c10 {
+    margin-left: -63px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c11 {
+    margin-left: 33px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c12 {
+    margin-left: -15px;
+    margin-top: -71px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c13 {
+    margin-left: -47px;
+    margin-top: -71px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c14 {
+    margin-left: 17px;
+    margin-top: -71px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c15 {
+    margin-left: -47px;
+    margin-top: 41px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c16 {
+    margin-left: 17px;
+    margin-top: 41px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c17 {
+    margin-left: -79px;
+    margin-top: -15px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c18 {
+    margin-left: 49px;
+    margin-top: -15px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c19 {
+    margin-left: -63px;
+    margin-top: -99px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c20 {
+    margin-left: 33px;
+    margin-top: -99px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c21 {
+    margin-left: 1px;
+    margin-top: -99px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c22 {
+    margin-left: -31px;
+    margin-top: -99px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c23 {
+    margin-left: -63px;
+    margin-top: 69px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c24 {
+    margin-left: 33px;
+    margin-top: 69px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c25 {
+    margin-left: 1px;
+    margin-top: 69px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c26 {
+    margin-left: -31px;
+    margin-top: 69px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c28 {
+    margin-left: -95px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c29 {
+    margin-left: -95px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c30 {
+    margin-left: 49px;
+    margin-top: 41px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c31 {
+    margin-left: -79px;
+    margin-top: -71px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c32 {
+    margin-left: -111px;
+    margin-top: -15px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c33 {
+    margin-left: 65px;
+    margin-top: -43px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c34 {
+    margin-left: 65px;
+    margin-top: 13px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c35 {
+    margin-left: -79px;
+    margin-top: 41px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c36 {
+    margin-left: 49px;
+    margin-top: -71px;
+  }
+  
+  .iv-hex-mark .iv-hex-node--c37 {
+    margin-left: 81px;
+    margin-top: -15px;
+  }
+  
+  /* ============================================================
+     ORIGINAL STAGGERED ROW TIMING
+     ============================================================ */
+  
+  .iv-hex-mark .iv-hex-node--r1 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.2s;
+  }
+  
+  .iv-hex-mark .iv-hex-node--r2 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.4s;
+  }
+  
+  .iv-hex-mark .iv-hex-node--r3 {
+    animation:
+      iv-hex-pulse
+      2.4s ease-in-out infinite 0.6s;
+  }
+  
+  .iv-hex-mark .iv-hex-node--r1 .iv-hex-brick {
+    animation-delay: 0.2s;
+  }
+  
+  .iv-hex-mark .iv-hex-node--r2 .iv-hex-brick {
+    animation-delay: 0.4s;
+  }
+  
+  .iv-hex-mark .iv-hex-node--r3 .iv-hex-brick {
+    animation-delay: 0.6s;
+  }
+  
+  /* ============================================================
+     ORIGINAL KEYFRAMES
+     ============================================================ */
+  
+  @keyframes iv-hex-pulse {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+  
+    50% {
+      transform: scale(0.06);
+    }
+  }
+  
+  @keyframes iv-hex-fade-warm {
+    0%,
+    100% {
+      opacity: 0.86;
+      background: #426bfa;
+    }
+  
+    50% {
+      opacity: 0.14;
+      background: #9cb5ee;
+    }
+  }
+  
+  /* ============================================================
+     STATIC + ACCESSIBILITY
+     ============================================================ */
+  
+  .iv-hex-mark.is-static .iv-hex-node,
+  .iv-hex-mark.is-static .iv-hex-brick {
+    animation: none !important;
+  }
+  
+  .iv-hex-mark.is-static .iv-hex-brick {
+    opacity: 0.86;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .iv-hex-mark .iv-hex-node,
+    .iv-hex-mark .iv-hex-brick {
+      animation: none !important;
+    }
+  
+    .iv-hex-mark .iv-hex-node {
+      transform: none;
+    }
+  
+    .iv-hex-mark .iv-hex-brick {
+      opacity: 0.65;
+    }
+  }
+  

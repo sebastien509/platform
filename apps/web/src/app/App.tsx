@@ -36,6 +36,7 @@ import LoginPage from '@/pages/Login';
 import AuthCallbackPage from '@/pages/AuthCallback';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import OnboardingPage from '@/pages/Onboarding';
+import LocalJourneyPage from '@/pages/LocalJourneyPage';
 import DraftJourneyPage from '@/pages/DraftJourneyPage';
 import { RequireOnboarding } from '@/features/auth/RequireOnboarding';
 import ResearchReportViewerPage from '@/pages/idea/ResearchReportViewer';
@@ -77,6 +78,10 @@ function AppRoutes() {
 
       <Route element={<AuthGuard />}>
         <Route path="/onboarding" element={<OnboardingPage />} />
+
+        {/* Local draft journey — authenticated but NOT workspace-gated.
+            Lives entirely in localStorage until synthesize completes. */}
+        <Route path="/ideas/local/:localId" element={<LocalJourneyPage />} />
         <Route element={<RequireOnboarding />}>
           <Route element={<JourneyShell />}>
             <Route path="/ideas/:ideaId" element={<IdeaDetailPage />} />

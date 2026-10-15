@@ -42,7 +42,7 @@ import { claimHandoff } from '@/features/onboarding/claim';
 
 import { pushIdeaToDb } from '@/lib/hooks/pushIdeaToDb';
 
-import { deriveIdeaTitle } from '@/features/ideas/deriveIdeaTitle';
+import { finalizeAndPersist } from '@/features/idea-journey/finalizeAndPersist';
 import './Onboarding.css';
 
 
@@ -349,196 +349,72 @@ export default function OnboardingPage() {
         const pendingHandoff = readPendingHandoff();
 
         if (pendingHandoff) {
-
           try {
-
+            /* Mark the handoff claimed server-side. The idea row is
+             * created below via finalizeAndPersist — a single INSERT
+             * at stage='validate'. */
             const claimed = await claimHandoff(pendingHandoff);
 
-
-
             const store = useJourneyStore.getState();
-
             const draftJourney = store.journeys[pendingHandoff];
 
-
-
             if (draftJourney) {
+              /* ONE write — finalize runs authenticated, the idea
+               * row is born at stage='validate' with all data baked in. */
+              const newIdeaId = await finalizeAndPersist(draftJourney);
 
-              /* Do NOT run finalize here — SynthesisStage runs it
-
-               * on /ideas/:id where the founder is authenticated.
-
-               * We push the raw draft state and start the founder at
-
-               * the synthesize stage. */
-
-
-
-              const derivedTitle = deriveIdeaTitle(
-
-                draftJourney.structured,
-
-                draftJourney.rawCapture,
-
-              );
-
-
-
-              const structuredWithResearch = {
-
-                ...(draftJourney.structured as unknown as Record<string, unknown>),
-
-                researchEntries: draftJourney.researchEntries ?? [],
-
-                researchRun: draftJourney.researchRun ?? null,
-
-                synthesisProposals: draftJourney.synthesisProposals ?? [],
-
-                synthesisOverview: draftJourney.synthesisOverview ?? null,
-
-                reviewNotes: draftJourney.reviewNotes ?? {},
-
-              };
-
-
-
-              const created = await pushIdeaToDb({
-
-                title: derivedTitle,
-
-                structured: structuredWithResearch,
-
-                capture_payload: {
-
-                  exchanges: draftJourney.capture?.exchanges ?? [],
-
-                  rawCapture: draftJourney.rawCapture ?? claimed.content ?? '',
-
-                },
-
-                clean_payload: {
-
-                  fields: draftJourney.clean?.fields ?? {},
-
-                },
-
-                validation: {
-
-                  decision: null,
-
-                  note: null,
-
-                  decidedAt: null,
-
-                  createdVentureId: null,
-
-                },
-
-                /* Start the authenticated journey at synthesize.
-
-                 * SynthesisStage fires finalize once we land there. */
-
-                stage: 'synthesize',
-
+              console.log('[onboarding] idea persisted', {
+                handoff: pendingHandoff,
+                ideaId: newIdeaId,
               });
-
-
-
-              /* Migrate the local journey to the new ideaId key */
-
-              store.setJourney(created.id, {
-
-                ...draftJourney,
-
-                ideaId: created.id,
-
-                serverId: created.id,
-
-              } as any);
-
-
-
-              console.log('[onboarding] journey migrated', {
-
-                from: pendingHandoff,
-
-                to: created.id,
-
-              });
-
-
 
               clearPendingHandoff();
-
-              navigate(`/ideas/${created.id}`, { replace: true });
-
+              navigate(`/ideas/${newIdeaId}`, { replace: true });
               return;
-
             }
-
-
 
             /* Handoff claimed but no draft journey found in
-
-             * localStorage. Fall back to a fresh idea seed with the
-
-             * raw content — the founder starts at capture. */
-
+             * localStorage (cleared cookies, different device).
+             * Fall back to a fresh idea at capture. */
             if (claimed.content) {
-
               const created = await pushIdeaToDb({
-
                 title: claimed.content.slice(0, 80),
-
                 structured: {},
-
                 capture_payload: { exchanges: [], rawCapture: claimed.content },
-
                 clean_payload: { fields: {} },
-
                 validation: { decision: null, note: null, decidedAt: null, createdVentureId: null },
-
                 stage: 'capture',
-
               });
-
               clearPendingHandoff();
-
               navigate(`/ideas/${created.id}`, { replace: true });
-
               return;
-
             }
 
-
-
             clearPendingHandoff();
-
           } catch (e) {
-
             console.warn('[onboarding] handoff claim failed:', e);
-
             setSaving(false);
-
             setError(
-
               e instanceof Error
-
                 ? `Could not save your idea — ${e.message}`
-
                 : 'Could not save your idea. Try again.',
-
             );
-
             return;
-
           }
-
         }
 
+        /* First-timer — enter a fresh LOCAL journey. No DB row is
+        written until finalize completes on /ideas/:id. */
+        if (!hasIdeas) {
+          /* Bare id — the URL drops the `local_` prefix. */
+          const localId = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+          const storeKey = `local_${localId}`;
+          useJourneyStore.getState().ensureJourney(storeKey);
+          navigate(`/ideas/local/${localId}`, { replace: true });
+          return;
+        }
 
-
-        navigate(hasIdeas ? '/today' : '/ideas', { replace: true });
+        navigate('/today', { replace: true });
 
         return;
 

@@ -12,6 +12,7 @@ import { useIdeaPush } from '@/features/idea-journey/useIdeaPush';
 import { useJourneyStore } from '@/lib/stores/journeyStore';
 import { useIdea } from '@/lib/hooks/useIdeas';
 import { useIdeaKnowledge } from '@/features/idea-journey/useIdeaKnowledge';
+import { finalizeAndPersist } from '@/features/idea-journey/finalizeAndPersist';
 
 import { Search } from 'lucide-react';
 
@@ -196,6 +197,14 @@ export default function IdeaDetailPage() {
     <IdeaJourney
       journey={journey}
       onChange={(next) => setJourney(ideaId, next)}
+      onValidate={async () => {
+        try {
+          const newIdeaId = await finalizeAndPersist(journey);
+          navigate(`/ideas/${newIdeaId}`, { replace: true });
+        } catch (e) {
+          console.error('[IdeaDetail] finalizeAndPersist failed', e);
+        }
+      }}
     />
   );
 }
