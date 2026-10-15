@@ -20,6 +20,10 @@ interface ResearchStageProps {
   rawCapture: string;
   entries: ResearchEntry[];
   onRunStateChange: (next: ResearchRunState) => void;
+  /** Write-through updater — reads the LATEST run state from the
+   *  store before applying. Prevents stale-prop overwrites when a
+   *  thread completes between render and click. */
+  onRunStateUpdate?: (fn: (latest: ResearchRunState) => ResearchRunState) => void;
   onEntriesChange: (next: ResearchEntry[]) => void;
   onComplete: (state: ResearchRunState) => void;
 }
@@ -44,6 +48,7 @@ export function ResearchStage({
   rawCapture,
   entries,
   onRunStateChange,
+  onRunStateUpdate,
   onEntriesChange,
   onComplete,
 }: ResearchStageProps) {
@@ -245,6 +250,7 @@ export function ResearchStage({
           kind,
           title: out.entry.title,
           summary: out.entry.summary,
+          html: (out.entry as any).html ?? null,
           sections: out.entry.sections,
           confidence: out.entry.confidence,
           founderPrompt: out.entry.founderPrompt,
@@ -321,9 +327,22 @@ export function ResearchStage({
 
   function handleOpenEntry(entry: ResearchEntry) {
     setActiveReport(entry);
-    const viewed = runState.viewedReportIds ?? [];
-    if (!viewed.includes(entry.id)) {
-      onRunStateChange({ ...runState, viewedReportIds: [...viewed, entry.id] });
+
+    /* Write-through: read the LATEST run state from the store so
+     * a thread that completed between render and click isn't
+     * clobbered. Falls back to the prop if the updater isn't
+     * provided (mock / standalone usage). */
+    if (onRunStateUpdate) {
+      onRunStateUpdate((latest) => {
+        const viewed = latest.viewedReportIds ?? [];
+        if (viewed.includes(entry.id)) return latest;
+        return { ...latest, viewedReportIds: [...viewed, entry.id] };
+      });
+    } else {
+      const viewed = runState.viewedReportIds ?? [];
+      if (!viewed.includes(entry.id)) {
+        onRunStateChange({ ...runState, viewedReportIds: [...viewed, entry.id] });
+      }
     }
   }
 
@@ -514,6 +533,7 @@ export function ResearchStage({
                 ventureId: ideaId,
                 status: 'approved',
                 content: '',
+                html: activeReport.html ?? null,
                 sections: activeReport.sections,
                 citations: [],
                 producedBy: 'knowledge',

@@ -120,21 +120,29 @@
     display: block;
     top: 5px;
   
-    width: 3px;
+    /* Width + color are consumer-overridable via CSS variables.
+       Loading screen keeps the blue defaults; other surfaces
+       (e.g. IdeaProcessing) set --hex-color / --hex-thickness. */
+    width: var(--hex-thickness, 3px);
     height: 70px;
   
     border-radius: 4px;
-    background: #426bfa;
+    background: var(--hex-color, #426bfa);
   
-    box-shadow:
-      0 0 7px rgb(66 107 250 / 20%),
-      0 0 17px rgb(66 107 250 / 6%);
+    box-shadow: var(--hex-glow, none);
   
     transform-origin: center center;
   
     animation:
       iv-hex-fade-warm
       2.4s ease-in-out infinite;
+  }
+  
+  /* Quiet mode — kill the pulse animation that swaps to a light
+     tint mid-cycle. Renders as a solid, calm network. */
+  .iv-hex-mark.is-quiet .iv-hex-node,
+  .iv-hex-mark.is-quiet .iv-hex-brick {
+    animation: none !important;
   }
   
   .iv-hex-mark .iv-hex-brick--b {

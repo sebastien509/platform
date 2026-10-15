@@ -119,6 +119,7 @@ export function useArchiveVenture() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['ventures'] });
+      qc.invalidateQueries({ queryKey: ['workspace-plan'] });
     },
   });
 }

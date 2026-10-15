@@ -355,9 +355,6 @@
   gap: var(--space-8);
 }
 
-
-
-
 /* ============================================================
    Header — icon left, title right
    ============================================================ */
@@ -735,67 +732,13 @@
    Processing hex
    ============================================================ */
 
-.idea-processing {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-height: 220px;
-  padding: var(--space-8) 0;
-  animation: idea-processing-in var(--motion-card) var(--ease-standard) both;
-}
-
-@keyframes idea-processing-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.idea-processing__hex-clip {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 200px;
-  height: 200px;
-  overflow: visible;
-}
-
-.idea-processing__hex {
-  position: relative;
-  width: 200px;
-  height: 200px;
-  flex-shrink: 0;
-  transform-origin: center center;
-  animation: idea-hex-breathe 2.8s ease-in-out infinite;
-}
-
 @keyframes idea-hex-breathe {
   0%, 100% { transform: scale(0.6); }
   50%      { transform: scale(0.7); }
 }
 
-.idea-processing__hex .iv-hex-brick {
-  background: var(--text-primary);
-  box-shadow:
-    0 0 6px rgb(255 255 255 / 32%),
-    0 0 16px rgb(255 255 255 / 10%);
-  animation: idea-hex-fade-mono 2.4s ease-in-out infinite;
-}
-
-[data-mode="warm"] .idea-processing__hex .iv-hex-brick {
-  box-shadow: none;
-}
-
-@keyframes idea-hex-fade-mono {
-  0%, 100% { opacity: 0.95; background: var(--text-primary); }
-  50%      { opacity: 0.2;  background: var(--text-muted); }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .idea-processing { animation: none; }
-  .idea-processing__hex { animation: none; transform: scale(0.65); }
-  .idea-processing__hex .iv-hex-brick { animation: none; opacity: 0.6; }
-}
+  }
 
 /* ---------- Synthesis summary tally ---------- */
 
@@ -1127,4 +1070,74 @@
 .synth-signal svg {
   color: var(--success);
   flex-shrink: 0;
+}
+
+/* ============================================================
+   IdeaProcessing — hex mark in the processing state
+   The .iv-hex-mark wrapper supplies size tokens; this container
+   gives it visible room and center alignment.
+   ============================================================ */
+/* ============================================================
+   IdeaProcessing — hex mark in the processing state
+   The .iv-hex-mark wrapper supplies size tokens; this container
+   gives it visible room and center alignment.
+   ============================================================ */
+/* ============================================================
+   IdeaProcessing — hex mark in the processing state
+   Clean version. Uses the IV-Hex-Mark design system directly.
+   No legacy overrides, no color hijack — the bricks render in
+   the loading screen blue (#426bfa from IV-Hex-Mark.css).
+   ============================================================ */
+/* The mark itself — bigger than the loading screen so it reads
+   as a distinct processing beat. */
+/* ============================================================
+   IdeaProcessing — final overrides
+   · Dark gray bricks (not blue)
+   · Full container height so the network isn't cropped
+   ============================================================ */
+
+/* Color — dark gray, subtle halo */
+/* Alternate darker for the rotated bars so they read distinctly */
+/* Kill the pulsing fade animation that flips colors mid-cycle.
+   The loading screen's animation swaps to a light blue tint — that
+   reads as "blue" even with a dark base. We want quiet gray. */
+/* Room to breathe — bigger container, centered. */
+/* Bigger mark, full presence */
+
+/* ============================================================
+   IdeaProcessing — the ONE rule set.
+   Wraps HexProcessing (which uses IV-Hex-Mark.css).
+   Container is 140px, padded, overflow-visible.
+   ============================================================ */
+
+
+/* ============================================================
+   IdeaProcessing — the ONE rule set.
+   The child HexProcessing is 140px; we don't clip, we don't
+   constrain beyond a min-height. Everything inside is absolute.
+   ============================================================ */
+.idea-processing {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 220px;
+  padding: 40px 0;
+  overflow: visible;
+  animation: idea-processing-fade-in 400ms var(--ease-standard) both;
+}
+
+@keyframes idea-processing-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.idea-processing__hex-clip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* No fixed size — the HexProcessing mark defines its own box.
+     This wrapper is just a centering container with overflow
+     visible so the network glow isn't cut. */
+  overflow: visible;
 }

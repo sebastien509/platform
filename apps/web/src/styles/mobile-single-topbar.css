@@ -67,3 +67,13 @@
       display: none !important;
     }
   }
+
+  .iv-nav-shell__mobile-logo {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    object-fit: contain;
+  
+    filter: brightness(0);
+    opacity: 0.88;
+  }

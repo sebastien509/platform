@@ -69,6 +69,7 @@ const RESEARCH_THREAD_SCHEMA = {
       title: { type: 'string' },
       summary: { type: 'string' },
       confidence: { type: 'integer' },
+      html: { type: 'string' },
       sections: {
         type: 'array',
         items: {
@@ -88,7 +89,7 @@ const RESEARCH_THREAD_SCHEMA = {
         },
       },
     },
-    required: ['title', 'summary', 'confidence', 'sections'],
+    required: ['title', 'summary', 'confidence', 'html', 'sections'],
     additionalProperties: false,
   },
 } as const;
@@ -299,7 +300,46 @@ CRITICAL RULES:
 - Ground claims in rawCapture + structured. Don't pivot the segment.
 - confidence: 55-70 directional, 80+ only if directly supported.
 - Title: 3-6 words. Summary: ONE sentence.
-- Respect priorEntriesSummary. If founderPrompt is set, focus on that.`;
+- Respect priorEntriesSummary. If founderPrompt is set, focus on that.
+
+═══════════════════════════════════════════
+HTML OUTPUT — REQUIRED
+═══════════════════════════════════════════
+Alongside 'sections', produce a complete self-contained HTML document in 'html'.
+
+The HTML must be ready to render inside an iframe. No external assets except Google Fonts.
+
+DESIGN TOKENS
+· Font: Inter — <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+· Palette: primary #2563EB, primary-hover #1E4EDB, text #111827, muted #6B7280,
+  border #E5E7EB, surface #FFFFFF, canvas #F9FAFB, success #16A34A, warning #D97706, error #DC2626
+· Radius: 8 / 12 / 16 / 999 px
+· Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 px
+
+STRUCTURE
+1. <head> — meta charset + viewport, Google Fonts, inline <style>
+2. Page shell — canvas #F9FAFB background, centered 720px column, padding 32px 24px
+3. Masthead — eyebrow (uppercase, 11px, wide tracking), title (30-34px display),
+   subtitle (15px muted)
+4. Confidence bar — small horizontal meter under the masthead showing confidence %
+5. Sections — render every section from 'sections' as its own visual block:
+   · headline  → h2 + kicker
+   · metrics   → 3-4 stat cards in a grid
+   · table     → bordered table with uppercase header cells
+   · narrative → paragraphs at 15px / 1.7
+   · list      → numbered rows with title + body
+   · quote     → blue left-border pull quote
+   · callout   → cream block (or amber if label contains "risk"/"watch"/"attention")
+6. Footer — small muted line: "IV Research · {kind} memo"
+
+RULES
+· ONE self-contained HTML document. Inline <style>. Real CSS. No Tailwind, no utility classes.
+· Mobile responsive — @media (max-width: 720px) collapses grids to one column.
+· NO <script> tags. NO trackers. Only Google Fonts external.
+· Every color/font/spacing is a decided value from the tokens above.
+· Aim for 250-450 lines. Clean, readable, production-quality.
+· No placeholder text — this IS the memo.
+`;
     case 'synthesize':
       return `You are IV's Synthesize agent. You've just reviewed the founder's research memos and their structured Idea Card.
 

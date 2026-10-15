@@ -21,7 +21,7 @@
 @import './responsive-foundation.css';
 @import './shell-responsive.css';
 @import './venture-shell-responsive.css';
-
+@import '../components/shared/IV-Hex-Mark.css';
 
 @import './features/grad-morph.css';
 @import '../layouts/JourneyShell/journey-shell.css';

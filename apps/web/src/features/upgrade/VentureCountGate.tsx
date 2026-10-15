@@ -1,100 +1,164 @@
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Archive } from 'lucide-react';
-import { ModalShell } from '@/components/containers';
-import { Button } from '@/components/ui/button';
+import { Rocket, Zap, ArrowRight, Archive, Crown } from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+
+export type GateState = 'none' | 'free_to_pro' | 'pro_to_founder';
 
 interface VentureCountGateProps {
   open: boolean;
   onClose: () => void;
+  gateState: GateState;
+  /** Only used when gateState === 'pro_to_founder' */
   currentVentureName?: string;
-  onArchiveCurrent?: () => void;
+  currentVentureId?: string;
+  /** Fires when the founder chooses "Archive & save this" */
+  onArchiveAndSave?: () => void | Promise<void>;
+  /** Fires when the founder chooses "Upgrade to Founder Premium" */
+  onUpgrade?: () => void;
 }
 
 /**
- * Existing venture-limit decision modal, with mobile layout hooks.
- * Archive and upgrade callbacks remain identical to the current behavior.
+ * VentureCountGate — the plan-aware payment gate.
+ *
+ * Two states:
+ *  · free_to_pro     — the founder has no ventures. The gate explains
+ *                       what Pro unlocks and sends them to /billing.
+ *  · pro_to_founder  — the founder is on Pro at the venture limit.
+ *                       They either archive the current venture or
+ *                       upgrade to Founder Premium.
  */
 export function VentureCountGate({
   open,
   onClose,
+  gateState,
   currentVentureName,
-  onArchiveCurrent,
+  onArchiveAndSave,
+  onUpgrade,
 }: VentureCountGateProps) {
   const navigate = useNavigate();
 
-  return (
-    <ModalShell
-      open={open}
-      onOpenChange={(v) => !v && onClose()}
-      title="One venture at a time"
-      description="Pro includes a single active venture. Free the slot or upgrade."
-      size="md"
-    >
-      <div className="venture-count-gate space-y-5 py-2">
-        <p className="venture-count-gate__description text-sm leading-relaxed text-[var(--text-primary)]">
-          {currentVentureName ? (
-            <>
-              <strong>{currentVentureName}</strong> is your active venture.
-              Archive it to start a new one — its history stays available in
-              Outcomes.
-            </>
-          ) : (
-            'Pro includes a single active venture. Archive the current one to start a new one, or upgrade for unlimited ventures.'
-          )}
-        </p>
+  if (gateState === 'free_to_pro') {
+    return (
+      <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+        <DialogContent className="venture-gate">
+          <div className="venture-gate__icon">
+            <Rocket className="h-5 w-5" />
+          </div>
 
-        <div className="venture-count-gate__choices space-y-3">
-          {onArchiveCurrent && (
+          <h2 className="venture-gate__title">Your idea is ready.</h2>
+
+          <p className="venture-gate__lead">
+            The idea journey is free — one idea, fully researched, sharpened.
+            Turning it into a venture is where IV does its real work.
+          </p>
+
+          <p className="venture-gate__subhead">
+            Pro unlocks the venture operating system:
+          </p>
+
+          <ul className="venture-gate__features">
+            <li>Strategy · Product · GTM · Campaigns · Sales</li>
+            <li>Full research engine</li>
+            <li>3 deliverable versions per op</li>
+            <li>Gmail · Slack · Notion · GitHub · Vercel</li>
+          </ul>
+
+          <p className="venture-gate__meta">
+            One active venture at a time. $29/mo. Cancel anytime.
+          </p>
+
+          <div className="venture-gate__actions">
             <button
               type="button"
-              onClick={() => {
-                onArchiveCurrent();
-                onClose();
-              }}
-              className="venture-count-gate__choice flex w-full items-start gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-1)] p-4 text-left transition-colors hover:border-[var(--accent)] hover:bg-[var(--accent-muted)]/30"
+              className="venture-gate__btn venture-gate__btn--primary"
+              onClick={() => navigate('/billing')}
             >
-              <span className="venture-count-gate__icon flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--surface-2)] text-[var(--text-muted)]">
-                <Archive className="h-4 w-4" aria-hidden="true" />
-              </span>
-              <span className="venture-count-gate__choice-body">
-                <span className="venture-count-gate__choice-title text-sm font-medium text-[var(--text-primary)]">
-                  Archive {currentVentureName ?? 'the current venture'}
-                </span>
-                <span className="venture-count-gate__choice-copy mt-0.5 text-xs text-[var(--text-secondary)]">
-                  Frees the slot immediately. History stays in Outcomes.
-                </span>
-              </span>
+              Choose a plan
+              <ArrowRight className="h-3.5 w-3.5" />
             </button>
-          )}
+            <button
+              type="button"
+              className="venture-gate__btn venture-gate__btn--ghost"
+              onClick={onClose}
+            >
+              Keep this as an idea for now
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
+  // pro_to_founder
+  const ventureLabel = currentVentureName ?? 'Your current venture';
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
+      <DialogContent className="venture-gate">
+        <div className="venture-gate__icon">
+          <Zap className="h-5 w-5" />
+        </div>
+
+        <h2 className="venture-gate__title">
+          You&rsquo;re on Pro. One active venture at a time.
+        </h2>
+
+        <p className="venture-gate__lead">
+          {ventureLabel} holds your slot right now. Two paths:
+        </p>
+
+        <div className="venture-gate__options">
+          <div className="venture-gate__option">
+            <div className="venture-gate__option-head">
+              <Archive className="h-3.5 w-3.5" />
+              <span>Archive {ventureLabel}</span>
+            </div>
+            <p className="venture-gate__option-copy">
+              Frees your venture slot. The record is preserved in the DB,
+              but {ventureLabel} is no longer active on the platform.
+              You save this idea as your new active venture.
+            </p>
+          </div>
+
+          <div className="venture-gate__option is-recommended">
+            <div className="venture-gate__option-head">
+              <Crown className="h-3.5 w-3.5" />
+              <span>Upgrade to Founder Premium — $59/mo</span>
+            </div>
+            <p className="venture-gate__option-copy">
+              Unlimited ventures. Every op — including Engineering, Growth,
+              Funding, Analytics. Priority processing. Unlimited
+              deliverable versions.
+            </p>
+          </div>
+        </div>
+
+        <div className="venture-gate__actions">
           <button
             type="button"
-            onClick={() => {
-              onClose();
-              navigate('/pricing');
-            }}
-            className="venture-count-gate__choice venture-count-gate__choice--upgrade flex w-full items-start gap-3 rounded-xl border border-[var(--accent)] bg-[var(--accent-muted)] p-4 text-left transition-colors hover:bg-[var(--accent-muted)]/70"
+            className="venture-gate__btn venture-gate__btn--primary"
+            onClick={() => onArchiveAndSave?.()}
           >
-            <span className="venture-count-gate__icon flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[var(--accent)]/15 text-[var(--accent)]">
-              <Sparkles className="h-4 w-4" aria-hidden="true" />
-            </span>
-            <span className="venture-count-gate__choice-body">
-              <span className="venture-count-gate__choice-title text-sm font-medium text-[var(--text-primary)]">
-                Upgrade to Founder Premium
-              </span>
-              <span className="venture-count-gate__choice-copy mt-0.5 text-xs text-[var(--text-secondary)]">
-                Unlimited ventures · every op · priority processing · $59/mo
-              </span>
-            </span>
+            Archive {ventureLabel} &amp; save this
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            className="venture-gate__btn venture-gate__btn--secondary"
+            onClick={() => onUpgrade?.()}
+          >
+            Upgrade to Founder Premium — $59/mo
+            <ArrowRight className="h-3.5 w-3.5" />
+          </button>
+          <button
+            type="button"
+            className="venture-gate__btn venture-gate__btn--ghost"
+            onClick={onClose}
+          >
+            Cancel
           </button>
         </div>
-
-        <div className="venture-count-gate__footer flex items-center justify-end pt-2">
-          <Button type="button" variant="ghost" size="sm" onClick={onClose}>
-            Cancel
-          </Button>
-        </div>
-      </div>
-    </ModalShell>
+      </DialogContent>
+    </Dialog>
   );
 }

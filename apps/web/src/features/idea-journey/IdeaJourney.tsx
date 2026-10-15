@@ -199,6 +199,19 @@ export function IdeaJourney({ journey, onChange, draftMode = false, onValidate }
     }));
   }
 
+  /** Write-through updater — reads latest researchRun from the store
+   *  before applying. Used by ResearchStage for per-memo review flags
+   *  so a completing thread can't be clobbered by a stale prop. */
+  function handleResearchRunUpdate(
+    fn: (latest: any) => any,
+  ) {
+    commit((latest) => ({
+      ...latest,
+      researchRun: fn(latest.researchRun),
+      updatedAt: new Date().toISOString(),
+    }));
+  }
+
   function handleResearchComplete(runState: any) {
     commit((latest) =>
       buildAdvancedState(latest, 'research', {
@@ -305,6 +318,7 @@ export function IdeaJourney({ journey, onChange, draftMode = false, onValidate }
                 rawCapture={journey.rawCapture}
                 entries={journey.researchEntries ?? []}
                 onRunStateChange={handleResearchStateChange}
+                onRunStateUpdate={handleResearchRunUpdate}
                 onEntriesChange={handleEntriesChange}
                 onComplete={handleResearchComplete}
               />

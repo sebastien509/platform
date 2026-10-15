@@ -15,10 +15,11 @@ import {
 } from 'lucide-react';
 import { ValidationDecision } from './ValidationDecision';
 import { ValidationStatusBanner } from './ValidationStatusBanner';
-import { MonetizationGate } from './MonetizationGate';
 import { ResearchMorePicker } from './ResearchMorePicker';
 import { useResearchRun } from './useResearchRun';
 import { VentureCountGate } from '@/features/upgrade';
+import { PlanGateBanner } from '@/features/upgrade/PlanGateBanner';
+import type { GateState } from '@/features/upgrade/VentureCountGate';
 import { useArchiveVenture, useVentures } from '@/lib/hooks/useVentures';
 import { deriveIdeaTitle } from '@/features/ideas/deriveIdeaTitle';
 import { TransitionStage } from '../transition/TransitionStage';
@@ -264,10 +265,28 @@ export function ValidateBentoPage({
   const planExhausted = !planLoading
     ? effectivePlan.venturesUsed >= effectivePlan.ventureLimit
     : false;
+
+  /* Gate state — single source of truth for the payment gate.
+   *  · none           — Founder / Team, or Pro with a slot open.
+   *  · free_to_pro    — Free tier, always blocked at validate.
+   *  · pro_to_founder — Pro tier at the 1-venture limit. */
+  const gateState: GateState = useMemo(() => {
+    if (planLoading || !effectivePlan) return 'none';
+    const tier = effectivePlan.tier;
+    if (tier === 'starter') return 'free_to_pro';
+    if (tier === 'pro' && planExhausted) return 'pro_to_founder';
+    return 'none';
+  }, [effectivePlan, planLoading, planExhausted]);
   const hasReports = researchEntries.length > 0;
   const isKilled = phase === 'killed';
   function handleDecide(decision: VDK) {
     if (decision === 'continue') {
+      /* Intercept at the moment of decision. If gated, open the
+       * plan-aware modal instead of advancing to naming. */
+      if (gateState !== 'none') {
+        setVentureGateOpen(true);
+        return;
+      }
       setPhase('naming');
       return;
     }
@@ -291,14 +310,6 @@ export function ValidateBentoPage({
   }
 
   async function handleCreateVenture(name: string): Promise<string> {
-    /* Pro tier gate — 1 active venture at a time. */
-    if (plan && plan.venturesUsed >= plan.ventureLimit) {
-      setVentureGateOpen(true);
-      /* Bail out via throw so callers' try/catch handles it. The
-       * gate UI is already showing; the error is a no-op signal. */
-      throw new Error('venture_gate_open');
-    }
-
     setCreateError(null);
 
     if (!workspace?.id) {
@@ -344,6 +355,35 @@ export function ValidateBentoPage({
     return venture.id;
   }
 
+  async function handleArchiveAndSave() {
+    if (!activeVentureIdForArchive) {
+      setCreateError('No active venture to archive.');
+      return;
+    }
+
+    try {
+      /* 1. Archive the current venture — frees the slot. */
+      await archiveVenture.mutateAsync(activeVentureIdForArchive);
+
+      /* 2. Close the gate modal. */
+      setVentureGateOpen(false);
+
+      /* 3. Give React Query a beat to refetch workspace-plan so
+       *    planExhausted flips to false. */
+      await new Promise((r) => setTimeout(r, 350));
+
+      /* 4. Create the new venture — takes over the freed slot. */
+      const newVentureId = await handleCreateVenture(displayTitle);
+
+      /* 5. Enter the new venture. */
+      navigate(`/ventures/${newVentureId}`);
+    } catch (e) {
+      setCreateError(
+        e instanceof Error ? e.message : 'Could not archive venture.',
+      );
+    }
+  }
+
   function handleCreateError(message: string) {
     setCreateError(message);
   }
@@ -358,14 +398,24 @@ export function ValidateBentoPage({
          * Shows validated / killed / gated state above the cards.
          * The full bento below stays visible — the cards ARE the
          * record of why the decision was made. */}
-        <ValidationStatusBanner
-          journey={journey}
-          gated={
-            journey.validation.decision !== 'kill' &&
-            !journey.createdVentureId &&
-            workspacePlan?.tier === 'starter'
-          }
-        />
+        {gateState !== 'none' &&
+        journey.validation.decision !== 'kill' &&
+        !journey.createdVentureId ? (
+          <PlanGateBanner
+            gateState={gateState}
+            currentVentureName={activeVentureName}
+            onReviewOptions={() => setVentureGateOpen(true)}
+          />
+        ) : (
+          <ValidationStatusBanner
+            journey={journey}
+            gated={
+              journey.validation.decision !== 'kill' &&
+              !journey.createdVentureId &&
+              workspacePlan?.tier === 'starter'
+            }
+          />
+        )}
 
       <div
         className="validate-bento-page"
@@ -692,19 +742,6 @@ export function ValidateBentoPage({
                   )}
                 </AnimatePresence>
               </div>
-
-              {planExhausted && (
-                <div className="validate-bento__gate">
-                  {/* Hidden when the decision is already made — the founder doesn't need to be sold once they've decided. */}
-          {journey.validation.decision === null && (
-            <MonetizationGate
-                    plan={effectivePlan}
-                    onUpgrade={onUpgrade}
-                    onKeepResearching={() => setPickerOpen(true)}
-                  />
-          )}
-                </div>
-              )}
             </motion.div>
           )}
 
@@ -801,16 +838,17 @@ export function ValidateBentoPage({
         onClose={() => setActiveReport(null)}
       />
           {/* Pro tier venture gate — 1 active venture at a time. */}
-      <VentureCountGate
-        open={ventureGateOpen}
-        onClose={() => setVentureGateOpen(false)}
-        currentVentureName={activeVentureName}
-        onArchiveCurrent={
-          activeVentureIdForArchive
-            ? () => archiveVenture.mutate(activeVentureIdForArchive)
-            : undefined
-        }
-      />
+      {gateState !== 'none' && (
+        <VentureCountGate
+          open={ventureGateOpen}
+          onClose={() => setVentureGateOpen(false)}
+          gateState={gateState}
+          currentVentureName={activeVentureName}
+          currentVentureId={activeVentureIdForArchive}
+          onArchiveAndSave={handleArchiveAndSave}
+          onUpgrade={onUpgrade}
+        />
+      )}
 
 </div>
 

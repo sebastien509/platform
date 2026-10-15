@@ -238,7 +238,17 @@ export function DocumentViewerDrawer({
                   </div>
                 )}
 
-                {doc.sections && doc.sections.length > 0 ? (
+                {/* HTML artifact — full-bleed iframe, no editorial chrome */}
+                {(doc as any).html ? (
+                  <div className="doc-html-full">
+                    <iframe
+                      title={doc.title}
+                      srcDoc={(doc as any).html}
+                      sandbox="allow-same-origin"
+                      className="doc-html-full__frame"
+                    />
+                  </div>
+                ) : doc.sections && doc.sections.length > 0 ? (
                   <div className="document-sheet__section">
                     <ResearchDocumentContent
                       entry={documentToResearchEntry(doc)}

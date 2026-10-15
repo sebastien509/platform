@@ -128,6 +128,7 @@ export const openaiAgent: IdeaAgent = {
       title: string;
       summary: string;
       confidence: number;
+      html: string;
       sections: any[];
     }>('researchThread', {
       kind: input.kind,
@@ -145,6 +146,7 @@ export const openaiAgent: IdeaAgent = {
         title: flat.title,
         summary: flat.summary,
         confidence: flat.confidence,
+        html: flat.html,
         sections: flat.sections,
         founderPrompt: input.founderPrompt,
       },

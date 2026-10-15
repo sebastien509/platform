@@ -1561,4 +1561,6 @@ export interface ResearchEntry {
      "Founder Research Memo". */
   typeLabel?: string;
   createdAt: string;
+  /** Self-contained HTML document — preferred render path. */
+  html?: string | null;
 }
