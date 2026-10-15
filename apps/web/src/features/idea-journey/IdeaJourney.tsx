@@ -43,7 +43,7 @@ const STAGE_TITLE: Record<IdeaStage, string> = {
   clean: "Let's sharpen this",
   research: 'Research is running',
   synthesize: 'Review what changed',
-  validate: 'Decide',
+  validate: 'Decide', 
   transition: 'Name the venture',
 };
 
@@ -66,7 +66,7 @@ function buildAdvancedState(
   };
 }
 
-export function IdeaJourney({ journey, onChange, draftMode = false }: IdeaJourneyProps) {
+export function IdeaJourney({ journey, onChange, draftMode = false, onValidate }: IdeaJourneyProps) {
   const currentStage = journey.currentStage;
   const previousStageRef = useRef<IdeaStage | null>(null);
   /* Track the CURRENT ideaId — memoized callbacks (handleJump,
@@ -208,16 +208,21 @@ export function IdeaJourney({ journey, onChange, draftMode = false }: IdeaJourne
   }
 
   function handleSynthesizeContinue() {
+    /* Mark synthesize complete locally, then hand off to the parent.
+     * We do NOT advance currentStage to 'validate' — validate is a
+     * DB-driven stage rendered by ValidateBentoPage, not a stage of
+     * this journey shell. Advancing here caused a blank-panel flash
+     * (no case matched 'validate' in the AnimatePresence block). */
     commit((latest) => ({
       ...latest,
-      currentStage: 'validate',
       stageStates: {
         ...latest.stageStates,
         synthesize: 'complete',
-        validate: 'active',
       },
       updatedAt: new Date().toISOString(),
     }));
+
+    onValidate?.();
   }
 
   function handleSynthesizeReviewAgain() {
