@@ -1,5 +1,5 @@
 
-import './iv-hex-mark.css';
+import './IV-Hex-Mark.css';
 
 const POSITIONS = [
   'c1 r1',
