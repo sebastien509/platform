@@ -8,6 +8,7 @@ import {
 import { cn } from '@/lib/utils/cn';
 import { useAgentDrawerStore } from '@/lib/stores/agentDrawerStore';
 import { runAction } from './runAction';
+import { containerKind } from './containerKind';
 import type { ActionDef } from './page-actions';
 
 const ICONS: Record<string, any> = {
@@ -77,6 +78,8 @@ export function ActionButton({ def, ventureId, pageId }: ActionButtonProps) {
   };
 
   const state = existingAction?.state;
+  const kind = containerKind(def.surfaceId);
+  const deps = def.requiresLabels ?? [];
 
   return (
     <button
@@ -92,12 +95,25 @@ export function ActionButton({ def, ventureId, pageId }: ActionButtonProps) {
         def.mode === 'connected' && 'action-btn--connected'
       )}
     >
+      {def.produces && (
+        <span className="action-btn__produces" aria-hidden="true">
+          {def.produces}
+        </span>
+      )}
       {busy ? (
         <Loader2 className="h-3 w-3 animate-spin" />
       ) : Icon ? (
         <Icon className="h-3 w-3" />
       ) : null}
       {def.verb}
+      <span className={`action-btn__kind is-${kind.toLowerCase()}`}>
+        {kind}
+      </span>
+      {deps.length > 0 && (
+        <span className="action-btn__deps">
+          Needs: {deps.join(' · ')}
+        </span>
+      )}
     </button>
   );
 }

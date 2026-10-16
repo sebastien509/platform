@@ -7,6 +7,8 @@ import { IVHexMark } from '@/components/shared/IVHexMark';
 
 import { useVentureOverview } from
   '@/features/venture-overview/useVentureOverview';
+import { useVentureEvidence } from './useVentureEvidence';
+import { useVentureInsight } from './useVentureInsight';
 
 import './venture-intelligence.css';
 
@@ -239,35 +241,51 @@ export function VentureIntelligence({
   } = useVentureOverview(ventureId);
 
   const pageId = getPageId(pathname);
+  /* Live venture evidence for the current page. */
+  const evidence = useVentureEvidence(ventureId, pathname);
+  const { data: insight, isLoading: insightLoading } = useVentureInsight(
+    ventureId,
+    ventureName,
+    evidence,
+  );
+
+
+
   const template = PAGE_MESSAGES[pageId] ?? DEFAULT_MESSAGE;
 
-  const message: IntelligenceMessage = isLoading
+    const message: IntelligenceMessage = insight
     ? {
         label: template.label,
-        headline: 'Understanding your venture.',
-        description: 'Preparing your workspace context.',
+        headline: insight.headline,
+        description: insight.description,
       }
-    : pageId === 'overview' && needsYou.length > 0
+    : isLoading || insightLoading
       ? {
-          label: 'Founder attention',
-          headline: 'Your venture needs your attention.',
-          description:
-            `${needsYou.length} ${
-              needsYou.length === 1
-                ? 'operation is'
-                : 'operations are'
-            } waiting for your input.`,
+          label: template.label,
+          headline: 'Understanding your venture.',
+          description: 'Preparing your workspace context.',
         }
-      : pageId === 'overview' &&
-          nextAction?.title &&
-          nextAction.severity !== 'none'
+      : pageId === 'overview' && needsYou.length > 0
         ? {
-            label: template.label,
-            headline: nextAction.title,
+            label: 'Founder attention',
+            headline: 'Your venture needs your attention.',
             description:
-              nextAction.why || template.description,
+              `${needsYou.length} ${
+                needsYou.length === 1
+                  ? 'operation is'
+                  : 'operations are'
+              } waiting for your input.`,
           }
-        : template;
+        : pageId === 'overview' &&
+            nextAction?.title &&
+            nextAction.severity !== 'none'
+          ? {
+              label: template.label,
+              headline: nextAction.title,
+              description:
+                nextAction.why || template.description,
+            }
+          : template;
 
   const headlineWords = message.headline
     .split(/\s+/)
@@ -360,6 +378,32 @@ export function VentureIntelligence({
                 delay={descriptionDelay}
               />
             </p>
+
+            {insight?.actionOpId && insight?.actionLabel && (
+              <div className="iv-intelligence__actions">
+                <button
+                  type="button"
+                  className="iv-intelligence__cta"
+                  onClick={() => {
+                    /* Navigate to the current page and open the
+                     * action drawer for the recommended op. */
+                    const detail = { opId: insight.actionOpId };
+                    window.dispatchEvent(
+                      new CustomEvent('iv:open-op', { detail }),
+                    );
+                    setOpen(false);
+                  }}
+                >
+                  {insight.actionLabel}
+                </button>
+                {evidence.relevantDeliverables.length > 0 && (
+                  <span className="iv-intelligence__sources">
+                    From {evidence.relevantDeliverables.length} deliverable
+                    {evidence.relevantDeliverables.length === 1 ? '' : 's'}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </section>
       )}

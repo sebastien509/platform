@@ -140,7 +140,12 @@ export interface FeedbackSection extends SectionBase {
 
 export interface ToolsSection extends SectionBase {
   type: 'tools';
-  actionIds: string[];
+  /**
+   * Optional override. When omitted, ops are resolved at render time
+   * from page-actions.ts via getActionsForPage(pageKey).
+   * page-actions.ts IS the registry — configs are layout only.
+   */
+  actionIds?: string[];
   recommendedActionIds?: string[];
   moreActionIds?: string[];
 }

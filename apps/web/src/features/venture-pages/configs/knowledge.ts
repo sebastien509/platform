@@ -10,9 +10,6 @@ export const knowledgeConfig: VenturePageConfig = {
     {
       type: 'tools',
       id: 'knowledge-tools',
-      actionIds: [
-        'knowledge.export-to-notion',
-      ],
     },
     {
       type: 'research-bar',

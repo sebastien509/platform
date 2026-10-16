@@ -24,12 +24,6 @@ export const gtmConfig: VenturePageConfig = {
       id: 'gtm-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'gtm.define-segments',
-        'gtm.draft-channel-strategy',
-        'gtm.draft-messaging',
-        'gtm.generate-landing',
-      ],
     },
   ],
 };

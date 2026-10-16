@@ -470,6 +470,7 @@ const PAYLOAD_ONLY_SCHEMA = {
           to: { type: ['string', 'null'] },
           subject: { type: ['string', 'null'] },
           body: { type: ['string', 'null'] },
+          html: { type: ['string', 'null'] },
           url: { type: ['string', 'null'] },
           heading: { type: ['string', 'null'] },
           subjectTemplate: { type: ['string', 'null'] },
@@ -511,6 +512,70 @@ const PAYLOAD_ONLY_SCHEMA = {
             ],
           },
           estimatedRecipients: { type: ['integer', 'null'] },
+          language: { type: ['string', 'null'] },
+          code: { type: ['string', 'null'] },
+          slides: {
+            anyOf: [
+              { type: 'null' },
+              {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    eyebrow: { type: ['string', 'null'] },
+                    title: { type: 'string' },
+                    body: { type: ['string', 'null'] },
+                    bullets: {
+                      anyOf: [
+                        { type: 'null' },
+                        { type: 'array', items: { type: 'string' } },
+                      ],
+                    },
+                    metric: {
+                      anyOf: [
+                        { type: 'null' },
+                        {
+                          type: 'object',
+                          properties: {
+                            label: { type: 'string' },
+                            value: { type: 'string' },
+                          },
+                          required: ['label', 'value'],
+                          additionalProperties: false,
+                        },
+                      ],
+                    },
+                  },
+                  required: ['eyebrow', 'title', 'body', 'bullets', 'metric'],
+                  additionalProperties: false,
+                },
+              },
+            ],
+          },
+          tabs: {
+            anyOf: [
+              { type: 'null' },
+              {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    name: { type: 'string' },
+                    columns: { type: 'array', items: { type: 'string' } },
+                    rows: {
+                      type: 'array',
+                      items: {
+                        type: 'array',
+                        items: { type: ['string', 'number', 'null'] },
+                      },
+                    },
+                  },
+                  required: ['name', 'columns', 'rows'],
+                  additionalProperties: false,
+                },
+              },
+            ],
+          },
         },
         required: [
           'type',
@@ -520,6 +585,7 @@ const PAYLOAD_ONLY_SCHEMA = {
           'to',
           'subject',
           'body',
+          'html',
           'url',
           'heading',
           'subjectTemplate',
@@ -527,6 +593,10 @@ const PAYLOAD_ONLY_SCHEMA = {
           'segments',
           'personalizationRules',
           'estimatedRecipients',
+          'language',
+          'code',
+          'slides',
+          'tabs',
         ],
         additionalProperties: false,
       },
@@ -1640,7 +1710,42 @@ RULES FOR THIS OP
 THIS OP — "Generate landing"
 
 Produce kind: "payload" with payload.type: "html".
-payload.body is a COMPLETE, SELF-CONTAINED HTML DOCUMENT.
+payload.html is a COMPLETE, SELF-CONTAINED HTML DOCUMENT.
+payload.label is a short human title (e.g. "Landing page — v1").
+All other payload fields are null.
+
+PAGE STRUCTURE
+1. <head> — meta charset + viewport, Google Fonts <link>, inline <style>
+2. Nav bar — logo/brand on left, one or two nav links, primary CTA button on right
+3. Hero — eyebrow, headline (8-12 words), subhead (1-2 sentences), primary CTA, secondary "learn more" link
+4. Feature grid — 3 columns, each: icon (SVG), title (3-5 words), body (1-2 sentences)
+5. Social proof — 2-3 testimonial or stat blocks side by side
+6. Final CTA — headline + primary button, centered
+7. Footer — brand mark, minimal links, copyright
+
+DESIGN SYSTEM (modern defaults — swap when design spec is wired in)
+- Palette: primary #2563EB, primary-hover #1E4EDB, surface #FFFFFF, canvas #F9FAFB, text #111827, muted #6B7280, border #E5E7EB
+- Font: Inter for everything — <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+- Spacing scale: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 px
+- Radius: 6 / 10 / 16 px (buttons/cards/hero blocks)
+- Shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08)
+- Max content width: 1080px, centered with 24px horizontal padding
+
+RULES
+- ONE self-contained HTML document. No external CSS or JS files.
+- Inline <style> in <head>. No utility classes. No Tailwind. Write real CSS.
+- Real copy from the venture context. No lorem ipsum.
+- Mobile responsive: single column under 720px (use @media queries).
+- NO <script> tags. NO trackers. Only external resource allowed is the Google Fonts <link>.
+- Every color, spacing, and font is a decided value — no "var(--whatever)" that isn't defined.
+- Aim for 300–500 lines. Clean, readable, production-quality.`,
+'product.generate-landing': `
+THIS OP — "Generate landing"
+
+Produce kind: "payload" with payload.type: "html".
+payload.html is a COMPLETE, SELF-CONTAINED HTML DOCUMENT.
+payload.label is a short human title (e.g. "Landing page — v1").
+All other payload fields are null.
 
 PAGE STRUCTURE
 1. <head> — meta charset + viewport, Google Fonts <link>, inline <style>
@@ -1669,11 +1774,44 @@ RULES
 - Aim for 300–500 lines. Clean, readable, production-quality.`,
 
   // ─────────────────────────────────────────────────────────
+  'campaigns.draft-email': `
+THIS OP — "Draft email"
+
+Produce kind: "payload" with payload.type: "html".
+payload.html is a COMPLETE, SELF-CONTAINED HTML DOCUMENT suitable for an email.
+payload.label is a short human title (e.g. "Welcome email — v1").
+All other payload fields are null.
+
+EMAIL STRUCTURE
+1. Single-column, max-width 600px, centered, 24px padding
+2. Header — brand name in muted caps, small
+3. Body — 2–4 short paragraphs, one job per paragraph
+4. Primary CTA — a single accent button with a specific label (not "Click here")
+5. Sign-off — founder name, one-liner
+6. Footer — physical address (placeholder), unsubscribe link (placeholder)
+
+DESIGN SYSTEM
+- Palette: primary #2563EB, surface #FFFFFF, canvas #F9FAFB, text #111827, muted #6B7280, border #E5E7EB
+- Font: Inter or system-sans (email clients vary — declare both)
+- Body: 16px / 1.6 line-height
+- Button: padding 12px 20px, radius 8px, no box-shadow (email clients strip it)
+- Dark mode fallback in @media (prefers-color-scheme: dark)
+
+RULES
+- ONE self-contained HTML document. All CSS inline in a <style> block.
+- No external CSS files. No <script> tags. No tracking pixels. No <img src> from unknown hosts.
+- Real copy from the venture context — the recipient, the trigger, the goal.
+- Table-based layout where email clients require it; flexbox where they support it.
+- Aim for 150–250 lines. Clean, deliverable, production-quality.`,
+
+  // ─────────────────────────────────────────────────────────
   'engineering.generate-ui-spec': `
 THIS OP — "Generate UI spec"
 
 Produce kind: "payload" with payload.type: "html".
-payload.body is a COMPLETE, SELF-CONTAINED HTML DOCUMENT — a component gallery.
+payload.html is a COMPLETE, SELF-CONTAINED HTML DOCUMENT — a component gallery.
+payload.label is a short human title (e.g. "UI spec — v1").
+All other payload fields are null.
 
 PAGE STRUCTURE
 1. <head> — meta tags, Google Fonts <link>, inline <style>
@@ -1701,38 +1839,168 @@ RULES
 - Aim for 400–700 lines. A designer should be able to hand this to a dev.`,
 
   // ─────────────────────────────────────────────────────────
-  'product.generate-prototype': `
-THIS OP — "Generate prototype"
+  'strategy.generate-brand-brief': `
+THIS OP — "Generate brand brief"
 
-Produce kind: "payload" with payload.type: "html".
-payload.body is a COMPLETE, SELF-CONTAINED HTML DOCUMENT — a clickable multi-screen prototype.
+Produce kind: "payload" with payload.type: "text".
+payload.slides is an array of 11-13 slides.
+payload.label = "Brand brief — [venture name]".
+All other payload fields are null.
 
-PAGE STRUCTURE
-Build a 3-4 screen prototype of the product's core flow. Use inline <script> ONLY for screen transitions — no external JS, no frameworks.
+Every slide: { eyebrow, title, body, bullets, metric }.
+- eyebrow: 1-2 word section tag
+- title: 5-8 word thesis (never shorter, never generic)
+- body: 2-4 sentences OR null when bullets carry the weight
+- bullets: 3-5 specific items OR null when body carries the weight
+- metric: { label, value } for stat slides, else null
 
-1. <head> — meta tags, Google Fonts <link>, inline <style>, inline <script>
-2. Screen container — a wrapper that shows one screen at a time
-3. Screen 1 — Landing / Login — product name, one-line value prop, "Get started" button
-4. Screen 2 — Dashboard / Main view — the primary surface with realistic data (fake but specific)
-5. Screen 3 — Detail / Action — drill into an item, take an action
-6. Screen 4 — Completion / Confirmation — success state with next step
+SLIDE ARC — 11 slides minimum
 
-Navigation: buttons at the bottom of each screen ("Continue", "Next", "Back") that show/hide screens via simple JS.
-
-DESIGN SYSTEM (modern defaults)
-- Palette: primary #2563EB, surface #FFFFFF, canvas #F9FAFB, text #111827, muted #6B7280, border #E5E7EB
-- Font: Inter
-- Mobile-first — design for a 375px viewport, scale up gracefully
-- Radius: 8 / 12 / 16 px
-- Shadow: subtle, 0 1px 3px + 0 4px 12px
+1.  Cover — eyebrow "Brand brief", title "[Venture name] — the brand", body one sentence naming what this company is and who it is for, grounded in the positioning draft.
+2.  The promise — title 6-8 words. body 2-3 sentences: what we promise and what we refuse to promise.
+3.  Audience — title 5-7 words naming the buyer, drawn from ICP. bullets: 3 truths about this audience, each drawn from ICP context, not generic.
+4.  Tone of voice — title 6-8 words naming the voice. body 2-3 sentences. bullets: 3 tone rules, each specific enough to act on.
+5.  The enemy — title 5-7 words naming what we are against. body 2-3 sentences: the industry norm we reject.
+6.  Visual language — title 6-8 words naming the aesthetic. body 2-3 sentences. Reference two real products whose aesthetic we borrow from.
+7.  Palette — title 5-7 words. bullets: 4-5 items, each "HEX · usage" — real 6-digit hex codes.
+8.  Typography — title 5-7 words. bullets: 3 items, each "family · weights · use" — real Google Fonts or system fonts.
+9.  Signature moves — title 5-7 words. bullets: 3 moves specific enough that a designer could implement them.
+10. Reference sites — title 5-7 words. bullets: 3 real products with a specific borrow point each.
+11. What we are not — title 5-7 words. bullets: 3 things we would never do.
 
 RULES
-- ONE self-contained HTML document. Inline <style> + inline <script>.
-- Use ONLY vanilla JS for screen switching — no libraries.
-- Real, specific copy for the venture. Not "Lorem ipsum".
-- Fake data should be realistic: names, numbers, dates.
-- Every screen has a clear "next step" that a founder could narrate.
-- Aim for 400–700 lines. Clickable from start to finish.`,
+- Real hex codes. Real font names. Real references.
+- Every bullet is falsifiable — a specific claim, not an adjective.
+- If VENTURE DESIGN SPEC is present in input, Palette + Typography MUST reflect its tokens.`,
+
+  // ─────────────────────────────────────────────────────────
+  'funding.build-pitch-deck': `
+THIS OP — "Build pitch deck"
+
+Produce kind: "payload" with payload.type: "text".
+payload.slides is an array of 12-14 slides.
+payload.label = "Pitch deck — [venture name] · [Stage]".
+All other payload fields are null.
+
+Every slide: { eyebrow, title, body, bullets, metric }.
+- title: 5-9 words, specific thesis
+- body: 2-4 sentences. The argument, not marketing.
+- bullets: 3-5 items when list-shaped, else null.
+- metric: { label, value } for quantitative slides, else null.
+
+SLIDE ARC — investor narrative, 12 slides minimum
+
+1.  Cover — venture name + one-line positioning (8-12 words).
+2.  Problem — the specific pain, with a real number if possible.
+3.  Insight — the non-obvious truth this company is built on.
+4.  Solution — the product, described in the customer words.
+5.  Product — one screen or flow, described. Not "features".
+6.  Market — metric slide: TAM, SAM, SOM with real dollar figures.
+7.  Business model — how money moves, pricing shape, gross margin.
+8.  Traction — metric slide: ARR / users / retention, real numbers.
+9.  Competition — name 2-3 real competitors, one clean wedge.
+10. GTM — primary channel, why it works, expected CAC.
+11. Team — founders, why them, one specific credential each.
+12. The ask — raise size, use of funds (3 bullets), 18-month goal.
+
+RULES
+- Every metric slide shows a real number. "$X" fails.
+- Every competitor slide names real companies.
+- Every team slide has real names and one relevant credential each.
+- No hockey-stick projections.`,
+
+  // ─────────────────────────────────────────────────────────
+  'engineering.draft-api-spec': `
+THIS OP — "Draft API spec"
+
+Produce kind: "payload" with payload.type: "text".
+payload.language = "yaml" (OpenAPI 3.1) or "typescript" (interface-first).
+Choose TypeScript if the venture is early-stage and the spec is for one team.
+Choose OpenAPI if this is an external or partner API.
+payload.code = the COMPLETE spec as a single string, no markdown fences.
+payload.label = "[Venture name] API — v1".
+All other payload fields are null.
+
+SPEC REQUIREMENTS — OpenAPI
+- openapi: 3.1.0
+- info.title, info.version (1.0.0), info.description (2 sentences)
+- servers with a real production URL
+- Every path under /api/v1/
+- For each endpoint: operationId, summary, tags, requestBody (schema + example), responses 200/400/401/404
+- components.schemas for every type, with example values
+- components.securitySchemes with bearer auth
+
+SPEC REQUIREMENTS — TypeScript
+- Leading comment block: 3-5 lines on auth model, base URL, rate limits
+- Named, exported interfaces for every request and response type
+- One typed function per endpoint: (input) => Promise<Output>
+- Error shapes: type ApiError = { code: string; message: string }
+- Field names drawn from venture context. If ceramics: Glaze, KilnProfile, FiringRun — not Item, Record.
+
+DOMAIN INJECTION
+- The spec MUST be for THIS venture's domain. If the venture is "AI pottery design", endpoints include /designs, /glazes, /kiln-profiles. If the venture is "biotech compliance", endpoints include /studies, /submissions, /audit-logs.
+- Field names use the venture's vocabulary.
+
+DEPTH
+- 250-600 lines of real spec. Not pseudocode, not "// TODO".
+- Every field is defined. Every example filled with realistic data.
+
+RULES
+- Real, runnable-looking code.
+- No placeholders. No "TODO", no "..." in body.
+- No markdown fences in payload.code. Just the raw string.
+- One artifact — OpenAPI OR TypeScript.`,
+
+  // ─────────────────────────────────────────────────────────
+  'funding.build-financial-model': `
+THIS OP — "Build financial model"
+
+Produce kind: "payload" with payload.type: "text".
+payload.tabs = 4 tab objects { name, columns, rows }.
+payload.label = "[Venture name] financial model — v1".
+All other payload fields are null.
+
+TABS — exactly these four
+
+1. "Revenue" — columns: ["Month", "Users", "ARPU ($)", "MRR ($)", "Cumulative ($)"]
+   · 24 rows: M1 through M24
+   · Users grows 8-15% MoM in Y1, decelerating to 4-8% in Y2
+   · ARPU is a real number tied to pricing model
+   · MRR = Users * ARPU
+   · Cumulative = previous + this month MRR
+
+2. "Costs" — columns: ["Month", "Engineering ($)", "Infra ($)", "GTM ($)", "Total ($)"]
+   · 24 rows matching Revenue
+   · Engineering grows stepwise as headcount adds
+   · Infra scales with users ($0.50-$2.00/user/month)
+   · GTM tied to CAC from gtm.draft-channel-strategy
+   · Total = Engineering + Infra + GTM
+
+3. "P&L" — columns: ["Month", "Revenue ($)", "Costs ($)", "Net ($)", "Cumulative Net ($)"]
+   · 24 rows
+   · Revenue = MRR from tab 1
+   · Costs = Total from tab 2
+   · Net = Revenue - Costs
+   · Cumulative Net = previous + this month net
+
+4. "Assumptions" — columns: ["Key", "Value", "Source"]
+   · 8-12 rows. Every assumption in the model listed here.
+   · Examples: "Monthly growth (Y1)" | "12%" | "Channel strategy"; "ARPU" | "$29" | "Pricing — Pro tier"; "CAC" | "$180" | "GTM draft"; "Engineering / person" | "$15,000" | "Market rate"; "Infra / user" | "$0.80" | "SaaS benchmark".
+
+ARITHMETIC RULES — non-negotiable
+- Users * ARPU = MRR
+- MRR month N = Revenue month N
+- Sum of Cost columns = Total
+- Net = Revenue - Costs
+- Cumulative columns are strictly running sums
+- No empty cells. No "TBD". No "X".
+
+RULES
+- Conservative by default. A model that assumes 5% of a $100B market in 24 months is not credible.
+- The Assumptions tab is where the founder changes the story.`,
+
+
+  // ─────────────────────────────────────────────────────────
 
 };
 
@@ -1825,9 +2093,33 @@ RULES
 6. Density over length. Founders read on screens, not paper.
 7. Every section id is unique. Use short slugs: "summary", "icp", "wedge", "signals".
 8. If the operation renderType is "html", produce kind: "payload" with payload.type: "html".
-   payload.body is a complete self-contained HTML document.
+   payload.html is a complete self-contained HTML document.
    Do NOT produce a snapshot with editorial sections.
-   An HTML deliverable is a single HTML file, not a doc.`;
+   An HTML deliverable is a single HTML file, not a doc.
+9. DEPTH FLOOR — every output must be rich, not thin.
+   - Sentences per paragraph field: minimum 2. No single-sentence bodies.
+   - Bullets per bullet-list: minimum 3.
+   - Slide titles: 5-8 words. "Market" fails; "The $4.2B ceramics market is fragmented" passes.
+   - Code length: 200+ lines for specs. Half-finished is not acceptable.
+   - Every cell in a table is a real value. No "TBD", no dash placeholders.
+10. FORBIDDEN PHRASES — these read as filler and are rejected:
+    leverage, solution, cutting-edge, innovative, robust, seamless, modern,
+    next-generation, next-gen, ecosystem, empower, holistic, synergy,
+    streamline, best-in-class, world-class, state-of-the-art, game-changing,
+    disruptive, revolutionary, transformative, "at scale" without a number.
+    Every claim must be specific and falsifiable.
+11. CONCRETENESS RULES:
+    - Every name is a real name. "A mid-market compliance buyer at a 500-bed hospital", not "our customer".
+    - Every number is a real number. "$2.1M ARR at 40% MoM growth", not "$X ARR".
+    - Every quote is in the founder voice, drawn from venture context.
+    - Every reference cites its source: ICP draft, positioning, messaging, etc.
+12. VENTURE-SPECIFIC, NOT GENERIC — if the venture is biotech, the output is about clinical ops;
+    if it is ceramics, the output is about glazes and kilns.
+    No template text that could apply to any company.
+13. If a VENTURE DESIGN SPEC is provided in the input, every color, font, spacing, and radius
+    in your output MUST come from that spec. Do NOT invent new values. If a token is not
+    specified, use the fallback defaults in the spec.
+`;
 
   const addition = opId ? OP_PROMPT_ADDITIONS[opId] : null;
   return addition ? base + '\n\n' + addition : base;
@@ -1870,16 +2162,52 @@ async function handleRunOp(input: any) {
     | string
     | undefined;
 
+  const opId = input?.operation?.id as string | undefined;
+  const ventureId = input?.venture?.id as string | undefined;
+
+  /* ── Design spec injection ──
+   * Four HTML/brand-producing ops read the design system so their
+   * output uses the founder's real palette, typography, and spacing
+   * — not generic defaults. */
+  const DESIGN_CONSUMER_OPS = new Set([
+    'product.generate-landing',
+    'engineering.generate-ui-spec',
+    'campaigns.draft-email',
+    'strategy.generate-brand-brief',
+  ]);
+
+  let designSpec: any = null;
+  if (opId && DESIGN_CONSUMER_OPS.has(opId) && ventureId) {
+    const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
+      auth: { persistSession: false },
+    });
+    const { data: row } = await admin
+      .from('outputs')
+      .select('id, title, output_payloads ( snapshot )')
+      .eq('venture_id', ventureId)
+      .eq('op_id', 'strategy.generate-design-spec')
+      .eq('status', 'validated')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    designSpec = row?.output_payloads?.[0]?.snapshot ?? null;
+    if (designSpec) {
+      console.log('[runOp] design spec injected for', opId);
+    } else {
+      console.log('[runOp] no design spec found for', opId);
+    }
+  }
+
   const userContent = JSON.stringify({
     venture: input.venture ?? {},
     operation: input.operation ?? {},
     answers: input.answers ?? {},
+    designSpec,
   });
 
   /* When the op pins its output kind, use a narrowed schema.
      The LLM physically cannot produce the wrong shape. */
   const schema = schemaForExpectedKind(expectedKind);
-  const opId = input?.operation?.id as string | undefined;
   return callOpenAI(systemPromptForRunOp(opId), userContent, schema);
 }
 
@@ -1888,6 +2216,23 @@ async function handleRunOp(input: any) {
    Reads the venture's knowledge + outputs, calls GPT-4.1 with
    the query + context, persists the answer as a knowledge_entry.
    ============================================================ */
+
+const VENTURE_INSIGHT_SCHEMA = {
+  name: 'venture_insight',
+  strict: true,
+  schema: {
+    type: 'object',
+    properties: {
+      headline: { type: 'string' },
+      description: { type: 'string' },
+      actionLabel: { type: ['string', 'null'] },
+      actionOpId: { type: ['string', 'null'] },
+      confidence: { type: 'integer' },
+    },
+    required: ['headline', 'description', 'actionLabel', 'actionOpId', 'confidence'],
+    additionalProperties: false,
+  },
+} as const;
 
 const RUN_OP_NEXT_SCHEMA = {
   name: 'run_op_next',
@@ -1937,6 +2282,39 @@ const INQUIRY_SCHEMA = {
     additionalProperties: false,
   },
 } as const;
+
+function systemPromptForVentureInsight(): string {
+  return `You are IV's Intelligence — the founder's in-venture companion.
+
+You receive:
+- VENTURE: name, description.
+- PAGE: the current venture page (strategy, product, engineering, gtm, campaigns, sales, growth, funding, knowledge, analytics, outcomes, connectors, overview).
+- FOCUS: what this page is about.
+- DELIVERABLES: validated deliverables on this page, most recent first. Each has { opId, title, createdAt }.
+- RUNS: recent runs on this page. Each has { opId, status, createdAt }.
+- NEEDS_YOU: runs waiting on founder input.
+- GAPS: missing or stale evidence — { kind, opId, label, hint }.
+- TOTAL_VALIDATED: total validated deliverables across the venture.
+
+YOUR JOB
+Produce ONE short, grounded insight that helps the founder decide what to do next on THIS page. Under 220 characters total.
+
+RULES
+1. Base every claim on the provided evidence. Never invent facts.
+2. If GAPS contains a "pending_review", lead with that — the founder is already blocked.
+3. If GAPS contains a "missing_op", lead with that — a specific op to run.
+4. If DELIVERABLES is empty, name the most important op this page needs.
+5. If everything is healthy, encourage moving to the NEXT page in the funnel.
+6. Prefer specific numbers and op names ("Re-run positioning with the new ICP") over generic advice ("consider strategy").
+7. headline: ONE sentence, 6-12 words, concrete.
+8. description: 1-2 sentences. Names what evidence drove the insight.
+9. actionOpId: the op to run next, e.g. "strategy.define-positioning". Null if no op is suggested.
+10. actionLabel: 2-4 word button text, e.g. "Re-run Positioning". Null if no op.
+11. confidence: 0-100. Higher when evidence is concrete, lower when inferring.
+12. Never use exclamation points. Never use "leverage", "seamless", "robust", "innovative".
+
+Return ONLY the JSON. No preamble.`;
+}
 
 function systemPromptForRunOpNext(): string {
   return `You are IV's Venture Op agent. The founder is about to run an operation, and you need enough context first.
@@ -2159,6 +2537,33 @@ async function handleRunOpNext(userId: string, input: any) {
   return result;
 }
 
+async function handleVentureInsight(input: any) {
+  const userContent = JSON.stringify({
+    venture: input.venture ?? {},
+    page: input.page ?? 'overview',
+    focus: input.focus ?? '',
+    deliverables: input.deliverables ?? [],
+    runs: input.runs ?? [],
+    needsYou: input.needsYou ?? [],
+    gaps: input.gaps ?? [],
+    totalValidated: input.totalValidated ?? 0,
+  });
+
+  const result = await callOpenAI(
+    systemPromptForVentureInsight(),
+    userContent,
+    VENTURE_INSIGHT_SCHEMA,
+  );
+
+  console.log('[ventureInsight]', {
+    page: input.page,
+    hasAction: !!result.actionOpId,
+    confidence: result.confidence,
+  });
+
+  return result;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS')
     return new Response('ok', { headers: CORS });
@@ -2212,6 +2617,9 @@ serve(async (req) => {
         break;
       case 'inquiry':
         output = await handleInquiry(userId, input);
+        break;
+      case 'ventureInsight':
+        output = await handleVentureInsight(input);
         break;
       case 'runOpNext':
         output = await handleRunOpNext(userId, input);

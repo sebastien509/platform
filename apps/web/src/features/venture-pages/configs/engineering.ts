@@ -24,12 +24,6 @@ export const engineeringConfig: VenturePageConfig = {
       id: 'eng-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'engineering.generate-architecture',
-        'engineering.draft-api-spec',
-        'engineering.generate-ui-spec',
-        'engineering.scaffold-repo',
-      ],
     },
   ],
 };

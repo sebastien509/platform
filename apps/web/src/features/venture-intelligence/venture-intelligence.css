@@ -333,3 +333,152 @@
      }
    }
    
+/* ============================================================
+   IV Intelligence — CTA + source chips (real insight mode)
+   ============================================================ */
+
+.iv-intelligence__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(150, 168, 220, 0.18);
+}
+
+.iv-intelligence__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vi-blue);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background 160ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.iv-intelligence__cta:hover {
+  background: #3157e7;
+  transform: translateY(-1px);
+}
+
+.iv-intelligence__sources {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: var(--vi-muted);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-intelligence__cta {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   IV Intelligence — CTA + source chips (real insight mode)
+   ============================================================ */
+
+.iv-intelligence__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(150, 168, 220, 0.18);
+}
+
+.iv-intelligence__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vi-blue);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background 160ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.iv-intelligence__cta:hover {
+  background: #3157e7;
+  transform: translateY(-1px);
+}
+
+.iv-intelligence__sources {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: var(--vi-muted);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-intelligence__cta {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+   IV Intelligence — CTA + source line (real insight mode)
+   ============================================================ */
+
+.iv-intelligence__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(150, 168, 220, 0.18);
+}
+
+.iv-intelligence__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--vi-blue);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  transition:
+    background 160ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 160ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.iv-intelligence__cta:hover {
+  background: #3157e7;
+  transform: translateY(-1px);
+}
+
+.iv-intelligence__sources {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  color: var(--vi-muted);
+  font-style: italic;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iv-intelligence__cta {
+    transition: none;
+    transform: none;
+  }
+}

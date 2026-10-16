@@ -24,10 +24,6 @@ export const growthConfig: VenturePageConfig = {
       id: 'growth-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'growth.design-experiment',
-        'growth.draft-retention-plan',
-      ],
     },
   ],
 };

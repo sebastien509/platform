@@ -22,8 +22,6 @@ import {
 import { cn } from '@/lib/utils/cn';
 import type { LucideIcon } from 'lucide-react';
 
-const COLLAPSED_ICON_OPACITY = 'opacity-60';
-
 const IV_LOGO_WORDMARK =
   'https://res.cloudinary.com/dvcmopd4q/image/upload/e_trim/v1789515611/Branding_IV_text_Color_Blue_vovyzb.png';
 
@@ -145,17 +143,26 @@ export function Sidebar({
     >
       <div className="relative z-10 flex h-full min-h-0 flex-col">
         <div className="iv-primary-sidebar__brand flex h-14 shrink-0 items-center overflow-hidden px-3">
+          
           {collapsed ? (
             <img
               src={IV_LOGO_ICON}
               alt="IV"
               className="mx-auto h-9 w-9 shrink-0 object-contain"
+              style={{
+                filter:
+                  'brightness(0) saturate(100%) invert(13%) sepia(11%) saturate(1450%) hue-rotate(180deg) brightness(92%) contrast(91%)',
+              }}
             />
           ) : (
             <img
               src={IV_LOGO_WORDMARK}
               alt="IV by InthraOS"
               className="h-7 w-auto max-w-full shrink-0 object-contain px-3"
+              style={{
+                filter:
+                  'brightness(0) saturate(100%) invert(13%) sepia(11%) saturate(1450%) hue-rotate(180deg) brightness(92%) contrast(91%)',
+              }}
             />
           )}
 
@@ -169,15 +176,16 @@ export function Sidebar({
               <X size={18} />
             </button>
           )}
+
         </div>
 
         <nav className="min-h-0 flex-1 space-y-3 overflow-y-auto px-2 py-2">
           {NAV_GROUPS.map((group) => (
             <div key={group.header}>
               {!collapsed && (
-                <p className="px-3 pb-1 text-2xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
-                  {group.header}
-                </p>
+                <p className="px-3 pb-1 text-2xs font-semibold uppercase tracking-wider text-[#7B8494]">
+                {group.header}
+              </p>
               )}
 
               <ul className="space-y-px">
@@ -260,32 +268,25 @@ function NavItemLink({
       tabIndex={tabIndex}
       className={({ isActive }) =>
         cn(
-          'relative flex items-center gap-2.5 rounded-md',
+          'relative flex items-center gap-2.5 rounded-[5px]',
           collapsed
             ? 'mx-auto h-8 w-8 justify-center px-0 py-0'
             : 'px-3 py-1.5',
           'text-sm transition-colors',
           isActive
-            ? 'bg-[var(--accent-muted)] text-[var(--accent)] font-medium'
-            : 'text-[var(--text-secondary)] hover:bg-[var(--surface-2)] hover:text-[var(--text-primary)]',
-          collapsed &&
-            `${COLLAPSED_ICON_OPACITY} hover:opacity-100`
+            ? 'bg-[#EDF2FF] text-[#426BFA] font-semibold'
+            : 'text-[#303846] font-medium hover:bg-[#F3F4F6] hover:text-[#202736]'
         )
       }
     >
-      {({ isActive }) => (
+      {() => (
         <>
-          {isActive && !collapsed && (
-            <span
-              className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-full"
-              style={{ background: 'var(--accent)' }}
-            />
-          )}
-
           <Icon className="h-3.5 w-3.5 shrink-0" />
 
           {!collapsed && (
-            <span className="truncate">{item.label}</span>
+            <span className="truncate">
+              {item.label}
+            </span>
           )}
         </>
       )}

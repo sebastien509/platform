@@ -2,6 +2,7 @@ import { Section, SectionGrid } from '@/components/layout';
 import { CollectionView } from '@/components/collections';
 import { ArtifactFrame } from '@/components/artifacts';
 import { OpsGrid } from '@/features/venture-actions';
+import { getActionsForPage } from '@/features/venture-actions/page-actions';
 import { SignalHero } from '../SignalHero';
 import { OutcomeCards } from '../OutcomeCards';
 import { DecisionImpactTable } from '../DecisionImpactTable';
@@ -38,7 +39,8 @@ function isSectionEmpty(section: VentureSection): boolean {
     case 'decision':
       return section.cards.length === 0;
     case 'tools':
-      return section.actionIds.length === 0;
+      /* tools are always resolved from the registry; never empty */
+      return false;
     case 'feedback':
       return false;
     case 'deliverable-history':
@@ -294,10 +296,19 @@ function ToolsView({
   pageKey: string;
   pageBlocked?: boolean;
 }) {
+  /* Resolve actionIds:
+   *  · If the section specifies them explicitly → use those.
+   *  · Otherwise → read them from the registry (page-actions.ts).
+   *    The configs are layout only; page-actions is the source of truth. */
+  const allActionIds =
+    section.actionIds && section.actionIds.length > 0
+      ? section.actionIds
+      : getActionsForPage(pageKey).map((a) => a.id);
+
   return (
     <div className="operations-row" id={section.id}>
       <OpsGrid
-        allActionIds={section.actionIds}
+        allActionIds={allActionIds}
         recommendedActionIds={section.recommendedActionIds}
         moreActionIds={section.moreActionIds}
         pageId={pageKey}

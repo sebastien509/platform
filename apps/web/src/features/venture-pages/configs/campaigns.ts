@@ -24,11 +24,6 @@ export const campaignsConfig: VenturePageConfig = {
       id: 'campaigns-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'campaigns.generate-drip-sequence',
-        'campaigns.draft-email',
-        'campaigns.launch-drip',
-      ],
     },
   ],
 };

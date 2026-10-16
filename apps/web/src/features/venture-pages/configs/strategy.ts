@@ -17,13 +17,6 @@ export const strategyConfig: VenturePageConfig = {
       id: 'strategy-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'strategy.define-icp',
-        'strategy.define-positioning',
-        'strategy.define-wedge',
-        'strategy.generate-brand-brief',
-        'strategy.draft-pricing-model',
-      ],
     },
   ],
 };

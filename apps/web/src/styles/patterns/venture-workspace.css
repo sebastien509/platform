@@ -3732,3 +3732,183 @@
 .venture-bento {gap:18px;}
 .venture-page__section-label {border-bottom:0;padding-bottom:2px;color:#667085;}
 @media(max-width:640px){.venture-page{gap:18px}.venture-bento{gap:13px;}}
+
+/* ============================================================
+   Action button — "produces" overlay (v2, high specificity)
+   Anchored to beat `.function-tool-strip .action-btn { ... }`
+   rules that were resetting position: relative on the base button.
+   ============================================================ */
+
+.function-tool-strip .action-btn {
+  position: relative !important;
+  overflow: hidden;
+}
+
+.function-tool-strip .action-btn__produces,
+.function-tool-strip .action-btn .action-btn__produces {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  inset: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  pointer-events: none !important;
+
+  font-family: var(--font-display, var(--font-sans)) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--text-primary) !important;
+
+  background: color-mix(in srgb, var(--surface-0) 74%, transparent) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+
+  opacity: 0.94 !important;
+  transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.2, 1) !important;
+  z-index: 3 !important;
+}
+
+.function-tool-strip .action-btn:hover:not(:disabled) .action-btn__produces {
+  opacity: 0.32 !important;
+}
+
+.function-tool-strip .action-btn--live .action-btn__produces,
+.function-tool-strip .action-btn--proven .action-btn__produces,
+.function-tool-strip .action-btn--failed .action-btn__produces,
+.function-tool-strip .action-btn:disabled .action-btn__produces {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+@media (max-width: 640px) {
+  .function-tool-strip .action-btn__produces {
+    font-size: 13px !important;
+  }
+}
+
+/* ============================================================
+   Action button — "produces" overlay (v2, high specificity)
+   Anchored to beat `.function-tool-strip .action-btn { ... }`
+   rules that were resetting position: relative on the base button.
+   ============================================================ */
+
+.function-tool-strip .action-btn {
+  position: relative !important;
+  overflow: hidden;
+}
+
+.function-tool-strip .action-btn__produces,
+.function-tool-strip .action-btn .action-btn__produces {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  inset: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  pointer-events: none !important;
+
+  font-family: var(--font-display, var(--font-sans)) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--text-primary) !important;
+
+  background: color-mix(in srgb, var(--surface-0) 74%, transparent) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+
+  opacity: 0.94 !important;
+  transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.2, 1) !important;
+  z-index: 3 !important;
+}
+
+.function-tool-strip .action-btn:hover:not(:disabled) .action-btn__produces {
+  opacity: 0.32 !important;
+}
+
+.function-tool-strip .action-btn--live .action-btn__produces,
+.function-tool-strip .action-btn--proven .action-btn__produces,
+.function-tool-strip .action-btn--failed .action-btn__produces,
+.function-tool-strip .action-btn:disabled .action-btn__produces {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+@media (max-width: 640px) {
+  .function-tool-strip .action-btn__produces {
+    font-size: 13px !important;
+  }
+}
+
+/* ============================================================
+   Action button — "produces" overlay (v2, high specificity)
+   Anchored to beat `.function-tool-strip .action-btn { ... }`
+   rules that were resetting position: relative on the base button.
+   ============================================================ */
+
+.function-tool-strip .action-btn {
+  position: relative !important;
+  overflow: hidden;
+}
+
+.function-tool-strip .action-btn__produces,
+.function-tool-strip .action-btn .action-btn__produces {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  inset: 0 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  pointer-events: none !important;
+
+  font-family: var(--font-display, var(--font-sans)) !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  color: var(--text-primary) !important;
+
+  background: color-mix(in srgb, var(--surface-0) 74%, transparent) !important;
+  backdrop-filter: blur(3px) !important;
+  -webkit-backdrop-filter: blur(3px) !important;
+
+  opacity: 0.94 !important;
+  transition: opacity 160ms cubic-bezier(0.2, 0.7, 0.2, 1) !important;
+  z-index: 3 !important;
+}
+
+.function-tool-strip .action-btn:hover:not(:disabled) .action-btn__produces {
+  opacity: 0.32 !important;
+}
+
+.function-tool-strip .action-btn--live .action-btn__produces,
+.function-tool-strip .action-btn--proven .action-btn__produces,
+.function-tool-strip .action-btn--failed .action-btn__produces,
+.function-tool-strip .action-btn:disabled .action-btn__produces {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+@media (max-width: 640px) {
+  .function-tool-strip .action-btn__produces {
+    font-size: 13px !important;
+  }
+}

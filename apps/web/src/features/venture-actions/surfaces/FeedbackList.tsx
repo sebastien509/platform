@@ -5,13 +5,33 @@ import { useVentureComments, useShareStore } from '@/lib/share';
 import type { SurfaceId } from '@/lib/share';
 
 const SURFACE_LABELS: Record<SurfaceId, string> = {
-  'strategy.brief': 'Strategy brief',
-  'product.prototype': 'Prototype',
-  'engineering.docs': 'Technical docs',
-  'gtm.plan': '90-day plan',
-  'gtm.landing': 'GTM landing',
-  'campaigns.landing': 'Campaign landing',
-  'sales.proposal': 'Proposal',
+  /* Documents */
+  'strategy.brief':      'Strategy brief',
+  'product.docs':        'Product document',
+  'engineering.docs':    'Engineering document',
+  'gtm.plan':            'GTM plan',
+  'campaigns.docs':      'Campaigns document',
+  'sales.docs':          'Sales document',
+  'sales.proposal':      'Proposal',
+  'growth.plan':         'Growth plan',
+  'funding.docs':        'Funding document',
+  /* Decks */
+  'strategy.deck':       'Brand deck',
+  'funding.deck':        'Pitch deck',
+  /* Code */
+  'engineering.code':    'Code spec',
+  /* HTML artifacts */
+  'product.landing':     'Landing page',
+  'engineering.ui-spec': 'UI spec',
+  'campaigns.email':     'Email draft',
+  /* Sheets */
+  'funding.sheet':       'Financial model',
+  /* Actions */
+  'action.confirm':      'Action',
+  /* Legacy */
+  'gtm.landing':         'Landing page',
+  'campaigns.landing':   'Landing page',
+  'product.prototype':   'Prototype',
 };
 
 interface FeedbackListProps {

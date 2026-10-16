@@ -2,26 +2,12 @@ import type { VenturePageKey } from '@/lib/types';
 import { EXTRA_OPS } from './extra-ops';
 
 /* ============================================================
-   RENDER TYPE — what shape does the output take?
-   Every op produces exactly one shape. The router uses this to
-   decide which viewer opens on Review / Open.
+   RENDER TYPE / TIER / PAYLOAD — unchanged shape
    ============================================================ */
 
 export type RenderType =
-  | 'markdown'     // DocumentViewer — prose, headings, lists
-  | 'html'         // SurfaceViewer HTML tab — interactive pages
-  | 'deck'         // SurfaceViewer Deck tab — slides
-  | 'report'       // DocumentViewer — analytical output
-  | 'code'         // CodeView — specs, configs, source
-  | 'sheet'        // SheetView — tables, pricing, matrices
-  | 'operational'  // No document — collection/status updates
-  | 'repo';        // Outbound URL + status card
-
-/* ============================================================
-   OP TIER — does this op create a new artifact or refine one?
-   Primary = produces a standalone deliverable
-   Secondary = refines an existing one (same deliverable, new version)
-   ============================================================ */
+  | 'markdown' | 'html' | 'deck' | 'report'
+  | 'code' | 'sheet' | 'operational' | 'repo';
 
 export type OpTier = 'primary' | 'secondary';
 
@@ -33,103 +19,47 @@ export interface ActionDef {
   connector?: string;
   description?: string;
   icon?: string;
-  /** Populated on preview. Optional — some actions are pure confirmations. */
   build?: () => ActionPayload;
-  /** Marks the action as visually primary in a row. */
   primary?: boolean;
-  /** When present, the preview modal renders this surface instead of a payload. */
   surfaceId?: import('@/lib/share').SurfaceId;
-  /** Builder for the surface snapshot. Called once at share time. */
   buildSnapshot?: () => import('@/lib/share').ShareSnapshot;
-  /**
-   * Inputs the agent needs before it can produce an output.
-   * Each becomes a block in the drawer's Needs-you zone.
-   * When all are answered, the agent proceeds to output.
-   */
   requires?: RequireInput[];
-
-  /* ---------- OpsCard display metadata ---------- */
-
-  /** One-line summary of what will be produced. e.g. "PRD", "Deployment". */
   produces?: string;
-  /** Cross-page or same-page prerequisites. e.g. ['strategy.icp', 'strategy.positioning']. */
   requiresOps?: string[];
-  /** Human labels for requiresOps. Rendered as chips on the card. */
   requiresLabels?: string[];
-  /** Optional soft dependency — informational only, doesn\'t block. */
   softDependency?: string;
-
-  /* ---------- Output shape ---------- */
-
-  /** What kind of artifact this op produces. Drives viewer routing. */
   renderType?: RenderType;
-  /** Primary produces a new deliverable. Secondary refines an existing one. */
   tier?: OpTier;
-  /** For secondary ops — the op id of the deliverable this refines. */
   refinesOpId?: string;
-
-  /* ---------- Agent runtime ---------- */
-
-  /** When true, the drawer keeps the composer visible for the
-   *  whole run — chat-style ops (knowledge.ask) rather than
-   *  question → wait → continue. */
   conversationMode?: boolean;
-
-  /** The edge function method this op calls. When absent, the
-   *  mock builders (def.build / def.buildSnapshot) are used as
-   *  fallback. Set during H2/H3 rollout, one domain at a time. */
   agentMethod?: string;
-
-  /** Pin the output kind for this op. When set, the LLM is forced
-   *  to return this kind via a narrowed response schema — no
-   *  ambiguity. Use for ops whose verb is ambiguous between
-   *  "produce a document" and "produce an outbound action".
-   *
-   *  Examples:
-   *    · "Run ICP validation" → email_batch (send survey emails)
-   *    · "Share brief"         → snapshot    (produce a document)
-   *    · "Log call"            → confirm     (one-shot write)
-   */
-  expectedOutputKind?: 'snapshot' | 'payload' | 'confirm' | 'email_batch';
+  expectedOutputKind?: 'snapshot' | 'payload' | 'confirm' | 'email_batch' | 'action';
 }
 
 export interface RequireInput {
-  /** Stable id — also used as the block id. */
   id: string;
   kind: 'question' | 'file_request' | 'approval';
   prompt: string;
-  /** For 'question' kind. */
   options?: Array<{ label: string; value: string; primary?: boolean }>;
   freeText?: boolean;
-  /** For 'file_request' kind. */
   acceptedKinds?: string[];
   destinationHint?: string;
-  /** For 'approval' kind. */
   approveLabel?: string;
   rejectLabel?: string;
 }
 
 export interface EmailBatchSegment {
-  /** Human name for the segment — "SMB solo", "Small firm". */
   name: string;
-  /** Estimated recipient count. */
   size?: number;
-  /** Optional human filter description — "firm size 1-2 lawyers". */
   filter?: string;
-  /** Short hint for what varies per recipient in this segment. */
   personalizationHint?: string;
 }
 
 export interface EmailBatch {
-  /** Subject line with {{placeholders}}. */
   subjectTemplate: string;
-  /** Body with {{placeholders}}. */
   bodyTemplate: string;
-  /** Segments the founder can target. */
   segments: EmailBatchSegment[];
-  /** Placeholder → source of truth. e.g. { firstName: 'recipient list' }. */
   personalizationRules: Record<string, string>;
-  /** Total estimated recipients across all segments. */
   estimatedRecipients?: number;
 }
 
@@ -143,164 +73,175 @@ export type ActionPayload =
   | { type: 'link'; label: string; url: string; description?: string };
 
 /* ============================================================
-   PAGE ACTIONS REGISTRY
-   Every op a founder can run on a venture page.
-   25 ops across 8 operating pages.
+   REGISTRY — 30 focused ops across 8 domains
    ============================================================ */
 
 const REGISTRY: Partial<Record<VenturePageKey, ActionDef[]>> = {
-  /* ============================================================
-     STRATEGY
-     ============================================================ */
+  /* ═══════════════ STRATEGY — 5 ═══════════════ */
   strategy: [
     {
-      id: 'strategy.share-brief',
-      verb: 'Share brief',
-      renderType: 'markdown',
+      id: 'strategy.define-icp',
+      verb: 'Define ICP',
+      renderType: 'report',
       tier: 'primary',
-      produces: 'Brief',
-      destination: 'Strategy › Brief',
+      produces: 'ICP',
+      destination: 'Strategy › ICP',
       mode: 'native',
-      icon: 'share',
+      icon: 'users',
+      primary: true,
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Generates a read-only link to the Strategy Brief. Anybody with the link can comment — no login.',
       surfaceId: 'strategy.brief',
-      buildSnapshot: () => ({
-        title: 'Contract Review — Strategy Brief',
-        kicker: 'For small law firms tired of enterprise contract platforms.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'summary',
-            label: 'Summary',
-            tone: 'ready',
-            body: 'IV is a contract reviewer that reads like a senior associate — fast, plain-spoken, and priced by the seat.',
-          },
-          {
-            type: 'paragraph',
-            id: 'icp',
-            label: 'ICP',
-            body: 'Owner-operators of small law firms (2–10 lawyers) who invoice hourly and lose 8–12 hours a week to contract review. They buy tools that save partner time, not staff time.',
-          },
-          {
-            type: 'paragraph',
-            id: 'wedge',
-            label: 'Wedge',
-            body: 'Incumbents sell platforms. We sell one job: upload a contract, get flagged risks in plain English before the client call.',
-          },
-          {
-            type: 'metrics',
-            id: 'signals',
-            label: 'Signals',
-            items: [
-              { label: 'Interviews', value: '8' },
-              { label: 'Willing to pay', value: '86%' },
-              { label: 'Wedge confidence', value: '91%' },
-            ],
-          },
-          {
-            type: 'list',
-            id: 'sources',
-            label: 'Sources',
-            items: [
-              { title: 'ICP interviews — 8 firms', body: 'Hours spent, tools used, decision-makers.' },
-              { title: 'Competitive teardown — Contract AI tools', body: 'Pricing, positioning, distribution.' },
-              { title: 'Legal market sizing', body: 'US small firm segment.' },
-            ],
-          },
-        ],
-      }),
+      description: 'Name the specific buyer segment with the sharpest pain.',
       requires: [
         {
-          id: 'req-audience',
+          id: 'req-icp-sector',
           kind: 'question',
-          prompt: 'Who should be able to review this brief?',
+          prompt: 'Which sector should the ICP focus on first?',
           options: [
-            { label: 'Advisors', value: 'Advisors', primary: true },
-            { label: 'Investors', value: 'Investors' },
-            { label: 'Teammates', value: 'Teammates' },
+            { label: 'Biotech / Healthtech', value: 'biotech', primary: true },
+            { label: 'B2B SaaS', value: 'b2b-saas' },
+            { label: 'Fintech', value: 'fintech' },
+            { label: 'Legal Tech', value: 'legal-tech' },
+            { label: 'Let research decide', value: 'auto' },
           ],
+        },
+        {
+          id: 'req-icp-size',
+          kind: 'question',
+          prompt: 'What firm size are you picturing?',
+          options: [
+            { label: 'Startup (1-50)', value: 'startup' },
+            { label: 'SMB (50-200)', value: 'smb', primary: true },
+            { label: 'Mid-market (200-2000)', value: 'mid-market' },
+            { label: 'Enterprise (2000+)', value: 'enterprise' },
+            { label: 'Let research decide', value: 'auto' },
+          ],
+        },
+        {
+          id: 'req-icp-role',
+          kind: 'question',
+          prompt: 'Who holds the buying power?',
+          options: [
+            { label: 'Compliance / Legal', value: 'compliance', primary: true },
+            { label: 'Data / IT', value: 'it' },
+            { label: 'Operations', value: 'ops' },
+            { label: 'Founder / CEO', value: 'founder' },
+            { label: 'Let research decide', value: 'auto' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'strategy.define-positioning',
+      verb: 'Define positioning',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Positioning',
+      destination: 'Strategy › Positioning',
+      mode: 'native',
+      icon: 'target',
+      primary: true,
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Write the one-line promise that makes the wedge obvious.',
+      requiresOps: ['strategy.define-icp'],
+      requiresLabels: ['ICP'],
+      requires: [
+        {
+          id: 'req-positioning-competitor',
+          kind: 'question',
+          prompt: 'Who is the primary competitor you are positioning against?',
+          freeText: true,
+        },
+        {
+          id: 'req-positioning-differentiator',
+          kind: 'question',
+          prompt: 'What can you claim that no competitor can?',
+          freeText: true,
+        },
+        {
+          id: 'req-positioning-category',
+          kind: 'question',
+          prompt: 'What category do you want to be filed under?',
+          options: [
+            { label: 'An existing category we lead', value: 'existing' },
+            { label: 'A new category we define', value: 'new-category' },
+            { label: 'A sub-category of an existing one', value: 'sub-category' },
+            { label: 'Let research decide', value: 'auto' },
+          ],
+        },
+        {
+          id: 'req-positioning-proof',
+          kind: 'question',
+          prompt: 'What is your strongest proof point today? (a customer, a metric, a technical edge)',
           freeText: true,
         },
       ],
     },
     {
-      id: 'strategy.export-tokens',
-      verb: 'Export brand tokens',
-      renderType: 'code',
-      tier: 'secondary',
-      produces: 'Brand tokens',
-      destination: 'Strategy › Brand',
-      mode: 'native',
-      icon: 'download',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'payload',
-      description: 'Exports the brand sheet as CSS variables and a JSON token file for Engineering.',
-      build: () => ({
-        type: 'json',
-        label: 'Brand tokens',
-        data: {
-          'color.accent': 'oklch(54.6% 0.215 262.9)',
-          'color.surface-0': 'hsl(var(--iv-color-bg-base))',
-          'radius.lg': '16px',
-        },
-      }),
-    },
-    {
-      id: 'strategy.run-validation',
-      verb: 'Run ICP validation',
+      id: 'strategy.define-wedge',
+      verb: 'Define wedge',
       renderType: 'report',
-      tier: 'secondary',
-      produces: 'Validation data',
-      softDependency: 'Better with a defined ICP',
-      destination: 'Strategy › ICP',
-      mode: 'connected',
-      connector: 'gmail',
-      icon: 'send',
+      tier: 'primary',
+      produces: 'Wedge',
+      destination: 'Strategy › Wedge',
+      mode: 'native',
+      icon: 'zap',
       agentMethod: 'runOp',
-      expectedOutputKind: 'email_batch',
-      description: 'Sends the ICP survey to target contacts. Requires Gmail. Until connected, you get the copy to send manually.',
-      build: () => ({
-        type: 'email',
-        to: 'targets@segment.list',
-        subject: 'Quick question about your tooling',
-        body: "Hi — I\'m building a tool for small law firms and I\'d love your take on one thing.\n\n[Question about pricing]\n\nThanks.",
-      }),
-    },
-    {
-      id: 'strategy.book-calls',
-      verb: 'Book validation calls',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Booked calls',
-      softDependency: 'Better with a defined ICP',
-      destination: 'Strategy › ICP',
-      mode: 'connected',
-      connector: 'calendar',
-      icon: 'calendar',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Publishes a Calendly-style booking link.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Book validation calls',
-        body: 'A booking link will be generated once a calendar is connected.',
-      }),
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'The single job you win first.',
+      requiresOps: ['strategy.define-icp', 'strategy.define-positioning'],
+      requiresLabels: ['ICP', 'Positioning'],
+      requires: [
+        {
+          id: 'req-wedge-first-job',
+          kind: 'question',
+          prompt: 'What is the ONE job the product must do well before anything else?',
+          freeText: true,
+        },
+        {
+          id: 'req-wedge-segment',
+          kind: 'question',
+          prompt: 'Who is the smallest segment we can win first?',
+          freeText: true,
+        },
+        {
+          id: 'req-wedge-timeframe',
+          kind: 'question',
+          prompt: 'What is a realistic time-to-value for that first job?',
+          options: [
+            { label: 'Same day', value: 'same-day' },
+            { label: 'Within a week', value: 'week' },
+            { label: 'Within a month', value: 'month' },
+            { label: 'Longer than a month', value: 'long' },
+          ],
+        },
+        {
+          id: 'req-wedge-constraint',
+          kind: 'question',
+          prompt: 'What constraint (technical, resource, market) most limits the wedge?',
+          freeText: true,
+        },
+      ],
     },
     {
       id: 'strategy.generate-brand-brief',
       verb: 'Generate brand brief',
+      renderType: 'deck',
+      tier: 'primary',
+      produces: 'Brand brief',
       destination: 'Strategy › Brand',
       mode: 'native',
       icon: 'sparkles',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
       description: 'Produce the visual + voice brief that guides every design decision.',
-      produces: 'Brand brief',
       requiresOps: ['strategy.define-positioning'],
       requiresLabels: ['Positioning'],
-      renderType: 'deck',
-      tier: 'primary',
-      surfaceId: 'strategy.brief',
       requires: [
         {
           id: 'req-brand-tone',
@@ -313,497 +254,487 @@ const REGISTRY: Partial<Record<VenturePageKey, ActionDef[]>> = {
           ],
         },
       ],
-      buildSnapshot: () => ({
-        title: 'Brand Brief',
-        kicker: 'Visual + voice system for the venture.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'principle',
-            label: 'Principle',
-            tone: 'ready',
-            body: 'Reads like a good associate, not a legal textbook. Short sentences. Verbs first.',
-          },
-          {
-            type: 'feature-grid',
-            id: 'pillars',
-            label: 'Brand pillars',
-            items: [
-              { title: 'Plain', body: 'No jargon. No legal theatre.' },
-              { title: 'Confident', body: 'Direct statements. No hedging.' },
-              { title: 'Quietly premium', body: 'Calm surfaces. Considered spacing.' },
-            ],
-          },
-          {
-            type: 'metrics',
-            id: 'visual',
-            label: 'Visual system',
-            items: [
-              { label: 'Accent', value: 'Blue 262.9' },
-              { label: 'Radius', value: '20px' },
-              { label: 'Voice', value: 'Verbs first' },
-            ],
-          },
-        ],
-      }),
     },
     {
-      id: 'strategy.rerun-market-sizing',
-      verb: 'Re-run market sizing',
-      destination: 'Strategy › Market',
+      id: 'strategy.draft-pricing-model',
+      verb: 'Draft pricing model',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Pricing model',
+      destination: 'Strategy › Pricing',
       mode: 'native',
-      icon: 'bar-chart',
+      icon: 'dollar-sign',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Refresh the market sizing with current data.',
-      produces: 'Market sizing report',
-      renderType: 'report',
-      tier: 'secondary',
       surfaceId: 'strategy.brief',
-      buildSnapshot: () => ({
-        title: 'Market Sizing — Update',
-        kicker: 'Refreshed with current market data.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'summary',
-            label: 'TAM',
-            tone: 'ready',
-            body: '$2.4B US small-firm contract review market. Growing at 14% CAGR.',
-          },
-          {
-            type: 'metrics',
-            id: 'numbers',
-            label: 'Numbers',
-            items: [
-              { label: 'Firms (2–10)', value: '340k' },
-              { label: 'Avg contract load', value: '48/mo' },
-              { label: 'Willing to pay', value: '72%' },
-            ],
-          },
-        ],
-      }),
+      description: 'Tiered pricing with a specific willingness-to-pay signal.',
+      requiresOps: ['strategy.define-icp'],
+      requiresLabels: ['ICP'],
+      requires: [
+        {
+          id: 'req-pricing-acv',
+          kind: 'question',
+          prompt: 'What annual contract value do you want to target?',
+          options: [
+            { label: 'Under $500', value: 'under-500' },
+            { label: '$500 to $2k', value: '500-2k' },
+            { label: '$2k to $10k', value: '2k-10k' },
+            { label: '$10k to $50k', value: '10k-50k' },
+            { label: 'Above $50k', value: 'above-50k' },
+          ],
+        },
+        {
+          id: 'req-pricing-value-metric',
+          kind: 'question',
+          prompt: 'What is the single value metric you want to charge on? (seats, usage, outcomes, flat)',
+          freeText: true,
+        },
+        {
+          id: 'req-pricing-cadence',
+          kind: 'question',
+          prompt: 'What billing cadence fits your buyer?',
+          options: [
+            { label: 'Monthly', value: 'monthly' },
+            { label: 'Annual upfront', value: 'annual' },
+            { label: 'Both', value: 'both' },
+            { label: 'Let research decide', value: 'auto' },
+          ],
+        },
+        {
+          id: 'req-pricing-wtp-signal',
+          kind: 'question',
+          prompt: 'What have you observed about willingness to pay? (a customer yes, a competitor price point, a budget line you map to)',
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'strategy.generate-design-spec',
+      verb: 'Generate design spec',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Design system',
+      destination: 'Strategy › Design',
+      mode: 'native',
+      icon: 'palette',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Turn the brand brief into a concrete design system — palette, typography, spacing, component patterns.',
+      requiresOps: ['strategy.generate-brand-brief'],
+      requiresLabels: ['Brand brief'],
+      requires: [
+        {
+          id: 'req-design-feeling',
+          kind: 'question',
+          prompt: "What should someone feel the moment they land on the product?",
+          freeText: true,
+        },
+        {
+          id: 'req-design-references',
+          kind: 'question',
+          prompt: "Any product or site whose visual language you admire? Name 1-3.",
+          freeText: true,
+        },
+        {
+          id: 'req-design-density',
+          kind: 'question',
+          prompt: "What information density fits your user?",
+          options: [
+            { label: 'Airy — big spacing, lots of whitespace', value: 'airy', primary: true },
+            { label: 'Balanced', value: 'balanced' },
+            { label: 'Dense — data-rich, more per screen', value: 'dense' },
+          ],
+        },
+        {
+          id: 'req-design-avoid',
+          kind: 'question',
+          prompt: "What visual style do you explicitly NOT want?",
+          freeText: true,
+        },
+      ],
     },
   ],
 
-  /* ============================================================
-     PRODUCT
-     ============================================================ */
+  /* ═══════════════ PRODUCT — 2 ═══════════════ */
   product: [
+    {
+      id: 'product.generate-prd',
+      verb: 'Generate PRD',
+      renderType: 'markdown',
+      tier: 'primary',
+      produces: 'PRD',
+      destination: 'Product › Requirements',
+      mode: 'native',
+      icon: 'file-text',
+      primary: true,
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Turn validated Strategy into an implementation-ready spec.',
+      requiresOps: ['strategy.define-icp', 'strategy.define-positioning'],
+      requiresLabels: ['ICP', 'Positioning'],
+requires: [
+        {
+          id: 'req-prd-primary-job',
+          kind: 'question',
+          prompt: 'What is the single most important thing the MVP must do well?',
+          freeText: true,
+        },
+        {
+          id: 'req-prd-launch-horizon',
+          kind: 'question',
+          prompt: 'What is your realistic launch horizon for the MVP?',
+          options: [
+            { label: '2 weeks', value: '2-weeks' },
+            { label: '1 month', value: '1-month' },
+            { label: '1 quarter', value: '1-quarter' },
+            { label: '6 months or more', value: '6-months' },
+          ],
+        },
+        {
+          id: 'req-prd-non-goals',
+          kind: 'question',
+          prompt: 'What are you explicitly NOT building in v1? (the features people will ask for that you will say no to)',
+          freeText: true,
+        },
+        {
+          id: 'req-prd-hardest-build',
+          kind: 'question',
+          prompt: 'What is the hardest thing to build — and should we buy it, borrow it, or build it?',
+          freeText: true,
+        },
+      ],
+    },
     {
       id: 'product.generate-prototype',
       verb: 'Generate prototype',
       renderType: 'html',
       tier: 'primary',
       produces: 'Prototype',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      requiresOps: ['product.export-requirements'],
-      requiresLabels: ['PRD'],
-      destination: 'Product › Prototypes',
+      destination: 'Product › Prototype',
       mode: 'native',
       icon: 'sparkles',
-      description: 'Produces a clickable prototype hosted by IV with a share link.',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'payload',
       surfaceId: 'product.prototype',
-      buildSnapshot: () => ({
-        title: 'Contract Review — Clickable prototype',
-        kicker: 'Upload a contract, get a plain-English risk summary.',
-        sections: [
-          {
-            type: 'paragraph',
-            id: 'intro',
-            label: 'What this is',
-            body: 'A working prototype of the core flow: upload → parse → flag → explain → export. Click through each step. No backend required.',
-          },
-          {
-            type: 'embed',
-            id: 'prototype-frame',
-            label: 'Try it',
-            aspect: 'video',
-            html: `<!doctype html><html><head><style>
-              html,body{margin:0;font-family:Inter,system-ui,sans-serif;background:#f6f7f8;height:100%;display:flex;align-items:center;justify-content:center;}
-              .card{background:#fff;border-radius:16px;padding:40px;max-width:520px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.06);}
-              h1{font-size:22px;margin:0 0 8px;color:#18191b;letter-spacing:-0.02em;}
-              p{color:#61646b;margin:0 0 24px;font-size:14px;line-height:1.55;}
-              button{background:#5b5ce2;color:#fff;border:0;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;}
-              .steps{display:flex;gap:8px;justify-content:center;margin-top:24px;font-size:11px;color:#8b8e94;}
-              .steps span{padding:4px 8px;background:#f1f2f4;border-radius:6px;}
-            </style></head><body>
-              <div class="card">
-                <h1>Upload a contract</h1>
-                <p>PDF or DOCX. We\'ll parse it, flag clauses, and explain each risk in plain English.</p>
-                <button>Choose file</button>
-                <div class="steps"><span>Upload</span><span>Parse</span><span>Flag</span><span>Explain</span><span>Export</span></div>
-              </div>
-            </body></html>`,
-          },
-          {
-            type: 'list',
-            id: 'flow',
-            label: 'What you can try',
-            items: [
-              { title: 'Upload a contract', body: 'PDF and DOCX supported. 25MB cap.' },
-              { title: 'See flagged clauses', body: 'Each clause gets a plain-English explanation.' },
-              { title: 'Export the summary', body: 'Markdown + PDF with links back to the source contract.' },
-            ],
-          },
-        ],
-      }),
-      requires: [
-        {
-          id: 'req-flows',
-          kind: 'question',
-          prompt: 'Which flows should the prototype cover?',
-          options: [
-            { label: 'Core flow only', value: 'Core flow only', primary: true },
-            { label: 'Core + edge cases', value: 'Core + edge cases' },
-          ],
-        },
-      ],
+      description: 'Produces a clickable prototype hosted by IV with a share link.',
+      requiresOps: ['product.generate-prd'],
+      requiresLabels: ['PRD'],
     },
     {
-      id: 'product.export-requirements',
-      verb: 'Export requirements',
-      renderType: 'markdown',
-      tier: 'primary',
-      produces: 'Requirements list',
-      destination: 'Product › Requirements',
-      mode: 'native',
-      icon: 'download',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Downloads the requirement list as Markdown + JSON.',
-      build: () => ({
-        type: 'text',
-        label: 'Requirements (Markdown)',
-        text: '# Requirements\n\n## P0\n- REQ-001 Document upload (PDF + DOCX, 25MB cap)\n- REQ-002 Clause classification (rule-based)\n- REQ-003 Plain-English summary\n\n## P1\n- REQ-004 Risk scoring\n\n## P2\n- REQ-005 Team notes',
-      }),
-    },
-    {
-      id: 'product.push-requirements',
-      verb: 'Push to Linear',
+      id: 'product.publish-prototype',
+      verb: 'Publish prototype',
       renderType: 'operational',
       tier: 'secondary',
-      produces: 'Linear board',
-      destination: 'Product › Requirements',
-      mode: 'connected',
-      connector: 'linear',
-      icon: 'arrow-up-right',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Syncs the requirement list to Linear.',
-      build: () => ({
-        type: 'text',
-        label: 'Requirements CSV',
-        text: 'id,title,priority\nREQ-001,Document upload,high\nREQ-002,Risk scoring,medium',
-      }),
-    },
-    {
-      id: 'product.test-with-users',
-      verb: 'Test with users',
-      renderType: 'report',
-      tier: 'secondary',
-      produces: 'User feedback',
-      softDependency: 'Better with a live prototype',
-      destination: 'Product › Prototypes',
-      mode: 'connected',
-      connector: 'gmail',
-      icon: 'users',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'email_batch',
-      description: 'Sends the prototype to ICP contacts with a feedback form.',
-      build: () => ({
-        type: 'email',
-        to: 'icp@segment.list',
-        subject: 'Would love your feedback on a 2-minute prototype',
-        body: "Hi — quick prototype for something I\'ve been working on. Two minutes, honest reaction.",
-      }),
-    },
-  ],
-
-  /* ============================================================
-     ENGINEERING
-     ============================================================ */
-  engineering: [
-    {
-      id: 'engineering.create-repo',
-      verb: 'Create repo',
-      renderType: 'repo',
-      tier: 'primary',
-      produces: 'GitHub repo',
-      destination: 'Engineering › Architecture',
-      mode: 'connected',
-      connector: 'github',
-      icon: 'github',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Creates a GitHub repo seeded with README, architecture docs, OpenAPI spec, and issues from the PRD.',
-      build: () => ({
-        type: 'json',
-        label: 'Repository contents',
-        data: { files: ['README.md', 'docs/architecture.md', 'openapi.yaml'], issues: 8 },
-      }),
-    },
-    {
-      id: 'engineering.deploy-preview',
-      verb: 'Deploy preview',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Preview URL',
-      requiresOps: ['engineering.create-repo'],
-      requiresLabels: ['Repo'],
-      destination: 'Engineering › Environments',
+      produces: 'Live prototype URL',
+      destination: 'Product › Prototype',
       mode: 'connected',
       connector: 'vercel',
       icon: 'rocket',
       agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Deploys the current build to a preview URL.',
-      primary: true,
-      build: () => ({
-        type: 'confirm',
-        heading: 'Deploy preview',
-        body: 'A preview deploy will be created once Vercel is connected.',
-      }),
+      expectedOutputKind: 'action',
+      description: 'Deploys the prototype to Vercel and returns a live URL.',
+      requiresOps: ['product.generate-prototype'],
+      requiresLabels: ['Prototype'],
     },
+  ],
+
+  /* ═══════════════ ENGINEERING — 3 ═══════════════ */
+  engineering: [
     {
-      id: 'engineering.publish-docs',
-      verb: 'Publish docs',
-      renderType: 'html',
+      id: 'engineering.generate-architecture',
+      verb: 'Generate architecture',
+      renderType: 'markdown',
       tier: 'primary',
-      produces: 'Public docs',
+      produces: 'Architecture',
       destination: 'Engineering › Architecture',
       mode: 'native',
-      icon: 'file-text',
+      icon: 'layers',
+      primary: true,
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Renders architecture and API docs as a public site.',
       surfaceId: 'engineering.docs',
-      buildSnapshot: () => ({
-        title: 'Contract Review — Technical docs',
-        kicker: 'Architecture and API reference.',
-        sections: [
-          {
-            type: 'paragraph',
-            id: 'arch',
-            label: 'Architecture',
-            body: 'Monolith-first. Single deployable, single database, no queue. Split only on measured pain.',
-          },
-          {
-            type: 'code',
-            id: 'stack',
-            label: 'Stack',
-            language: 'yaml',
-            code: 'services:\n  - api: Node 20 + Express\n  - worker: shares api codebase\n  - web: Vite + React\n\ndatabase:\n  - postgres: single instance\n  - tables: users, orgs, contracts, clauses, summaries',
-          },
-          {
-            type: 'code',
-            id: 'api',
-            label: 'API surface',
-            language: 'typescript',
-            code: 'POST   /v1/contracts         Upload a contract\nGET    /v1/contracts/:id     Retrieve summary\nPOST   /v1/contracts/:id/export  Export as MD/PDF\nGET    /v1/me                Current user\nPOST   /v1/auth/exchange     Session exchange',
-          },
-        ],
-      }),
-    },
-    {
-      id: 'engineering.provision-db',
-      verb: 'Provision database',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Database',
-      destination: 'Engineering › Architecture',
-      mode: 'connected',
-      connector: 'supabase',
-      icon: 'database',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Provisions a Postgres database and applies the initial schema.',
-      build: () => ({
-        type: 'text',
-        label: 'Initial schema',
-        text: 'CREATE TABLE users (\n  id uuid PRIMARY KEY,\n  email text UNIQUE NOT NULL\n);',
-      }),
-      requires: [
+      description: 'Design the monolith-first architecture for the MVP.',
+      requiresOps: ['product.generate-prd'],
+      requiresLabels: ['PRD'],
+requires: [
         {
-          id: 'req-provider',
+          id: 'req-arch-team-size',
           kind: 'question',
-          prompt: 'Where should the database run?',
+          prompt: 'What team size will build and maintain this?',
           options: [
-            { label: 'Supabase', value: 'Supabase', primary: true },
-            { label: 'Neon', value: 'Neon' },
-            { label: 'Existing infrastructure', value: 'Existing' },
+            { label: 'Solo founder', value: 'solo' },
+            { label: '2-3 engineers', value: 'small' },
+            { label: '4-8 engineers', value: 'mid' },
+            { label: '8+ engineers', value: 'large' },
           ],
+        },
+        {
+          id: 'req-arch-constraint',
+          kind: 'question',
+          prompt: 'What constraint matters most here — budget, speed, team skills, or scale?',
+          freeText: true,
+        },
+        {
+          id: 'req-arch-deployment',
+          kind: 'question',
+          prompt: 'Where should this deploy?',
+          options: [
+            { label: 'Vercel', value: 'vercel' },
+            { label: 'AWS', value: 'aws' },
+            { label: 'GCP', value: 'gcp' },
+            { label: 'A bare VPS', value: 'vps' },
+            { label: 'Recommend one', value: 'auto' },
+          ],
+        },
+        {
+          id: 'req-arch-existing',
+          kind: 'question',
+          prompt: 'Any existing tech, vendors, or internal systems this must integrate with?',
+          freeText: true,
         },
       ],
     },
     {
       id: 'engineering.draft-api-spec',
       verb: 'Draft API spec',
+      renderType: 'code',
+      tier: 'primary',
+      produces: 'API spec',
       destination: 'Engineering › API',
       mode: 'native',
       icon: 'code',
       agentMethod: 'runOp',
       expectedOutputKind: 'payload',
       description: 'Produce the OpenAPI spec for the MVP surface.',
-      produces: 'API spec',
       requiresOps: ['engineering.generate-architecture'],
       requiresLabels: ['Architecture'],
-      renderType: 'code',
-      tier: 'primary',
-      surfaceId: 'engineering.docs',
-      buildSnapshot: () => ({
-        title: 'API Specification',
-        kicker: 'OpenAPI 3.1 — MVP surface.',
-        sections: [
-          {
-            type: 'code',
-            id: 'spec',
-            label: 'openapi.yaml',
-            language: 'yaml',
-            code: 'openapi: 3.1.0\ninfo:\n  title: Contract Review API\n  version: 1.0.0\npaths:\n  /v1/contracts:\n    post:\n      summary: Upload a contract\n      requestBody:\n        content:\n          multipart/form-data:\n            schema:\n              type: object\n              properties:\n                file:\n                  type: string\n                  format: binary\n  /v1/contracts/{id}:\n    get:\n      summary: Retrieve a summary\n  /v1/contracts/{id}/export:\n    post:\n      summary: Export as MD/PDF\n  /v1/auth/exchange:\n    post:\n      summary: Session exchange',
-          },
-        ],
-      }),
     },
     {
       id: 'engineering.generate-ui-spec',
       verb: 'Generate UI spec',
-      destination: 'Engineering › UI',
-      mode: 'native',
-      icon: 'layers',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Mockup + component inventory driven by brand brief and architecture.',
-      produces: 'UI spec',
-      requiresOps: ['engineering.generate-architecture', 'strategy.generate-brand-brief'],
-      requiresLabels: ['Architecture', 'Brand brief'],
       renderType: 'html',
       tier: 'primary',
+      produces: 'UI spec',
+      destination: 'Engineering › UI',
+      mode: 'native',
+      icon: 'layout',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'payload',
       surfaceId: 'engineering.docs',
-      buildSnapshot: () => ({
-        title: 'UI Specification',
-        kicker: 'Component inventory + layout mockups.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'principle',
-            label: 'Principle',
-            tone: 'ready',
-            body: 'Five components cover the entire MVP. Zero invented.',
-          },
-          {
-            type: 'list',
-            id: 'components',
-            label: 'Core components',
-            items: [
-              { title: 'UploadPanel', body: 'Drag-drop + file picker. Progress + errors.' },
-              { title: 'SummaryView', body: 'Clause list with plain-English explanations.' },
-              { title: 'RiskChip', body: 'Color + label + one-line rationale.' },
-              { title: 'ExportBar', body: 'MD/PDF picker + share toggle.' },
-              { title: 'EmptyState', body: 'First-run guidance.' },
-            ],
-          },
-          {
-            type: 'embed',
-            id: 'mockup',
-            label: 'Layout mockup',
-            html: '<div style="padding:40px;background:#f6f7f8;font-family:Inter,system-ui,sans-serif;"><div style="background:#fff;border-radius:16px;padding:32px;max-width:640px;box-shadow:0 4px 24px rgba(0,0,0,0.06);"><h2 style="margin:0 0 12px;font-size:20px;letter-spacing:-0.02em;color:#18191b;">Upload a contract</h2><p style="margin:0;color:#61646b;font-size:14px;line-height:1.55;">PDF or DOCX. We\'ll flag risks in plain English.</p></div></div>',
-          },
-        ],
-      }),
+      description: 'Mockup + component inventory driven by brand brief and architecture.',
+      requiresOps: ['engineering.generate-architecture', 'strategy.generate-brand-brief'],
+      requiresLabels: ['Architecture', 'Brand brief'],
+requires: [
+        {
+          id: 'req-ui-signature-screen',
+          kind: 'question',
+          prompt: 'Name the one screen that must feel uniquely yours — where users get the "ah" moment.',
+          freeText: true,
+        },
+        {
+          id: 'req-ui-design-maturity',
+          kind: 'question',
+          prompt: 'How mature is the design system today?',
+          options: [
+            { label: 'Nothing yet', value: 'none' },
+            { label: 'Basic tokens + components', value: 'basic' },
+            { label: 'Full design system', value: 'full' },
+          ],
+        },
+        {
+          id: 'req-ui-reference',
+          kind: 'question',
+          prompt: 'What is your strongest UI reference — a product, a site, a screenshot you keep coming back to?',
+          freeText: true,
+        },
+        {
+          id: 'req-ui-library',
+          kind: 'question',
+          prompt: 'Where should the components come from?',
+          options: [
+            { label: 'Build from scratch', value: 'scratch' },
+            { label: 'shadcn/ui', value: 'shadcn' },
+            { label: 'Material', value: 'material' },
+            { label: 'Custom, based on existing', value: 'custom' },
+          ],
+        },
+      ],
     },
     {
-      id: 'engineering.break-into-tasks',
-      verb: 'Break into tasks',
-      destination: 'Engineering › Tasks',
-      mode: 'native',
-      icon: 'priority',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Decompose the API spec into a task board.',
-      produces: 'Task board',
-      requiresOps: ['engineering.draft-api-spec'],
-      requiresLabels: ['API spec'],
+      id: 'engineering.scaffold-repo',
+      verb: 'Scaffold repo',
       renderType: 'operational',
       tier: 'primary',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Task board created',
-        body: '12 tasks derived from the API spec. Open the Tasks tab to view.',
-      }),
+      produces: 'GitHub repo',
+      destination: 'Engineering › Repo',
+      mode: 'connected',
+      connector: 'github',
+      icon: 'github',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'action',
+      description: 'Creates a real GitHub repo with README, architecture doc, and initial issues.',
+      requiresOps: ['engineering.generate-architecture'],
+      requiresLabels: ['Architecture'],
     },
   ],
 
-  /* ============================================================
-     GTM
-     ============================================================ */
+  /* ═══════════════ GTM — 4 ═══════════════ */
   gtm: [
     {
-      id: 'gtm.start-channel-test',
-      verb: 'Start channel test',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Channel experiment',
-      destination: 'GTM › Channels',
+      id: 'gtm.define-segments',
+      verb: 'Define segments',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Segments',
+      destination: 'GTM › Segments',
       mode: 'native',
-      icon: 'play',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Creates a new channel experiment with tracking links and a hypothesis card.',
+      icon: 'users',
       primary: true,
-      build: () => ({
-        type: 'confirm',
-        heading: 'Start channel test',
-        body: 'A new channel test will be created with hypothesis tracking.',
-      }),
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'gtm.plan',
+      description: 'Name and rank the segments to reach first.',
+      requiresOps: ['strategy.define-icp'],
+      requiresLabels: ['ICP'],
+      requires: [
+        {
+          id: 'req-seg-lens',
+          kind: 'question',
+          prompt: "What lens should we segment by?",
+          options: [
+            { label: 'Firm size', value: 'size' },
+            { label: 'Role / function', value: 'role' },
+            { label: 'Industry vertical', value: 'vertical' },
+            { label: 'Need / pain shape', value: 'need', primary: true },
+          ],
+        },
+        {
+          id: 'req-seg-existing',
+          kind: 'question',
+          prompt: "Any segment you already know is the priority — or should we find it?",
+          freeText: true,
+        },
+        {
+          id: 'req-seg-exclusions',
+          kind: 'question',
+          prompt: "Any segment to explicitly rule out? (competitor turf, too-small, etc.)",
+          freeText: true,
+        },
+        {
+          id: 'req-seg-reach',
+          kind: 'question',
+          prompt: "How do you reach new segments today?",
+          options: [
+            { label: 'Founder-led outbound', value: 'founder-outbound' },
+            { label: 'Content / SEO', value: 'content' },
+            { label: 'Paid', value: 'paid' },
+            { label: 'Partnerships', value: 'partners' },
+            { label: 'Not sure yet', value: 'auto', primary: true },
+          ],
+        },
+      ],
     },
     {
-      id: 'gtm.share-plan',
-      verb: 'Share plan',
-      renderType: 'markdown',
+      id: 'gtm.draft-channel-strategy',
+      verb: 'Draft channel strategy',
+      renderType: 'report',
       tier: 'primary',
-      produces: 'Plan link',
-      destination: 'GTM › Plan',
+      produces: 'Channel strategy',
+      destination: 'GTM › Channels',
       mode: 'native',
       icon: 'share',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Generates a read-only link to the 90-Day Plan for advisors or investors.',
       surfaceId: 'gtm.plan',
-      buildSnapshot: () => ({
-        title: 'Contract Review — 90-day plan',
-        kicker: 'From validated idea to first 100 customers.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'thesis',
-            label: 'Thesis',
-            tone: 'ready',
-            body: 'Small law firms will pay a seat-based price for a contract reviewer that reads like a senior associate. We reach them through SEO comparison pages and legal newsletters.',
-          },
-          {
-            type: 'timeline',
-            id: 'plan',
-            label: 'Phases',
-            items: [
-              { when: 'Days 0–30', title: 'Signal', body: 'Ship the landing page. Run 20 discovery calls. Refine ICP.', status: 'In progress' },
-              { when: 'Days 31–60', title: 'Traction', body: 'Publish 4 comparison pages. Launch on 3 newsletters. Target 40 trials.' },
-              { when: 'Days 61–90', title: 'Conversion', body: 'Double down on the highest-converting channel. Ship pricing page.' },
-            ],
-          },
-          {
-            type: 'metrics',
-            id: 'targets',
-            label: 'Targets',
-            items: [
-              { label: 'Trials', value: '40' },
-              { label: 'Paid conversion', value: '18%' },
-              { label: 'CAC ceiling', value: '$120' },
-            ],
-          },
-        ],
-      }),
+      description: 'Rank channels by expected CAC and time-to-signal.',
+      requiresOps: ['gtm.define-segments'],
+      requiresLabels: ['Segments'],
+      requires: [
+        {
+          id: 'req-ch-primary',
+          kind: 'question',
+          prompt: "What channel are you most confident in today?",
+          options: [
+            { label: 'Founder-led outbound', value: 'founder-outbound' },
+            { label: 'Content / SEO', value: 'content' },
+            { label: 'Cold email', value: 'cold-email' },
+            { label: 'Paid', value: 'paid' },
+            { label: 'Partnerships', value: 'partners' },
+            { label: 'Recommend one', value: 'auto', primary: true },
+          ],
+        },
+        {
+          id: 'req-ch-cac',
+          kind: 'question',
+          prompt: "What CAC would still feel like a good deal?",
+          freeText: true,
+        },
+        {
+          id: 'req-ch-budget',
+          kind: 'question',
+          prompt: "Monthly budget available for channels?",
+          options: [
+            { label: 'Under $500', value: 'under-500' },
+            { label: '$500-$2k', value: '500-2k' },
+            { label: '$2k-$10k', value: '2k-10k' },
+            { label: '$10k+', value: '10k-plus' },
+          ],
+        },
+        {
+          id: 'req-ch-advantage',
+          kind: 'question',
+          prompt: "Any unfair advantage we should exploit — audience, network, SEO moat, referral?",
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'gtm.draft-messaging',
+      verb: 'Draft messaging',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Messaging doc',
+      destination: 'GTM › Messaging',
+      mode: 'native',
+      icon: 'message-circle',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'gtm.plan',
+      description: 'Message variants tuned per segment.',
+      requiresOps: ['gtm.define-segments'],
+      requiresLabels: ['Segments'],
+      requires: [
+        {
+          id: 'req-msg-promise',
+          kind: 'question',
+          prompt: "In one sentence, what do you promise the buyer?",
+          freeText: true,
+        },
+        {
+          id: 'req-msg-enemy',
+          kind: 'question',
+          prompt: "What are you replacing — the incumbent tool, the manual process, the status quo?",
+          freeText: true,
+        },
+        {
+          id: 'req-msg-tone',
+          kind: 'question',
+          prompt: "What tone fits the brand?",
+          options: [
+            { label: 'Plain & confident', value: 'plain', primary: true },
+            { label: 'Technical & precise', value: 'technical' },
+            { label: 'Warm & human', value: 'warm' },
+          ],
+        },
+        {
+          id: 'req-msg-proof',
+          kind: 'question',
+          prompt: "What is the strongest proof point you can put behind the message?",
+          freeText: true,
+        },
+      ],
     },
     {
       id: 'gtm.generate-landing',
@@ -811,442 +742,245 @@ const REGISTRY: Partial<Record<VenturePageKey, ActionDef[]>> = {
       renderType: 'html',
       tier: 'primary',
       produces: 'Landing page',
-      destination: 'GTM › Channels',
+      destination: 'GTM › Landing',
       mode: 'native',
       icon: 'rocket',
       agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Produces a live landing page for the primary channel.',
+      expectedOutputKind: 'payload',
       surfaceId: 'gtm.landing',
-      buildSnapshot: () => ({
-        title: 'Review contracts in under 2 minutes',
-        kicker: 'The associate you wish you had.',
-        sections: [
-          {
-            type: 'hero',
-            id: 'hero',
-            eyebrow: 'For small law firms',
-            headline: 'Review every contract in under 2 minutes.',
-            subhead: 'Upload a contract. Get flagged risks in plain English before the client call.',
-            cta: { label: 'Start free trial' },
-          },
-          {
-            type: 'feature-grid',
-            id: 'features',
-            label: 'Why firms switch',
-            items: [
-              { title: '2-minute review', body: 'Upload, parse, get a summary before the next call.' },
-              { title: 'Plain English', body: 'Every clause gets a one-line explanation.' },
-              { title: 'Priced per seat', body: 'No enterprise contract. Cancel anytime.' },
-            ],
-          },
-        ],
-      }),
-    },
-    {
-      id: 'gtm.export-plan',
-      verb: 'Export plan',
-      renderType: 'markdown',
-      tier: 'secondary',
-      produces: '90-day plan',
-      destination: 'GTM › Plan',
-      mode: 'native',
-      icon: 'download',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Downloads the 90-day plan as Markdown.',
-      build: () => ({
-        type: 'text',
-        label: '90-day plan (Markdown)',
-        text: '# 90-Day Plan\n\n## Days 0–30 — Signal\nShip the landing page. Run 20 discovery calls. Refine ICP.\n\n## Days 31–60 — Traction\nPublish 4 comparison pages. Launch on 3 newsletters.\n\n## Days 61–90 — Conversion\nDouble down on the highest-converting channel.',
-      }),
-    },
-    {
-      id: 'gtm.draft-channel-strategy',
-      verb: 'Draft channel strategy',
-      destination: 'GTM › Channels',
-      mode: 'native',
-      icon: 'megaphone',
-      description: 'Rank channels by expected CAC and time-to-signal.',
-      produces: 'Channel strategy',
-      requiresOps: ['gtm.define-segments'],
-      requiresLabels: ['Segments'],
-      renderType: 'markdown',
-      tier: 'primary',
-      surfaceId: 'gtm.plan',
-      buildSnapshot: () => ({
-        title: 'Channel Strategy',
-        kicker: 'Primary, secondary, and experimental channels ranked.',
-        sections: [
-          {
-            type: 'list',
-            id: 'channels',
-            label: 'Channels',
-            items: [
-              { title: 'SEO comparison pages', body: 'High intent, compounding, low CAC.', meta: 'Primary' },
-              { title: 'Legal newsletters', body: 'Fast feedback, testable.', meta: 'Secondary' },
-              { title: 'Bar association talks', body: 'High trust, low volume.', meta: 'Experimental' },
-            ],
-          },
-          {
-            type: 'metrics',
-            id: 'economics',
-            label: 'Expected economics',
-            items: [
-              { label: 'SEO CAC', value: '$40' },
-              { label: 'Newsletter CAC', value: '$120' },
-              { label: 'Event CAC', value: '$200' },
-            ],
-          },
-        ],
-      }),
-    },
-    {
-      id: 'gtm.draft-messaging',
-      verb: 'Draft messaging',
-      destination: 'GTM › Messaging',
-      mode: 'native',
-      icon: 'sparkles',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Message variants tuned per segment.',
-      produces: 'Messaging doc',
-      requiresOps: ['gtm.define-segments'],
-      requiresLabels: ['Segments'],
-      renderType: 'markdown',
-      tier: 'primary',
-      surfaceId: 'gtm.plan',
-      buildSnapshot: () => ({
-        title: 'Messaging',
-        kicker: 'One promise per segment.',
-        sections: [
-          {
-            type: 'list',
-            id: 'by-segment',
-            label: 'By segment',
-            items: [
-              { title: 'Real-estate closing attorneys', body: '"Close more files. Read fewer contracts."' },
-              { title: 'Compliance-first SMBs', body: '"NDAs reviewed in the time it takes to open them."' },
-            ],
-          },
-          {
-            type: 'paragraph',
-            id: 'core',
-            label: 'Core line',
-            body: 'Review every contract in under 2 minutes — without hiring an associate.',
-          },
-        ],
-      }),
+      description: 'Produces a live landing page for the primary channel.',
+      requiresOps: ['gtm.draft-messaging'],
+      requiresLabels: ['Messaging'],
     },
   ],
 
-  /* ============================================================
-     CAMPAIGNS
-     ============================================================ */
+  /* ═══════════════ CAMPAIGNS — 2 ═══════════════ */
   campaigns: [
     {
-      id: 'campaigns.publish-landing',
-      verb: 'Publish landing',
-      renderType: 'html',
+      id: 'campaigns.generate-drip-sequence',
+      verb: 'Generate drip sequence',
+      renderType: 'report',
       tier: 'primary',
-      produces: 'Live page',
-      destination: 'Campaigns › Assets',
+      produces: 'Drip sequence',
+      destination: 'Campaigns › Drip',
       mode: 'native',
-      icon: 'rocket',
+      icon: 'mail',
+      primary: true,
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Makes a Native HTML page live at iv.app/<venture>/<slug>.',
       surfaceId: 'campaigns.landing',
-      buildSnapshot: () => ({
-        title: 'Review contracts in under 2 minutes',
-        kicker: 'The associate you wish you had.',
-        sections: [
-          {
-            type: 'hero',
-            id: 'hero',
-            eyebrow: 'For small law firms',
-            headline: 'Review every contract in under 2 minutes.',
-            subhead: 'Upload a contract. Get flagged risks in plain English before the client call. Priced by the seat.',
-            cta: { label: 'Start free trial' },
-            secondaryCta: { label: 'See a sample review' },
-          },
-          {
-            type: 'feature-grid',
-            id: 'features',
-            label: 'What you get',
-            items: [
-              { title: '2-minute review', body: 'Upload, parse, and get a plain-English summary before the next call.' },
-              { title: 'Risk flags you can act on', body: 'Every clause gets a one-line explanation, not a legal textbook.' },
-              { title: 'Export-ready', body: 'Markdown + PDF summaries with links back to the source.' },
-            ],
-          },
-          {
-            type: 'metrics',
-            id: 'proof',
-            label: 'Results from beta firms',
-            items: [
-              { label: 'Time saved', value: '8h/wk' },
-              { label: 'Flag precision', value: '>85%' },
-              { label: 'Firms upgraded', value: '3' },
-            ],
-          },
-        ],
-      }),
+      description: 'Create the 5-email onboarding sequence.',
+      requiresOps: ['gtm.define-segments'],
+      requiresLabels: ['Segments'],
+      requires: [
+        {
+          id: 'req-drip-goal',
+          kind: 'question',
+          prompt: "What is the sequence for?",
+          options: [
+            { label: 'Onboarding after signup', value: 'onboarding', primary: true },
+            { label: 'Activation (first value)', value: 'activation' },
+            { label: 'Upgrade / upsell', value: 'upgrade' },
+            { label: 'Retention / re-engagement', value: 'retention' },
+          ],
+        },
+        {
+          id: 'req-drip-length',
+          kind: 'question',
+          prompt: "How many emails do you want?",
+          options: [
+            { label: '3 emails', value: '3' },
+            { label: '5 emails', value: '5', primary: true },
+            { label: '7 emails', value: '7' },
+          ],
+        },
+        {
+          id: 'req-drip-trigger',
+          kind: 'question',
+          prompt: "What triggers the sequence? (signup, first action, inactivity, upgrade)",
+          freeText: true,
+        },
+        {
+          id: 'req-drip-tone-ref',
+          kind: 'question',
+          prompt: "Any email you love — competitor, brand, founder — that sets the tone?",
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'campaigns.draft-email',
+      verb: 'Draft email',
+      renderType: 'html',
+      tier: 'primary',
+      produces: 'Email draft',
+      destination: 'Campaigns › Drip',
+      mode: 'native',
+      icon: 'file-text',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'campaigns.landing',
+      description: 'Write the send-ready HTML for a specific drip email.',
+      requiresOps: ['campaigns.generate-drip-sequence'],
+      requiresLabels: ['Drip sequence'],
     },
     {
       id: 'campaigns.launch-drip',
       verb: 'Launch drip',
       renderType: 'operational',
       tier: 'secondary',
-      produces: 'Active sequence',
-      destination: 'Campaigns › Drip',
-      mode: 'connected',
-      connector: 'postmark',
-      icon: 'send',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'email_batch',
-      description: 'Activates the email sequence for new signups.',
-      primary: true,
-      build: () => ({
-        type: 'confirm',
-        heading: 'Launch drip',
-        body: 'The 5-email onboarding sequence will activate immediately.',
-      }),
-      requires: [
-        {
-          id: 'req-test',
-          kind: 'question',
-          prompt: 'Send a test email first?',
-          options: [
-            { label: 'Yes, send test', value: 'Test', primary: true },
-            { label: 'Skip test — go live', value: 'Live' },
-          ],
-        },
-      ],
-    },
-    {
-      id: 'campaigns.send-test',
-      verb: 'Send test',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Test email',
+      produces: 'Sent drip',
       destination: 'Campaigns › Drip',
       mode: 'connected',
       connector: 'gmail',
-      icon: 'mail',
+      icon: 'send',
       agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Sends one email in the sequence to the founder.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Send test email',
-        body: 'One test email will be sent to your inbox.',
-      }),
-    },
-    {
-      id: 'campaigns.pause-campaign',
-      verb: 'Pause campaign',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Paused state',
-      destination: 'Campaigns › Drip',
-      mode: 'native',
-      icon: 'pause',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Stops sending. Preserves state.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Pause campaign',
-        body: 'Sending will stop. You can resume anytime.',
-      }),
-    },
-    {
-      id: 'campaigns.add-variant',
-      verb: 'Add variant',
-      renderType: 'html',
-      tier: 'secondary',
-      produces: 'New variant',
-      destination: 'Campaigns › Drip',
-      mode: 'native',
-      icon: 'sparkles',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Creates an A/B variant with a hypothesis.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Add variant',
-        body: 'A new variant will be created for A/B testing.',
-      }),
-    },
-    {
-      id: 'campaigns.draft-email',
-      verb: 'Draft email',
-      destination: 'Campaigns › Drip',
-      mode: 'native',
-      icon: 'mail',
-      description: 'Write the send-ready HTML for a specific drip email.',
-      produces: 'Email draft',
-      requiresOps: ['campaigns.generate-drip-sequence'],
-      requiresLabels: ['Drip sequence'],
-      renderType: 'html',
-      tier: 'primary',
-      surfaceId: 'campaigns.landing',
-      requires: [
+      expectedOutputKind: 'email_batch',
+      description: 'Sends the drip sequence to a list through Gmail.',
+requires: [
         {
-          id: 'req-email-index',
+          id: 'req-drip-goal',
           kind: 'question',
-          prompt: 'Which email in the sequence?',
+          prompt: 'What is the sequence for?',
           options: [
-            { label: 'Welcome — first 5 min', value: 'welcome', primary: true },
-            { label: 'Day 1 — 3 clauses', value: 'day1' },
-            { label: 'Day 12 — Upgrade', value: 'day12' },
+            { label: 'Onboarding after signup', value: 'onboarding', primary: true },
+            { label: 'Activation (first value)', value: 'activation' },
+            { label: 'Upgrade / upsell', value: 'upgrade' },
+            { label: 'Retention / re-engagement', value: 'retention' },
           ],
         },
+        {
+          id: 'req-drip-length',
+          kind: 'question',
+          prompt: 'How many emails do you want?',
+          options: [
+            { label: '3 emails', value: '3' },
+            { label: '5 emails', value: '5', primary: true },
+            { label: '7 emails', value: '7' },
+          ],
+        },
+        {
+          id: 'req-drip-trigger',
+          kind: 'question',
+          prompt: 'What triggers the sequence? (signup, first action, inactivity, upgrade)',
+          freeText: true,
+        },
+        {
+          id: 'req-drip-tone-ref',
+          kind: 'question',
+          prompt: 'Any email you love — competitor, brand, founder — that sets the tone?',
+          freeText: true,
+        },
       ],
-      buildSnapshot: () => ({
-        title: 'Welcome — What you get in 5 minutes',
-        kicker: 'Email 1 of 5. Send-ready HTML.',
-        sections: [
-          {
-            type: 'embed',
-            id: 'preview',
-            label: 'Preview',
-            html: '<div style="font-family:Inter,system-ui,sans-serif;padding:32px;background:#fff;max-width:560px;margin:0 auto;"><h1 style="font-size:24px;letter-spacing:-0.02em;margin:0 0 16px;color:#18191b;">Welcome to IV</h1><p style="margin:0 0 16px;color:#61646b;font-size:15px;line-height:1.6;">Upload a contract in the next 5 minutes and you\'ll see why firms are switching from manual review.</p><a style="display:inline-block;background:#5b5ce2;color:#fff;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;">Upload a contract</a><p style="margin:24px 0 0;color:#8b8e94;font-size:13px;">— The IV team</p></div>',
-          },
-        ],
-      }),
-    },
-    {
-      id: 'campaigns.draft-calendar',
-      verb: 'Draft calendar',
-      destination: 'Campaigns › Drip',
-      mode: 'native',
-      icon: 'calendar',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Send schedule across the drip sequence.',
-      produces: 'Send calendar',
       requiresOps: ['campaigns.generate-drip-sequence'],
       requiresLabels: ['Drip sequence'],
-      renderType: 'sheet',
-      tier: 'primary',
-      surfaceId: 'campaigns.landing',
-      buildSnapshot: () => ({
-        title: 'Send Calendar',
-        kicker: 'Timing across the 5-email sequence.',
-        sections: [
-          {
-            type: 'timeline',
-            id: 'schedule',
-            label: 'Schedule',
-            items: [
-              { when: 'Day 0, 9am', title: 'Welcome', body: 'Immediate on signup.' },
-              { when: 'Day 1, 9am', title: 'The 3 clauses we always flag', body: 'Educational.' },
-              { when: 'Day 3, 9am', title: 'Case study', body: 'Social proof.' },
-              { when: 'Day 6, 10am', title: 'Personalized usage', body: 'Personalized.' },
-              { when: 'Day 12, 9am', title: 'Upgrade', body: 'Offer with expiry.' },
-            ],
-          },
-        ],
-      }),
     },
   ],
 
-  /* ============================================================
-     SALES
-     ============================================================ */
+  /* ═══════════════ SALES — 4 ═══════════════ */
   sales: [
     {
-      id: 'sales.send-sequence',
-      verb: 'Send sequence',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Outbound emails',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'email_batch',
-      requiresOps: ['strategy.share-brief'],
-      requiresLabels: ['ICP'],
-      softDependency: 'Better with GTM segments',
-      destination: 'Sales › Outreach',
-      mode: 'connected',
-      connector: 'gmail',
-      icon: 'send',
-      description: 'Sends the chosen outreach sequence to the target list.',
+      id: 'sales.generate-discovery-script',
+      verb: 'Generate discovery script',
+      renderType: 'markdown',
+      tier: 'primary',
+      produces: 'Discovery script',
+      destination: 'Sales › Discovery',
+      mode: 'native',
+      icon: 'message-circle',
       primary: true,
-      build: () => ({
-        type: 'email',
-        to: 'prospects@list',
-        subject: 'Quick question',
-        body: 'Hi — noticed you might be dealing with contract review overhead...',
-      }),
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'sales.proposal',
+      description: 'Eight-question discovery script tuned to the ICP.',
+      requiresOps: ['strategy.define-icp', 'strategy.define-positioning'],
+      requiresLabels: ['ICP', 'Positioning'],
       requires: [
         {
-          id: 'req-segment',
+          id: 'req-disc-goal',
           kind: 'question',
-          prompt: 'Which segment should this go to?',
+          prompt: "What is the primary goal of the discovery call?",
           options: [
-            { label: 'SMB', value: 'SMB', primary: true },
-            { label: 'Mid-market', value: 'Mid-market' },
-            { label: 'Enterprise', value: 'Enterprise' },
+            { label: 'Qualify fit', value: 'qualify', primary: true },
+            { label: 'Understand pain deeply', value: 'understand-pain' },
+            { label: 'Scope a pilot', value: 'scope-pilot' },
+            { label: 'Map decision process', value: 'decision-map' },
           ],
+        },
+        {
+          id: 'req-disc-next-step',
+          kind: 'question',
+          prompt: "What should happen right after the call?",
+          options: [
+            { label: 'Demo', value: 'demo' },
+            { label: 'Pilot', value: 'pilot' },
+            { label: 'Intro to a decision-maker', value: 'intro' },
+            { label: 'Send proposal', value: 'proposal', primary: true },
+          ],
+        },
+        {
+          id: 'req-disc-unknown',
+          kind: 'question',
+          prompt: "What is the one thing you most need to learn on this call?",
+          freeText: true,
+        },
+        {
+          id: 'req-disc-objection',
+          kind: 'question',
+          prompt: "What objection do you hear most often, and how do you handle it?",
+          freeText: true,
         },
       ],
     },
     {
-      id: 'sales.log-call',
-      verb: 'Log call',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Call record',
-      destination: 'Sales › Pipeline',
+      id: 'sales.draft-outreach-sequence',
+      verb: 'Draft outreach sequence',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Outreach sequence',
+      destination: 'Sales › Outreach',
       mode: 'native',
-      icon: 'phone',
+      icon: 'send',
       agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Records a call with notes, next step, and outcome.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Log call',
-        body: 'A new call record will be added to the pipeline.',
-      }),
-    },
-    {
-      id: 'sales.create-deal',
-      verb: 'Create deal',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Deal record',
-      destination: 'Sales › Pipeline',
-      mode: 'native',
-      icon: 'plus',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Creates a formal deal record with value and stage.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Create deal',
-        body: 'A new deal will be added to the pipeline.',
-      }),
-    },
-    {
-      id: 'sales.sync-crm',
-      verb: 'Sync to CRM',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'CRM sync',
-      destination: 'Sales › Pipeline',
-      mode: 'connected',
-      connector: 'hubspot',
-      icon: 'arrow-up-right',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Pushes the pipeline to HubSpot, Pipedrive, or Attio.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Sync to CRM',
-        body: 'Pipeline data will sync to your CRM.',
-      }),
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'sales.proposal',
+      description: 'Three-touch cold sequence for the primary segment.',
+      requiresOps: ['strategy.define-icp'],
+      requiresLabels: ['ICP'],
+      requires: [
+        {
+          id: 'req-out-touches',
+          kind: 'question',
+          prompt: "How many touches in the sequence?",
+          options: [
+            { label: '3 touches', value: '3', primary: true },
+            { label: '4 touches', value: '4' },
+            { label: '5+ touches', value: '5-plus' },
+          ],
+        },
+        {
+          id: 'req-out-channel',
+          kind: 'question',
+          prompt: "What channel mix?",
+          options: [
+            { label: 'Email only', value: 'email' },
+            { label: 'LinkedIn only', value: 'linkedin' },
+            { label: 'Email + LinkedIn', value: 'both', primary: true },
+          ],
+        },
+        {
+          id: 'req-out-icp-signal',
+          kind: 'question',
+          prompt: "What is the specific trigger or signal that makes someone a fit right now?",
+          freeText: true,
+        },
+        {
+          id: 'req-out-proof',
+          kind: 'question',
+          prompt: "What proof point or reference customer can you lead with?",
+          freeText: true,
+        },
+      ],
     },
     {
       id: 'sales.share-proposal',
@@ -1254,350 +988,562 @@ const REGISTRY: Partial<Record<VenturePageKey, ActionDef[]>> = {
       renderType: 'markdown',
       tier: 'primary',
       produces: 'Proposal',
-      destination: 'Sales › Pipeline',
+      destination: 'Sales › Proposal',
       mode: 'native',
       icon: 'share',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
+      surfaceId: 'sales.proposal',
       description: 'Generates a shareable proposal page with pricing and terms.',
-      surfaceId: 'sales.proposal',
-      buildSnapshot: () => ({
-        title: 'Contract Review — Proposal',
-        kicker: 'Prepared for Hart LLP',
-        sections: [
-          {
-            type: 'paragraph',
-            id: 'intro',
-            label: 'Overview',
-            body: 'Three-seat annual plan for Contract Review. Includes unlimited contract uploads, plain-English summaries, and shared team workspace. Ready to deploy in 24 hours.',
-          },
-          {
-            type: 'pricing',
-            id: 'plans',
-            label: 'Pricing',
-            tiers: [
-              {
-                name: 'Starter',
-                price: '$49',
-                cadence: 'seat / month',
-                features: ['1 seat', 'Unlimited contract uploads', 'Email support'],
-              },
-              {
-                name: 'Team',
-                price: '$79',
-                cadence: 'seat / month',
-                features: ['Up to 10 seats', 'Shared workspace', 'Priority support'],
-                highlighted: true,
-              },
-              {
-                name: 'Firm',
-                price: 'Custom',
-                features: ['Unlimited seats', 'Dedicated onboarding', 'SLA'],
-              },
-            ],
-          },
-          {
-            type: 'terms',
-            id: 'terms',
-            label: 'Terms',
-            items: [
-              { label: 'Term', body: '12 months from signature' },
-              { label: 'Payment', body: 'Annual, upfront. Net-15 for firms with existing account.' },
-              { label: 'Cancellation', body: '30 days written notice. No cancellation fee.' },
-              { label: 'Data', body: 'Contracts stay in the firm\'s tenant. No cross-tenant reads. SOC 2 Type II in progress.' },
-            ],
-          },
-        ],
-      }),
-    },
-    {
-      id: 'sales.generate-discovery-script',
-      verb: 'Generate discovery script',
-      destination: 'Sales › Discovery',
-      mode: 'native',
-      icon: 'message-circle',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Eight-question discovery script tuned to the ICP.',
-      produces: 'Discovery script',
-      requiresOps: ['strategy.define-icp', 'strategy.define-positioning'],
-      requiresLabels: ['ICP', 'Positioning'],
-      renderType: 'markdown',
-      tier: 'primary',
-      surfaceId: 'sales.proposal',
-      buildSnapshot: () => ({
-        title: 'Discovery Script',
-        kicker: 'Eight questions. Ends with a clear next step.',
-        sections: [
-          {
-            type: 'list',
-            id: 'questions',
-            label: 'Questions',
-            items: [
-              { title: 'How many contracts does the firm review per week?', body: 'Baseline volume.' },
-              { title: 'Who does the review today?', body: 'Partner, associate, or paralegal.' },
-              { title: 'What tools track contracts?', body: 'Clio, Drive, spreadsheets.' },
-              { title: 'What does a good review look like?', body: 'Their definition, not ours.' },
-              { title: 'How much time per contract?', body: 'Baseline for ROI.' },
-              { title: 'What goes wrong most often?', body: 'Pain surface.' },
-              { title: 'Who else weighs in on purchases?', body: 'Buying committee.' },
-              { title: 'What would make this a no-brainer?', body: 'Explicit next-step criteria.' },
-            ],
-          },
-        ],
-      }),
-    },
-    {
-      id: 'sales.summarize-call',
-      verb: 'Summarize call',
-      destination: 'Sales › Pipeline',
-      mode: 'native',
-      icon: 'file-text',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Turn a discovery call into a structured summary with next step.',
-      produces: 'Call summary',
-      renderType: 'report',
-      tier: 'secondary',
-      surfaceId: 'sales.proposal',
-      buildSnapshot: () => ({
-        title: 'Discovery Call — Hart LLP',
-        kicker: 'Summary + recommended next step.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'next-step',
-            label: 'Next step',
-            tone: 'ready',
-            body: 'Send pricing sheet + book a 2-week trial. Follow up Thursday.',
-          },
-          {
-            type: 'list',
-            id: 'findings',
-            label: 'Findings',
-            items: [
-              { title: '48 contracts/month', body: 'Heavier load than average for their size.' },
-              { title: 'Partner does the review', body: 'Direct decision-maker.' },
-              { title: 'Uses spreadsheets', body: 'No incumbent tool to displace.' },
-            ],
-          },
-        ],
-      }),
-    },
-  ],
-
-  /* ============================================================
-     GROWTH
-     ============================================================ */
-  growth: [
-    {
-      id: 'growth.start-experiment',
-      verb: 'Start experiment',
-      renderType: 'markdown',
-      tier: 'primary',
-      produces: 'Experiment',
-      destination: 'Growth › Experiments',
-      mode: 'native',
-      icon: 'play',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Creates an experiment with hypothesis, variants, and success metric.',
-      primary: true,
-      build: () => ({
-        type: 'confirm',
-        heading: 'Start experiment',
-        body: 'A new A/B experiment will be created with tracking enabled.',
-      }),
+      requiresOps: ['strategy.draft-pricing-model'],
+      requiresLabels: ['Pricing'],
       requires: [
         {
-          id: 'req-metric',
+          id: 'req-prop-client',
           kind: 'question',
-          prompt: 'Which metric decides the winner?',
+          prompt: "Who is the client, and what is the specific problem they are trying to solve?",
+          freeText: true,
+        },
+        {
+          id: 'req-prop-scope',
+          kind: 'question',
+          prompt: "What is included in the scope of work?",
+          freeText: true,
+        },
+        {
+          id: 'req-prop-investment',
+          kind: 'question',
+          prompt: "What is the total investment?",
           options: [
-            { label: 'Click-through rate', value: 'CTR', primary: true },
-            { label: 'Conversion rate', value: 'Conversion' },
-            { label: 'Retention', value: 'Retention' },
+            { label: 'Under $5k', value: 'under-5k' },
+            { label: '$5k-$20k', value: '5k-20k' },
+            { label: '$20k-$50k', value: '20k-50k', primary: true },
+            { label: '$50k+', value: '50k-plus' },
+          ],
+        },
+        {
+          id: 'req-prop-payment',
+          kind: 'question',
+          prompt: "Payment schedule preference?",
+          options: [
+            { label: 'Upfront', value: 'upfront' },
+            { label: '50/50', value: '50-50', primary: true },
+            { label: 'Milestone-based', value: 'milestones' },
           ],
         },
       ],
     },
     {
-      id: 'growth.promote-winner',
-      verb: 'Promote winner',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Updated default',
-      destination: 'Growth › Experiments',
-      mode: 'native',
-      icon: 'check',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Rolls the winning variant into the default.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Promote winner',
-        body: 'The winning variant becomes the default for all new sessions.',
-      }),
-    },
-    {
-      id: 'growth.kill-variant',
-      verb: 'Kill variant',
-      renderType: 'operational',
-      tier: 'secondary',
-      produces: 'Archived variant',
-      destination: 'Growth › Experiments',
-      mode: 'native',
-      icon: 'x-circle',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'confirm',
-      description: 'Archives a losing variant. Records the outcome.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Kill variant',
-        body: 'The variant will be archived and the outcome recorded.',
-      }),
-    },
-    {
-      id: 'growth.export-report',
-      verb: 'Export report',
+      id: 'sales.summarize-call',
+      verb: 'Summarize call',
       renderType: 'report',
       tier: 'secondary',
-      produces: 'Experiment report',
-      destination: 'Growth › Experiments',
+      produces: 'Call summary',
+      destination: 'Sales › Pipeline',
       mode: 'native',
-      icon: 'download',
+      icon: 'file-text',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Downloads the experiment report as Markdown.',
-      build: () => ({
-        type: 'text',
-        label: 'Experiment report (Markdown)',
-        text: '# Experiment Report\n\n## Hero copy A/B\n\n**Winner**: "The associate you wish you had" (+14% CTR, p=0.04)\n\n**Recommendation**: Promote.',
-      }),
+      surfaceId: 'sales.proposal',
+      description: 'Turn a discovery call into a structured summary with next step.',
+      requires: [
+        {
+          id: 'req-sum-paste',
+          kind: 'question',
+          prompt: "Paste the call notes or transcript.",
+          freeText: true,
+        },
+        {
+          id: 'req-sum-stage',
+          kind: 'question',
+          prompt: "What stage is this deal in?",
+          options: [
+            { label: 'Discovery', value: 'discovery', primary: true },
+            { label: 'Demo / scoping', value: 'demo' },
+            { label: 'Negotiation', value: 'negotiation' },
+            { label: 'Post-pilot', value: 'pilot' },
+          ],
+        },
+        {
+          id: 'req-sum-temperature',
+          kind: 'question',
+          prompt: "How warm is this lead?",
+          options: [
+            { label: 'Hot — moving fast', value: 'hot', primary: true },
+            { label: 'Warm — progressing', value: 'warm' },
+            { label: 'Cold — need to re-engage', value: 'cold' },
+          ],
+        },
+        {
+          id: 'req-sum-decision-maker',
+          kind: 'question',
+          prompt: "Who is the decision-maker, and are they in the loop?",
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'sales.send-outreach-sequence',
+      verb: 'Send outreach sequence',
+      renderType: 'operational',
+      tier: 'secondary',
+      produces: 'Sent emails',
+      destination: 'Sales › Outreach',
+      mode: 'connected',
+      connector: 'gmail',
+      icon: 'send',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'email_batch',
+      description: 'Sends the outreach sequence to a recipient list through Gmail.',
+      requiresOps: ['sales.draft-outreach-sequence'],
+      requiresLabels: ['Sequence'],
+    },
+    {
+      id: 'sales.book-calls',
+      verb: 'Book calls',
+      renderType: 'operational',
+      tier: 'secondary',
+      produces: 'Calendar event',
+      destination: 'Sales › Pipeline',
+      mode: 'connected',
+      connector: 'calendar',
+      icon: 'calendar',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'action',
+      description: 'Creates a discovery call event on your calendar.',
+      requiresOps: ['sales.generate-discovery-script'],
+      requiresLabels: ['Discovery script'],
+requires: [
+        {
+          id: 'req-sum-paste',
+          kind: 'question',
+          prompt: 'Paste the call notes or transcript.',
+          freeText: true,
+        },
+        {
+          id: 'req-sum-stage',
+          kind: 'question',
+          prompt: 'What stage is this deal in?',
+          options: [
+            { label: 'Discovery', value: 'discovery', primary: true },
+            { label: 'Demo / scoping', value: 'demo' },
+            { label: 'Negotiation', value: 'negotiation' },
+            { label: 'Post-pilot', value: 'pilot' },
+          ],
+        },
+        {
+          id: 'req-sum-temperature',
+          kind: 'question',
+          prompt: 'How warm is this lead?',
+          options: [
+            { label: 'Hot — moving fast', value: 'hot', primary: true },
+            { label: 'Warm — progressing', value: 'warm' },
+            { label: 'Cold — need to re-engage', value: 'cold' },
+          ],
+        },
+        {
+          id: 'req-sum-decision-maker',
+          kind: 'question',
+          prompt: 'Who is the decision-maker, and are they in the loop?',
+          freeText: true,
+        },
+      ],
+    },
+  ],
+
+  /* ═══════════════ GROWTH — 2 ═══════════════ */
+  growth: [
+    {
+      id: 'growth.design-experiment',
+      verb: 'Design experiment',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Experiment',
+      destination: 'Growth › Experiments',
+      mode: 'native',
+      icon: 'play',
+      primary: true,
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'gtm.plan',
+      description: 'Define an A/B test with hypothesis, variants, and success metric.',
+      requiresOps: ['gtm.define-segments'],
+      requiresLabels: ['Segments'],
+      requires: [
+        {
+          id: 'req-exp-hypothesis',
+          kind: 'question',
+          prompt: "What is your hypothesis? (if we change X, metric Y will move because Z)",
+          freeText: true,
+        },
+        {
+          id: 'req-exp-metric',
+          kind: 'question',
+          prompt: "What is the primary success metric?",
+          options: [
+            { label: "Conversion rate", value: 'conversion', primary: true },
+            { label: "Activation rate", value: 'activation' },
+            { label: "Retention", value: 'retention' },
+            { label: "Revenue per user", value: 'revenue' },
+            { label: "Other — describe", value: 'other' },
+          ],
+        },
+        {
+          id: 'req-exp-baseline',
+          kind: 'question',
+          prompt: "What is the current baseline for that metric, and how big a lift would matter?",
+          freeText: true,
+        },
+        {
+          id: 'req-exp-guardrail',
+          kind: 'question',
+          prompt: "What metric must NOT get worse during the test?",
+          freeText: true,
+        },
+      ],
     },
     {
       id: 'growth.draft-retention-plan',
       verb: 'Draft retention plan',
+      renderType: 'report',
+      tier: 'primary',
+      produces: 'Retention plan',
       destination: 'Growth › Retention',
       mode: 'native',
       icon: 'trending-up',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'gtm.plan',
       description: 'Plan to lift retention by specific intervention.',
-      produces: 'Retention plan',
       requiresOps: ['growth.design-experiment'],
       requiresLabels: ['Experiment'],
-      renderType: 'markdown',
-      tier: 'primary',
-      surfaceId: 'gtm.plan',
-      buildSnapshot: () => ({
-        title: 'Retention Plan',
-        kicker: 'Three interventions targeting week-4 drop-off.',
-        sections: [
-          {
-            type: 'callout',
-            id: 'diagnosis',
-            label: 'Diagnosis',
-            tone: 'attention',
-            body: '41% of firms active at week 4. Two-thirds of those who drop never upload a second contract.',
-          },
-          {
-            type: 'list',
-            id: 'interventions',
-            label: 'Interventions',
-            items: [
-              { title: 'Day-2 nudge email', body: 'If no second upload in 48h, send a specific prompt.' },
-              { title: 'Firm-wide invite', body: 'Encourage partner to invite an associate in week 1.' },
-              { title: 'Template library', body: 'Give firms 5 industry contracts to review as practice.' },
-            ],
-          },
-          {
-            type: 'metrics',
-            id: 'targets',
-            label: 'Targets',
-            items: [
-              { label: 'Week 4 retention', value: '52%' },
-              { label: 'Second upload', value: '>75%' },
-            ],
-          },
-        ],
-      }),
+      requires: [
+        {
+          id: 'req-ret-current',
+          kind: 'question',
+          prompt: "What is your current retention at D30, M3, or M6?",
+          freeText: true,
+        },
+        {
+          id: 'req-ret-churn-cause',
+          kind: 'question',
+          prompt: "Why do users leave today? (your best guess)",
+          freeText: true,
+        },
+        {
+          id: 'req-ret-lever',
+          kind: 'question',
+          prompt: "Which lever are you most willing to pull?",
+          options: [
+            { label: "Onboarding", value: 'onboarding', primary: true },
+            { label: "Product depth", value: 'product-depth' },
+            { label: "Notifications / nudges", value: 'notifications' },
+            { label: "Pricing / commitment", value: 'pricing' },
+            { label: "Support / success", value: 'support' },
+          ],
+        },
+        {
+          id: 'req-ret-tried',
+          kind: 'question',
+          prompt: "What retention intervention have you already tried, and how did it go?",
+          freeText: true,
+        },
+      ],
     },
   ],
 
-  /* ============================================================
-     KNOWLEDGE
-     ============================================================ */
-  knowledge: [
+    /* ═══════════════ FUNDING — 8 ═══════════════ */
+  funding: [
     {
-      id: 'knowledge.ask',
-      verb: 'Ask a question',
+      id: 'funding.build-pitch-deck',
+      verb: 'Build pitch deck',
+      renderType: 'deck',
+      tier: 'primary',
+      produces: 'Pitch deck',
+      destination: 'Funding › Deck',
+      mode: 'native',
+      icon: 'sparkles',
+      primary: true,
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: '10-12 slide investor narrative — problem, wedge, market, traction, ask.',
+      requiresOps: ['strategy.define-positioning'],
+      requiresLabels: ['Positioning'],
+    },
+    {
+      id: 'funding.draft-one-pager',
+      verb: 'Draft one-pager',
       renderType: 'markdown',
       tier: 'primary',
-      produces: 'Answer',
-      destination: 'Knowledge › Library',
+      produces: 'One-pager',
+      destination: 'Funding › One-pager',
+      mode: 'native',
+      icon: 'file-text',
+      primary: true,
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Compressed executive summary — problem, solution, market, team, ask.',
+      requires: [
+        {
+          id: 'req-1p-round',
+          kind: 'question',
+          prompt: "How much are you raising and at what stage?",
+          freeText: true,
+        },
+        {
+          id: 'req-1p-traction',
+          kind: 'question',
+          prompt: "What is your single strongest traction number?",
+          freeText: true,
+        },
+        {
+          id: 'req-1p-why-now',
+          kind: 'question',
+          prompt: "What market shift makes this the right moment?",
+          freeText: true,
+        },
+        {
+          id: 'req-1p-use-of-funds',
+          kind: 'question',
+          prompt: "What will you use the capital for?",
+          options: [
+            { label: "Hire 2-3 engineers", value: 'engineering' },
+            { label: "Go-to-market", value: 'gtm' },
+            { label: "R&D / product", value: 'rnd' },
+            { label: "Mixed — mostly team + GTM", value: 'mixed', primary: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'funding.build-financial-model',
+      verb: 'Build financial model',
+      renderType: 'sheet',
+      tier: 'primary',
+      produces: 'Financial model',
+      destination: 'Funding › Model',
+      mode: 'native',
+      icon: 'bar-chart',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: '3-year projection with revenue, costs, and runway assumptions.',
+    },
+    {
+      id: 'funding.prepare-investor-faq',
+      verb: 'Prepare investor FAQ',
+      renderType: 'markdown',
+      tier: 'secondary',
+      produces: 'Investor FAQ',
+      destination: 'Funding › FAQ',
       mode: 'native',
       icon: 'message-circle',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Opens the Research Agent drawer with your query.',
-      primary: true,
-      conversationMode: true,
-      build: () => ({
-        type: 'confirm',
-        heading: 'Ask a question',
-        body: 'The Research Agent drawer will open. Your question goes to the conversation.',
-      }),
+      surfaceId: 'strategy.brief',
+      description: 'The 15 hard questions an investor will ask, with drafted answers.',
+      requires: [
+        {
+          id: 'req-faq-hardest',
+          kind: 'question',
+          prompt: "What is the hardest question an investor has asked you?",
+          freeText: true,
+        },
+        {
+          id: 'req-faq-stage',
+          kind: 'question',
+          prompt: "What stage are you raising at?",
+          options: [
+            { label: "Pre-seed", value: 'pre-seed', primary: true },
+            { label: "Seed", value: 'seed' },
+            { label: "Series A", value: 'series-a' },
+          ],
+        },
+        {
+          id: 'req-faq-uncertainty',
+          kind: 'question',
+          prompt: "What is the biggest thing you genuinely don't know yet?",
+          freeText: true,
+        },
+        {
+          id: 'req-faq-competitor',
+          kind: 'question',
+          prompt: "Who is your strongest competitor, and why do you win?",
+          freeText: true,
+        },
+      ],
     },
     {
-      id: 'knowledge.dig-deeper',
-      verb: 'Dig deeper',
-      renderType: 'report',
-      tier: 'primary',
-      produces: 'New research',
-      destination: 'Knowledge › Library',
-      mode: 'native',
-      icon: 'search',
-      agentMethod: 'runOp',
-      expectedOutputKind: 'snapshot',
-      description: 'Commissions additional research on the current insight.',
-      build: () => ({
-        type: 'confirm',
-        heading: 'Dig deeper',
-        body: 'A research run will be commissioned for the current insight.',
-      }),
-    },
-    {
-      id: 'knowledge.export-insight',
-      verb: 'Export insight',
+      id: 'funding.build-target-list',
+      verb: 'Build target list',
       renderType: 'report',
       tier: 'secondary',
-      produces: 'Insight doc',
-      destination: 'Knowledge › Library',
+      produces: 'Investor targets',
+      destination: 'Funding › Targets',
       mode: 'native',
-      icon: 'download',
+      icon: 'users',
       agentMethod: 'runOp',
       expectedOutputKind: 'snapshot',
-      description: 'Downloads the insight as Markdown with citations.',
-      build: () => ({
-        type: 'text',
-        label: 'Insight (Markdown)',
-        text: '# Insight\n\n## Price sensitivity clusters at $50\n\nAbove $50, conversion drops 40% for solo lawyers. Team plans tolerate $79.\n\n### Sources\n- ICP interviews — 8 firms\n- Competitive teardown — Contract AI tools',
-      }),
+      surfaceId: 'strategy.brief',
+      description: 'Named investors matched to thesis, stage, and sector.',
+      requires: [
+        {
+          id: 'req-tl-check',
+          kind: 'question',
+          prompt: "What check size are you targeting?",
+          options: [
+            { label: "Under $100k", value: 'under-100k' },
+            { label: "$100k-$500k", value: '100k-500k' },
+            { label: "$500k-$2M", value: '500k-2m', primary: true },
+            { label: "$2M+", value: '2m-plus' },
+          ],
+        },
+        {
+          id: 'req-tl-sector',
+          kind: 'question',
+          prompt: "What sector or thesis focus should the investors align with?",
+          freeText: true,
+        },
+        {
+          id: 'req-tl-geo',
+          kind: 'question',
+          prompt: "What geography matters?",
+          options: [
+            { label: "US only", value: 'us', primary: true },
+            { label: "North America", value: 'na' },
+            { label: "Global", value: 'global' },
+            { label: "Specific region — describe", value: 'other' },
+          ],
+        },
+        {
+          id: 'req-tl-warm',
+          kind: 'question',
+          prompt: "Any warm intros you already have into investors?",
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'funding.draft-investor-update',
+      verb: 'Draft investor update',
+      renderType: 'markdown',
+      tier: 'secondary',
+      produces: 'Investor update',
+      destination: 'Funding › Updates',
+      mode: 'native',
+      icon: 'mail',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Monthly investor letter — metrics, highlights, asks.',
+      requires: [
+        {
+          id: 'req-upd-period',
+          kind: 'question',
+          prompt: "What period does this update cover? (e.g. October 2026)",
+          freeText: true,
+        },
+        {
+          id: 'req-upd-win',
+          kind: 'question',
+          prompt: "What was the single biggest win this period?",
+          freeText: true,
+        },
+        {
+          id: 'req-upd-miss',
+          kind: 'question',
+          prompt: "What went wrong or fell behind?",
+          freeText: true,
+        },
+        {
+          id: 'req-upd-ask',
+          kind: 'question',
+          prompt: "What do you need help with?",
+          freeText: true,
+        },
+      ],
+    },
+    {
+      id: 'funding.outreach-investors',
+      verb: 'Outreach investors',
+      renderType: 'operational',
+      tier: 'secondary',
+      produces: 'Investor emails',
+      destination: 'Funding › Outreach',
+      mode: 'connected',
+      connector: 'gmail',
+      icon: 'send',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'email_batch',
+      description: 'Cold outreach batch to target investors.',
+      requiresOps: ['funding.build-target-list'],
+      requiresLabels: ['Targets'],
+    },
+    {
+      id: 'funding.prepare-data-room',
+      verb: 'Prepare data room',
+      renderType: 'report',
+      tier: 'secondary',
+      produces: 'Diligence checklist',
+      destination: 'Funding › Data room',
+      mode: 'native',
+      icon: 'file-text',
+      agentMethod: 'runOp',
+      expectedOutputKind: 'snapshot',
+      surfaceId: 'strategy.brief',
+      description: 'Diligence checklist + index of files a VC will request.',
+      requires: [
+        {
+          id: 'req-dr-stage',
+          kind: 'question',
+          prompt: "What stage of raise is this data room for?",
+          options: [
+            { label: "Pre-seed", value: 'pre-seed', primary: true },
+            { label: "Seed", value: 'seed' },
+            { label: "Series A", value: 'series-a' },
+            { label: "Later", value: 'later' },
+          ],
+        },
+        {
+          id: 'req-dr-status',
+          kind: 'question',
+          prompt: "How much is already assembled?",
+          options: [
+            { label: "Nothing yet", value: 'none' },
+            { label: "Some docs scattered", value: 'scattered', primary: true },
+            { label: "Most docs collected", value: 'most' },
+            { label: "All docs in one place", value: 'ready' },
+          ],
+        },
+        {
+          id: 'req-dr-jurisdiction',
+          kind: 'question',
+          prompt: "What jurisdiction is the entity registered in?",
+          freeText: true,
+        },
+        {
+          id: 'req-dr-concern',
+          kind: 'question',
+          prompt: "Any known gap or concern an investor will flag?",
+          freeText: true,
+        },
+      ],
     },
   ],
 };
 
-/* ---------- Lookup ---------- */
+/* ---------- Lookups ---------- */
 export function getActionsForPage(pageKey: string): ActionDef[] {
   return REGISTRY[pageKey as VenturePageKey] ?? [];
 }
 
 export function getActionDef(actionDefId: string): ActionDef | undefined {
-  /* Base registry first */
   for (const list of Object.values(REGISTRY)) {
     const found = list?.find((a) => a.id === actionDefId);
     if (found) return found;
   }
-  /* Supplementary registry */
   for (const list of Object.values(EXTRA_OPS)) {
     const found = list?.find((a) => a.id === actionDefId);
     if (found) return found;

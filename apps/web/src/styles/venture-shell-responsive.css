@@ -461,4 +461,16 @@
       transition: none !important;
     }
   }
+
   
+
+  /* IV Brand — Exact Charcoal */
+
+.iv-nav-shell__logo,
+.iv-nav-shell__mobile-logo,
+.iv-topbar__mobile-brand img {
+  filter: brightness(0) saturate(100%)
+    invert(13%) sepia(11%) saturate(1450%)
+    hue-rotate(180deg) brightness(92%)
+    contrast(91%);
+}

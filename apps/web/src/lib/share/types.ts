@@ -3,13 +3,33 @@
    ============================================================ */
 
 export type SurfaceId =
+  /* ── Documents — editorial briefs in the side drawer ── */
   | 'strategy.brief'
-  | 'product.prototype'
+  | 'product.docs'
   | 'engineering.docs'
   | 'gtm.plan'
+  | 'campaigns.docs'
+  | 'sales.docs'
+  | 'sales.proposal'
+  | 'growth.plan'
+  | 'funding.docs'
+  /* ── Decks — full-screen slide viewers ── */
+  | 'strategy.deck'
+  | 'funding.deck'
+  /* ── Code — mono split-view drawer ── */
+  | 'engineering.code'
+  /* ── HTML artifacts — iframe containers ── */
+  | 'product.landing'
+  | 'engineering.ui-spec'
+  | 'campaigns.email'
+  /* ── Sheets — tabular grid ── */
+  | 'funding.sheet'
+  /* ── Action — connector confirm cards ── */
+  | 'action.confirm'
+  /* ── Legacy — kept so existing outputs still resolve ── */
   | 'gtm.landing'
   | 'campaigns.landing'
-  | 'sales.proposal';
+  | 'product.prototype';
 
 export interface ShareLink {
   id: string;

@@ -188,6 +188,11 @@ export function OpsCard({
   return (
     <article className={cn('ops-card', 'ops-card--electric', `ops-card--${state}`)} data-output-type={preview.type}>
       <div className="ops-card__cover">
+        {def.produces && (
+          <span className="ops-card__produces" aria-hidden="true">
+            {def.produces}
+          </span>
+        )}
         <img src={preview.src} alt={preview.alt} loading="lazy" decoding="async" onError={(event) => { event.currentTarget.style.opacity = '0'; }} />
         <span className="ops-card__cover-type">{preview.label}</span>
         {state === 'running' && <span className="ops-card__cover-running" aria-label="Operation running"><Loader2 className="h-3.5 w-3.5 animate-spin" /> Running</span>}

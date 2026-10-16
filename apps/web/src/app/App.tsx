@@ -20,6 +20,10 @@ import { DeliverableCommentsPanel } from '@/features/venture-actions/Deliverable
 import { AgentSideDrawer } from '@/features/agent-drawer';
 import { DocumentViewerDrawer } from '@/features/venture-docs/DocumentViewerDrawer';
 import { SurfaceViewerModal } from '@/features/venture-actions';
+import { HtmlViewerModal } from '@/features/venture-actions/HtmlViewerModal';
+import { DeckViewerModal } from '@/features/venture-actions/DeckViewerModal';
+import { CodeViewerModal } from '@/features/venture-actions/CodeViewerModal';
+import { SheetViewerModal } from '@/features/venture-actions/SheetViewerModal';
 import { CodeViewHost } from '@/features/venture-actions/viewers/CodeViewHost';
 import { useDocumentViewer } from '@/lib/stores/documentViewerStore';
 
@@ -144,6 +148,10 @@ function GlobalOverlays() {
       <AgentSideDrawer onOpenDoc={openDocument} />
       <DocumentViewerDrawer />
       <SurfaceViewerModal />
+      <HtmlViewerModal />
+      <DeckViewerModal />
+      <CodeViewerModal />
+      <SheetViewerModal />
       <CodeViewHost />
     </>
   );

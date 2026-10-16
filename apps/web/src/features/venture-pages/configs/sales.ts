@@ -29,14 +29,6 @@ export const salesConfig: VenturePageConfig = {
       id: 'sales-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'sales.generate-discovery-script',
-        'sales.draft-outreach-sequence',
-        'sales.share-proposal',
-        'sales.summarize-call',
-        'sales.send-outreach-sequence',
-        'sales.book-calls',
-      ],
     },
   ],
 };

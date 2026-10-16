@@ -29,11 +29,6 @@ export const productConfig: VenturePageConfig = {
       id: 'product-tools',
       label: 'Operations',
       icon: 'sparkles',
-      actionIds: [
-        'product.generate-prd',
-        'product.generate-prototype',
-        'product.publish-prototype',
-      ],
     },
   ],
 };

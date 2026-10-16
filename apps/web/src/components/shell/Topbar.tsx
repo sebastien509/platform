@@ -245,11 +245,12 @@ export function Topbar({
           </button>
 
           <div className="iv-topbar__mobile-brand flex h-9 items-center">
-            <img
-              src={IV_LOGO_ICON}
-              alt="IV"
-              className="h-8 w-8 object-contain"
-            />
+          <img
+            src={IV_LOGO_ICON}
+            alt="IV"
+            className="h-8 w-8 object-contain"
+            style={{ filter: 'brightness(0)' }}
+          />
           </div>
         </div>
 

@@ -40,3 +40,73 @@
 .ops-card--electric :is(button,a):focus-visible {outline:2px solid #426bfa;outline-offset:2px}
 @media(max-width:640px){.ops-card--electric .ops-card__content{padding:16px}.ops-card--electric .ops-card__cover{max-height:155px}}
 @media(prefers-reduced-motion:reduce){.ops-card.ops-card--electric,.ops-card--electric .ops-card__cover img{transform:none!important;transition:none!important}}
+
+
+/* ============================================================
+   Ops card — "produces" overlay (v2)
+   · Lighter translucent cover — the image reads through
+   · Visible in EVERY card state, including blocked (a founder
+     should see what they'll unlock when prerequisites land)
+   · Only fades on hover so the real action button shows
+   ============================================================ */
+
+.ops-card--electric .ops-card__cover {
+  position: relative;
+}
+
+.ops-card--electric .ops-card__produces {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  padding: 8px 14px;
+  text-align: center;
+
+  font-family: var(--font-display, var(--font-sans));
+  font-size: clamp(13px, 1.3vw, 18px);
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: #1a2338;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.55);
+
+  /* Light enough that the cover image reads through */
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(2px) saturate(1.08);
+  -webkit-backdrop-filter: blur(2px) saturate(1.08);
+
+  opacity: 1;
+  transition: opacity 200ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  z-index: 2;
+}
+
+/* Hover — full fade so the underlying card + verb + button show */
+.ops-card--electric:hover .ops-card__produces {
+  opacity: 0;
+}
+
+/* Focus (keyboard tab) — fade out so tabbing shows the action */
+.ops-card--electric:focus-within .ops-card__produces {
+  opacity: 0.1;
+}
+
+/* No state-based hiding. The produces keyword is always correct —
+   it names what the op will make regardless of whether the
+   prerequisites are met, whether it's running, done, or failed. */
+
+@media (prefers-reduced-motion: reduce) {
+  .ops-card--electric .ops-card__produces {
+    transition: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .ops-card--electric .ops-card__produces {
+    font-size: 12px;
+    letter-spacing: 0.07em;
+    background: rgba(255, 255, 255, 0.5);
+  }
+}
