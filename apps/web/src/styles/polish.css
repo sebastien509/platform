@@ -10445,3 +10445,144 @@ button.oc-card__status.is-needs-you {
     color: #a5b4fc;
   }
 }
+
+/* ============================================================
+   Invite preview — shows role capabilities before accepting
+   ============================================================ */
+
+.invite-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  padding: 20px 0;
+  max-width: 460px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.invite-preview__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 12px;
+  border-radius: 999px;
+
+  border: 1px solid rgba(66, 107, 250, 0.28);
+  background: rgba(66, 107, 250, 0.08);
+
+  color: var(--accent, #426bfa);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invite-preview__title {
+  margin: 4px 0 0;
+  font-family: var(--font-display, var(--font-sans));
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.028em;
+  color: var(--text-primary);
+}
+
+.invite-preview__role {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  color: var(--text-secondary);
+}
+
+.invite-preview__role strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.invite-preview__caps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  width: 100%;
+  margin-top: 8px;
+  padding: 18px 20px;
+
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-1);
+  text-align: left;
+}
+
+.invite-preview__cap {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.invite-preview__cap-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(66, 107, 250, 0.1);
+  color: var(--accent, #426bfa);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.invite-preview__cap-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.invite-preview__cap-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.invite-preview__cap-detail {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.invite-preview__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.invite-preview__decline {
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.invite-preview__decline:hover {
+  color: var(--text-primary);
+}
+
+.invite-preview__footnote {
+  margin: 4px 0 0;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: var(--text-muted);
+}

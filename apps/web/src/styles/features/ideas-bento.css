@@ -1049,3 +1049,30 @@
     }
   }
   
+/* ============================================================
+   Ideas — read-only notice for non-owners
+   ============================================================ */
+
+.ideas-readonly-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: -12px 0 20px;
+  padding: 10px 14px;
+
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+
+  background: var(--surface-1);
+  color: var(--text-muted);
+
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.ideas-readonly-notice svg {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}

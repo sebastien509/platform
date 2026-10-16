@@ -35,7 +35,7 @@ import {
   useDeliverablesStore,
 } from '@/lib/deliverables';
 import { useOpenDeliverable } from './useOpenDeliverable';
-import { runAction } from './runAction';
+import { runAction, PREMIUM_BLOCKED_SENTINEL, VERSION_LIMIT_SENTINEL } from './runAction';
 import { DeliverableCardMenu } from './DeliverableCardMenu';
 import { VersionsModal } from './VersionsModal';
 import type { ActionDef } from './page-actions';
@@ -150,7 +150,20 @@ export function OpsCard({
       ? 'blocked'
       : 'available';
   const handleRun = () => {
-    runAction(def, { ventureId, pageId });
+    const result = runAction(def, { ventureId, pageId });
+    if (result === PREMIUM_BLOCKED_SENTINEL) {
+      window.dispatchEvent(
+        new CustomEvent('iv:show-gate', {
+          detail: { gate: 'premium-op', opId: def.id, pageId },
+        }),
+      );
+    } else if (result === VERSION_LIMIT_SENTINEL) {
+      window.dispatchEvent(
+        new CustomEvent('iv:show-gate', {
+          detail: { gate: 'version-limit', opId: def.id, pageId },
+        }),
+      );
+    }
   };
   const handleViewRun = () => {
     if (activeRun) openDrawer(activeRun.id);

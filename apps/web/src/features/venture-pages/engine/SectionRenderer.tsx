@@ -18,6 +18,9 @@ import { DeliverableHistoryView } from '../DeliverableHistoryView';
 import { getIcon } from '../iconMap';
 import { ArchetypeRenderer } from './ArchetypeRenderer';
 import type { VentureSection } from './types';
+import { useMyRole } from '@/lib/hooks/useMyRole';
+import { useCurrentWorkspace } from '@/lib/hooks/useWorkspace';
+import { Lock } from 'lucide-react';
 
 
 /* ---------- Empty-section guard ----------
@@ -305,16 +308,35 @@ function ToolsView({
       ? section.actionIds
       : getActionsForPage(pageKey).map((a) => a.id);
 
+  /* Role awareness — viewers see the same ops, but read-only. */
+  const { data: workspace } = useCurrentWorkspace();
+  const { role } = useMyRole(workspace?.id);
+  const isViewer = role === 'viewer';
+
   return (
     <div className="operations-row" id={section.id}>
-      <OpsGrid
-        allActionIds={allActionIds}
-        recommendedActionIds={section.recommendedActionIds}
-        moreActionIds={section.moreActionIds}
-        pageId={pageKey}
-        ventureId={ventureId}
-        pageBlocked={pageBlocked}
-      />
+      {isViewer && (
+        <div className="viewer-notice" role="note">
+          <span className="viewer-notice__icon">
+            <Lock className="h-3.5 w-3.5" />
+          </span>
+          <span>
+            You have viewer access to this workspace. You can read every
+            deliverable and comment on it — running ops requires Editor
+            access. Ask an admin if you need it.
+          </span>
+        </div>
+      )}
+      <div className={isViewer ? 'ops-grid is-viewer-mode' : undefined}>
+        <OpsGrid
+          allActionIds={allActionIds}
+          recommendedActionIds={section.recommendedActionIds}
+          moreActionIds={section.moreActionIds}
+          pageId={pageKey}
+          ventureId={ventureId}
+          pageBlocked={pageBlocked}
+        />
+      </div>
     </div>
   );
 }

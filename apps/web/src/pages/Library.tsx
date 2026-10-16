@@ -5,6 +5,8 @@ import { LoadingSkeleton } from '@/components/shared/LoadingSkeleton';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LibraryRow } from '@/features/knowledge/LibraryRow';
+import { LockedGridBadge } from '@/features/locked/LockedGridBadge';
+import '@/features/locked/locked.css';
 import { LibraryEntryMenu } from '@/features/knowledge/LibraryEntryMenu';
 import { useKnowledge } from '@/lib/hooks/useKnowledge';
 import { cn } from '@/lib/utils/cn';
@@ -120,7 +122,8 @@ export default function LibraryPage() {
       {allEntries.length > 0 ? (
         <div className="library-list">
           {allEntries.map((entry) => (
-            <div key={entry.id} className="library-row">
+            <div key={entry.id} className="library-row locked-grid-item">
+              <LockedGridBadge />
               <LibraryRow
                 entry={entry}
                 onOpen={() => navigate(`/library/${entry.id}`)}

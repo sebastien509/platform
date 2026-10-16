@@ -3912,3 +3912,40 @@
     font-size: 13px !important;
   }
 }
+
+/* ============================================================
+   Sidebar / nav — golden treatment for preview + coming-soon
+   pages. Any nav item with [data-page-state="preview"] gets a
+   subtle gold border + gradient. Clicking it still navigates.
+   ============================================================ */
+
+[data-page-state="preview"].venture-sidebar__item,
+[data-page-state="preview"].sidebar__item,
+[data-page-state="preview"] a,
+[data-page-state="preview"] button {
+  border-left: 2px solid transparent;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 245, 215, 0.35) 0%,
+    transparent 60%
+  );
+}
+
+[data-page-state="preview"].venture-sidebar__item::after,
+[data-page-state="preview"].sidebar__item::after {
+  content: 'Soon';
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 245, 215, 0.95),
+    rgba(255, 251, 235, 0.92)
+  );
+  color: #8a6d1e;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}

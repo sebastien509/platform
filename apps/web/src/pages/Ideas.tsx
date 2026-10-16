@@ -16,6 +16,8 @@ import {
 import { dbIdeaToLocal } from '@/features/ideas/dbIdeaConverter';
 
 import { useIdeas } from '@/lib/hooks/useIdeas';
+import { useMyRole, canCreateIdeas } from '@/lib/hooks/useMyRole';
+import { useCurrentWorkspace } from '@/lib/hooks/useWorkspace';
 import { useJourneyStore } from '@/lib/stores/journeyStore';
 import { cn } from '@/lib/utils/cn';
 import type { IdeaListStatus } from '@/lib/types';
@@ -67,6 +69,12 @@ export default function IdeasPage() {
   const { data: dbIdeas = [], isLoading } = useIdeas();
   const localIdeas = useJourneyStore((s) => s.ideas);
   const localJourneys = useJourneyStore((s) => s.journeys);
+
+  /* Role — only owners can start new ideas. Everyone else
+   *  reads and comments on what the owner has created. */
+  const { data: workspace } = useCurrentWorkspace();
+  const { role } = useMyRole(workspace?.id);
+  const canCreate = canCreateIdeas(role);
 
   const enriched = useMemo(() => {
     // DB ideas are the source of truth for anything that's been pushed.
@@ -144,14 +152,20 @@ export default function IdeasPage() {
       <PageContainer width="full">
         <div className="ideas-page">
           <EmptyState
-            title="No ideas yet"
-            description="Capture your first idea — the platform takes it from there."
+            title={canCreate ? 'No ideas yet' : 'No ideas in this workspace'}
+            description={
+              canCreate
+                ? 'Capture your first idea — the platform takes it from there.'
+                : 'Ideas created by the workspace owner will appear here. You can read and comment on them.'
+            }
             icon={<Lightbulb className="h-6 w-6" />}
             action={
-              <Button onClick={handleNewIdea} className="gap-1.5">
-                <Plus className="h-4 w-4" />
-                Capture an idea
-              </Button>
+              canCreate ? (
+                <Button onClick={handleNewIdea} className="gap-1.5">
+                  <Plus className="h-4 w-4" />
+                  Capture an idea
+                </Button>
+              ) : undefined
             }
           />
         </div>
@@ -171,15 +185,27 @@ export default function IdeasPage() {
               Explore possibilities. Find what deserves to become a venture.
             </p>
           </div>
-          <button
-            type="button"
-            className="ideas-new-btn shrink-0"
-            onClick={handleNewIdea}
-          >
-            <Plus className="h-4 w-4" />
-            New idea
-          </button>
+          {canCreate && (
+            <button
+              type="button"
+              className="ideas-new-btn shrink-0"
+              onClick={handleNewIdea}
+            >
+              <Plus className="h-4 w-4" />
+              New idea
+            </button>
+          )}
         </header>
+
+        {!canCreate && (
+          <div className="ideas-readonly-notice" role="note">
+            <Lightbulb className="h-3.5 w-3.5" />
+            <span>
+              Only the workspace owner can start new ideas. You can
+              read and comment on the ideas below.
+            </span>
+          </div>
+        )}
 
         {needingAction.length > 0 && (
           <section aria-label="What needs your attention">
@@ -248,14 +274,16 @@ export default function IdeasPage() {
             <div className="ideas-empty-inline">
               <Lightbulb className="h-6 w-6" />
               <p>No ideas match this filter.</p>
-              <button
-                type="button"
-                className="ideas-new-btn"
-                onClick={handleNewIdea}
-              >
-                <Plus className="h-4 w-4" />
-                New idea
-              </button>
+              {canCreate && (
+                <button
+                  type="button"
+                  className="ideas-new-btn"
+                  onClick={handleNewIdea}
+                >
+                  <Plus className="h-4 w-4" />
+                  New idea
+                </button>
+              )}
             </div>
           )}
         </section>

@@ -35,10 +35,22 @@ export function PremiumOpGate({
     ? PAGE_LABELS[resolvedPage] ?? resolvedPage
     : 'This';
 
-  /* What does Founder unlock from Pro? */
-  const unlocked = pagesUnlockedByUpgrade('pro', 'founder').map(
-    (p) => PAGE_LABELS[p] ?? p,
-  );
+  /* What does Founder unlock from Pro? Filter to pages that
+   * actually have ops — some page keys are navigational only
+   * (analytics, knowledge), not op surfaces. */
+  const OPS_PAGES = [
+    'strategy',
+    'product',
+    'engineering',
+    'gtm',
+    'campaigns',
+    'sales',
+    'growth',
+    'funding',
+  ];
+  const unlocked = pagesUnlockedByUpgrade('pro', 'founder')
+    .filter((p) => OPS_PAGES.includes(p))
+    .map((p) => PAGE_LABELS[p] ?? p);
 
   return (
     <ModalShell

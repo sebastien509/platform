@@ -1430,3 +1430,58 @@
     font-size: 13px;
   }
 }
+
+/* ============================================================
+   Ops — viewer read-only state
+   When the current user is a viewer, op cards render disabled
+   with a subtle banner. Same visual language as a locked item.
+   ============================================================ */
+
+.ops-grid.is-viewer-mode .action-btn,
+.ops-grid.is-viewer-mode .ops-card {
+  opacity: 0.62;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ops-grid.is-viewer-mode .action-btn__produces,
+.ops-grid.is-viewer-mode .ops-card__produces {
+  opacity: 0.35;
+}
+
+.viewer-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 16px;
+  padding: 12px 16px;
+
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 245, 215, 0.35),
+    rgba(255, 251, 235, 0.3)
+  );
+
+  color: #6b5518;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.viewer-notice__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+
+  border-radius: 8px;
+  background: rgba(212, 175, 55, 0.18);
+  color: #8a6d1e;
+}

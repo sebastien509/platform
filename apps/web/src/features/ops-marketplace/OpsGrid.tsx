@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import type { MarketplaceApp } from './types';
+import { LockedGridBadge } from '@/features/locked/LockedGridBadge';
+import '@/features/locked/locked.css';
 
 const ICONS: Record<string, any> = {
   presentation: Presentation,
@@ -25,58 +27,61 @@ export function OpsGrid({ apps }: { apps: MarketplaceApp[] }) {
       {apps.map((app) => {
         const Icon = ICONS[app.icon] ?? Layers;
         return (
-          <article
-            key={app.id}
-            className={cn('marketplace-card', `is-${app.status}`)}
-          >
-            <header className="marketplace-card__head">
-              <span className="marketplace-card__icon">
-                <Icon className="h-4 w-4" />
+          <div key={app.id} className="locked-grid-item">
+            <LockedGridBadge />
+            <article
+              className={cn('marketplace-card', `is-${app.status}`)}
+            >
+              <header className="marketplace-card__head">
+                <span className="marketplace-card__icon">
+                  <Icon className="h-4 w-4" />
+                </span>
+                <div className="marketplace-card__identity">
+                  <span className="marketplace-card__name">{app.name}</span>
+                  <span className="marketplace-card__vendor">
+                    by {app.developer} · v{app.version}
+                  </span>
+                </div>
+                <StatusPill status={app.status} />
+              </header>
+
+              <p className="marketplace-card__tagline">{app.tagline}</p>
+
+              <ul className="marketplace-card__capabilities">
+                {app.capabilities.slice(0, 3).map((c) => (
+                  <li key={c} className="marketplace-card__capability">
+                    {c}
+                  </li>
+                ))}
+              </ul>
+
+              <footer className="marketplace-card__footer">
+                <div className="marketplace-card__meta">
+                  <span className="marketplace-card__pricing">
+                    {app.pricingLabel ??
+                      (app.pricing === 'free' ? 'Free' : app.pricing)}
+                  </span>
+                  <span className="marketplace-card__installs">
+                    {app.installs} installs
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className={cn(
+                    'marketplace-card__action',
+                    app.status === 'installed' && 'is-secondary'
+                  )}
+                >
+                  {app.status === 'installed' ? 'Manage' : 'Install'}
+                  <ArrowRight className="h-3 w-3" />
+                </button>
+              </footer>
+
+              <span className="marketplace-card__produces">
+                Produces on {app.producesOn.join(' · ')}
               </span>
-              <div className="marketplace-card__identity">
-                <span className="marketplace-card__name">{app.name}</span>
-                <span className="marketplace-card__vendor">
-                  by {app.developer} · v{app.version}
-                </span>
-              </div>
-              <StatusPill status={app.status} />
-            </header>
-
-            <p className="marketplace-card__tagline">{app.tagline}</p>
-
-            <ul className="marketplace-card__capabilities">
-              {app.capabilities.slice(0, 3).map((c) => (
-                <li key={c} className="marketplace-card__capability">
-                  {c}
-                </li>
-              ))}
-            </ul>
-
-            <footer className="marketplace-card__footer">
-              <div className="marketplace-card__meta">
-                <span className="marketplace-card__pricing">
-                  {app.pricingLabel ?? (app.pricing === 'free' ? 'Free' : app.pricing)}
-                </span>
-                <span className="marketplace-card__installs">
-                  {app.installs} installs
-                </span>
-              </div>
-              <button
-                type="button"
-                className={cn(
-                  'marketplace-card__action',
-                  app.status === 'installed' && 'is-secondary'
-                )}
-              >
-                {app.status === 'installed' ? 'Manage' : 'Install'}
-                <ArrowRight className="h-3 w-3" />
-              </button>
-            </footer>
-
-            <span className="marketplace-card__produces">
-              Produces on {app.producesOn.join(' · ')}
-            </span>
-          </article>
+            </article>
+          </div>
         );
       })}
     </div>

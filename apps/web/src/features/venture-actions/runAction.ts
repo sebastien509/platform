@@ -1,15 +1,17 @@
 import { useAgentDrawerStore } from '@/lib/stores/agentDrawerStore';
 import { getTier } from '@/lib/stores/tierStore';
-import { canRunOp } from '@/lib/config/tiers';
+import { canRunOp , TIER_CONFIG } from '@/lib/config/tiers';
 
 /** Returned by runAction when the tier can't run this op. */
 export const PREMIUM_BLOCKED_SENTINEL = '__premium_blocked__';
+export const VERSION_LIMIT_SENTINEL = '__version_limit__';
 import { supabase } from '@/lib/supabase';
 import { useShareStore } from '@/lib/share';
 import { getActionDef } from './page-actions';
 import { runOp, runOpNext } from '@/lib/api/ventureAgent';
 import type { ActionDef, RequireInput } from './page-actions';
 import type { AgentRun } from '@/lib/types';
+import { useDeliverablesStore } from '@/lib/deliverables';
 
 /* ============================================================
    PAGE → AGENT MAPPING
@@ -683,7 +685,41 @@ export function runAction(def: ActionDef, ctx: RunActionContext): string {
    * and shows the gate. */
   const tier = getTier();
   if (!canRunOp(tier, def.id)) {
+    /* Dispatch the gate event so the shell can surface the
+       upgrade modal, then return the sentinel so callers can
+       bail out if they care. */
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('iv:show-gate', {
+          detail: { gate: 'premium-op', opId: def.id, pageId: ctx.pageId },
+        }),
+      );
+    }
     return PREMIUM_BLOCKED_SENTINEL;
+  }
+
+  /* Version-limit gate — Pro caps at 3 versions per (page, op).
+   * Founder / Team have Infinity. */
+  const versionsForOp = countDeliverableVersions(
+    ctx.pageId,
+    def.id,
+    ctx.ventureId,
+  );
+  const versionLimit = TIER_CONFIG[tier].versionsPerDeliverable;
+  if (Number.isFinite(versionLimit) && versionsForOp >= versionLimit) {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(
+        new CustomEvent('iv:show-gate', {
+          detail: {
+            gate: 'version-limit',
+            opId: def.id,
+            pageId: ctx.pageId,
+            limit: versionLimit,
+          },
+        }),
+      );
+    }
+    return VERSION_LIMIT_SENTINEL;
   }
 
   const store = useAgentDrawerStore.getState();
@@ -775,5 +811,34 @@ export function resumeRun(runId: string, reqId: string, value: string) {
       emitError(runId, run.agentId, err, def);
     }
   }, 600);
+}
+
+/**
+ * countDeliverableVersions — how many versions of a given
+ * (pageId, opId) exist for the current venture. Reads from the
+ * local deliverables store, which is hydrated by useDeliverables
+ * on every venture page mount.
+ */
+function countDeliverableVersions(
+  pageId: string,
+  opId: string,
+  ventureId?: string,
+): number {
+  try {
+    const store = useDeliverablesStore.getState();
+    const all = Object.values(store.deliverables ?? {}) as Array<{
+      opId: string;
+      pageId: string;
+      ventureId?: string;
+    }>;
+    return all.filter((d) => {
+      if (d.opId !== opId) return false;
+      if (d.pageId !== pageId) return false;
+      if (ventureId && d.ventureId !== ventureId) return false;
+      return true;
+    }).length;
+  } catch {
+    return 0;
+  }
 }
 

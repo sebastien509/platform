@@ -110,3 +110,85 @@
     background: rgba(255, 255, 255, 0.5);
   }
 }
+
+/* ============================================================
+   OpsCard — "produces" overlay
+   Bold keyword centered on the cover image. Light translucent
+   white behind it so the cover image reads through.
+   Visible in EVERY state — a founder should see what the op
+   will produce whether it's ready, blocked, or already run.
+   ============================================================ */
+
+.ops-card--electric .ops-card__cover {
+  position: relative;
+}
+
+.ops-card--electric .ops-card__produces {
+  /* Fill the cover, centered */
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Sits above the cover image + type label */
+  z-index: 3;
+
+  /* No pointer events — the card itself remains the click target */
+  pointer-events: none;
+
+  padding: 12px 16px;
+  text-align: center;
+
+  /* Typography — bold, uppercase, tight tracking */
+  font-family: var(--font-display, var(--font-sans));
+  font-size: clamp(13px, 1.35vw, 19px);
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: #1a2338;
+
+  /* Slight text shadow so the keyword stays crisp over any image */
+  text-shadow:
+    0 1px 2px rgba(255, 255, 255, 0.6),
+    0 0 8px rgba(255, 255, 255, 0.4);
+
+  /* Light translucent cover — the image reads through */
+  background: rgba(255, 255, 255, 0.42);
+  backdrop-filter: blur(2px) saturate(1.06);
+  -webkit-backdrop-filter: blur(2px) saturate(1.06);
+
+  opacity: 1;
+  transition: opacity 220ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* On hover, fade the cover entirely so the real card chrome
+   (image, type badge, verb, action button) is what the founder
+   interacts with. */
+.ops-card--electric:hover .ops-card__produces {
+  opacity: 0;
+}
+
+/* Keyboard focus on the card — same fade so tab navigation
+   surfaces the true interactive elements. */
+.ops-card--electric:focus-within .ops-card__produces {
+  opacity: 0.1;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .ops-card--electric .ops-card__produces {
+    transition: none;
+  }
+}
+
+/* Mobile — tighter typography, slightly stronger cover for legibility
+   on small screens where the image is compressed. */
+@media (max-width: 640px) {
+  .ops-card--electric .ops-card__produces {
+    font-size: 12.5px;
+    letter-spacing: 0.07em;
+    background: rgba(255, 255, 255, 0.5);
+  }
+}

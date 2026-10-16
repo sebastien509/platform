@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 import { useAgentDrawerStore } from '@/lib/stores/agentDrawerStore';
-import { runAction } from './runAction';
+import { runAction, PREMIUM_BLOCKED_SENTINEL, VERSION_LIMIT_SENTINEL } from './runAction';
 import { containerKind } from './containerKind';
 import type { ActionDef } from './page-actions';
 
@@ -70,7 +70,20 @@ export function ActionButton({ def, ventureId, pageId }: ActionButtonProps) {
 
     setBusy(true);
     try {
-      runAction(def, { ventureId, pageId });
+      const result = runAction(def, { ventureId, pageId });
+      if (result === PREMIUM_BLOCKED_SENTINEL) {
+        window.dispatchEvent(
+          new CustomEvent('iv:show-gate', {
+            detail: { gate: 'premium-op', opId: def.id, pageId },
+          }),
+        );
+      } else if (result === VERSION_LIMIT_SENTINEL) {
+        window.dispatchEvent(
+          new CustomEvent('iv:show-gate', {
+            detail: { gate: 'version-limit', opId: def.id, pageId },
+          }),
+        );
+      }
     } finally {
       /* busy resets on next render anyway */
       setTimeout(() => setBusy(false), 200);

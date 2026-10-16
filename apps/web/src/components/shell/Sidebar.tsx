@@ -20,6 +20,7 @@ import {
 } from '@/lib/stores/uiStore';
 
 import { cn } from '@/lib/utils/cn';
+import { getPageState } from '@/lib/config/pageStates';
 import type { LucideIcon } from 'lucide-react';
 
 const IV_LOGO_WORDMARK =
@@ -37,6 +38,15 @@ interface NavItem {
 interface NavGroup {
   header: string;
   items: NavItem[];
+}
+
+
+/** Derive the page-state key from a nav route. */
+function navKey(to: string): string {
+  const seg = to.split('/').filter(Boolean)[0]?.toLowerCase() ?? '';
+  // Map /apps-agents → 'apps' so pageStates key matches
+  if (seg === 'apps-agents') return 'apps';
+  return seg;
 }
 
 const NAV_GROUPS: NavGroup[] = [
@@ -260,8 +270,11 @@ function NavItemLink({
 }: NavItemLinkProps) {
   const Icon = item.icon;
 
+  const pageState = getPageState(navKey(item.to));
+
   return (
     <NavLink
+      data-page-state={pageState}
       to={item.to}
       onClick={onClick}
       title={collapsed ? item.label : undefined}

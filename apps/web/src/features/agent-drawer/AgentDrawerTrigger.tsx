@@ -54,6 +54,10 @@ export function AgentRunStrip({ className }: { className?: string }) {
     if (!routeVentureId) return [];
     return Object.values(runs)
       .filter((r) => r.ventureId === routeVentureId)
+      /* Kill / validation / failure all set closedAt. The tab
+         strip must reflect the SAME rule as the dock — closed
+         runs are gone, no matter what their status field says. */
+      .filter((r) => !r.closedAt)
       .filter((r) => TAB_STATUSES.has(r.status))
       .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
   }, [runs, routeVentureId]);

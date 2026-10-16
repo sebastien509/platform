@@ -28,6 +28,8 @@ import { useDeliverablesStore } from '@/lib/deliverables';
 
 import { VentureIntelligence } from
   '@/features/venture-intelligence/VentureIntelligence';
+import { PremiumOpGate } from '@/features/upgrade/PremiumOpGate';
+import { VersionLimitGate } from '@/features/upgrade/VersionLimitGate';
 
 export function VentureShell() {
   const { ventureId } = useParams<{ ventureId: string }>();
@@ -45,6 +47,40 @@ export function VentureShell() {
   const setDeliverablesVentureId = useDeliverablesStore(
     (s) => s.setActiveVentureId
   );
+
+  const [premiumGate, setPremiumGate] = useState<{
+    opId?: string;
+    pageId?: string;
+  } | null>(null);
+
+  const [versionGate, setVersionGate] = useState<{
+    opId?: string;
+    pageId?: string;
+    limit?: number;
+  } | null>(null);
+
+  /* Gate listener — runAction returns sentinels instead of a runId
+   * when the tier blocks the op. The ActionButton / OpsCard dispatch
+   * an 'iv:show-gate' event; we surface the right modal here. */
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent).detail;
+      if (!detail?.gate) return;
+      if (detail.gate === 'premium-op') {
+        setPremiumGate({ opId: detail.opId, pageId: detail.pageId });
+      } else if (detail.gate === 'version-limit') {
+        setVersionGate({
+          opId: detail.opId,
+          pageId: detail.pageId,
+          limit: detail.limit ?? 3,
+        });
+      }
+    };
+    window.addEventListener('iv:show-gate', handler as EventListener);
+    return () => {
+      window.removeEventListener('iv:show-gate', handler as EventListener);
+    };
+  }, []);
 
   const [mobileVentureNavOpen, setMobileVentureNavOpen] =
     useState(false);
@@ -143,13 +179,28 @@ export function VentureShell() {
         </div>
 
         {ventureId && !isLoading && (
-          <VentureIntelligence
-            key={ventureId}
-            ventureId={ventureId}
-            ventureName={venture?.name ?? 'This venture'}
-            pathname={location.pathname}
-            suspended={mobileVentureNavOpen}
-          />
+          <>
+            <PremiumOpGate
+              open={!!premiumGate}
+              onClose={() => setPremiumGate(null)}
+              opId={premiumGate?.opId}
+              pageId={premiumGate?.pageId}
+            />
+            <VersionLimitGate
+              open={!!versionGate}
+              onClose={() => setVersionGate(null)}
+              opId={versionGate?.opId}
+              pageId={versionGate?.pageId}
+              limit={versionGate?.limit ?? 3}
+            />
+            <VentureIntelligence
+              key={ventureId}
+              ventureId={ventureId}
+              ventureName={venture?.name ?? 'This venture'}
+              pathname={location.pathname}
+              suspended={mobileVentureNavOpen}
+            />
+          </>
         )}
       </div>
     </div>
